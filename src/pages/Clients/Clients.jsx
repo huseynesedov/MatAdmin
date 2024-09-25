@@ -1,0 +1,1158 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, Checkbox, Radio, } from 'antd';
+
+
+
+import SearchModal from './Component/Modal/modal';
+import SearchModal2 from './Component/Modal/modal2';
+
+import Description_active from './Component/Description/active';
+import Description_passif from './Component/Description/passif';
+
+import './../../assets/styles/Clients.scss';
+
+import Images from '../../assets/images/js/Images';
+
+import { SearchContext } from '../../searchprovider';
+import Customers from './Component/Connected Customers';
+import Product_passive from './Component/Passive Product/passive';
+import Product_active from './Component/Passive Product/active';
+import Licence from './Component/Licence';
+import Licence_mobil from './Component/Licence Mobil';
+import Login from './Component/Login';
+import Searches from './Component/Searches';
+import Bank from './Component/Bank Taksit';
+import Discount from './Component/Additional discount/discount';
+import Producer from './Component/Additional discount/producer';
+import Users from './Component/Users';
+import Oil from './Component/Oil Sales';
+import Integrated from './Component/Integrated';
+const { Title } = Typography;
+const { TabPane } = Tabs;
+
+const Clients = () => {
+    const [show, setShow] = useState(false);
+    const [show2, setShow2] = useState(false);
+    const [formData, setFormData] = useState({
+        kodu: '',
+        uretici: '',
+        ureticiKodu: '',
+        kosulKodu: '',
+        genel: '',
+        rafAdresi: '',
+        qemNo: '',
+    });
+
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
+    const handleClose2 = () => setShow2(false);
+
+    const handleInputChangee = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleClear = () => {
+        setFormData({
+            kodu: '',
+            uretici: '',
+            ureticiKodu: '',
+            kosulKodu: '',
+            genel: '',
+            rafAdresi: '',
+            qemNo: '',
+        });
+        alert('Silmekden eminmisiniz?');
+    };
+
+    const handleShowModal2 = () => {
+        setShow(false);
+        setShow2(true);
+    };
+
+
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const handleBlur = (e) => {
+
+        if (!dropdownRef.current.contains(e.relatedTarget)) {
+            setIsDropdownOpen(false);
+        }
+    };
+
+
+    const handleItemClick = () => {
+        setIsDropdownOpen(false);
+    };
+
+
+    const [isUpVisible, setIsUpVisible] = useState(false);
+    const [isTableViewVisible, setIsTableViewVisible] = useState(false);
+
+    const handleToggleClick = () => {
+        setIsUpVisible(!isUpVisible);
+        setIsTableViewVisible(!isTableViewVisible);
+    };
+
+
+    const [showAlert, setShowAlert] = useState(false);
+
+    const handleSaveClick = () => {
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 5000);
+    };
+
+    const handleCloseAlert = () => {
+        setShowAlert(false);
+    };
+
+
+
+
+    const [isBarCode, setIsBarCode] = useState(false);
+
+    const handlePrintClick = () => {
+        setIsBarCode(true)
+    };
+
+    const [isNewFoto, setIsNewFoto] = useState(false);
+
+    const handleNewFotoClick = () => {
+        setIsNewFoto(true)
+    };
+
+    const [inputs, setInputs] = useState({
+        product_code: '',
+        product_name: '',
+        seller_code: '',
+        seller: '',
+        company: '',
+        case: '',
+        foregin_selling_rate: '',
+        raf_address: '',
+        photo: '',
+        balance_1: '',
+        balance_2: '',
+        selling_rate: '',
+        buy_rate: '',
+    });
+
+    const [isDisabled, setIsDisabled] = useState(false);
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+    const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
+    const { selectedItem } = useContext(SearchContext);
+
+    useEffect(() => {
+        if (selectedItem) {
+            setInputs({
+                product_code: selectedItem.product_code || '',
+                product_name: selectedItem.product_name || '',
+                seller_code: selectedItem.seller_code || '',
+                seller: selectedItem.seller || '',
+                company: selectedItem.company || '',
+                case: selectedItem.case || '',
+                foregin_selling_rate: selectedItem.foregin_selling_rate || '',
+                raf_address: selectedItem.raf_address || '',
+                photo: selectedItem.photo || '',
+                balance_1: selectedItem.balance_1 || '',
+                balance_2: selectedItem.balance_2 || '',
+                selling_rate: selectedItem.selling_rate || '',
+                buy_rate: selectedItem.buy_rate || ''
+            });
+            setIsDisabled(true); // Eğer veri varsa inputları disable yap
+            setIsSaveDisabled(false);  // Save butonunu etkinleştir
+            setIsDeleteDisabled(false); // Delete butonunu etkinleştir
+        }
+    }, [selectedItem]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setInputs({
+            ...inputs,
+            [name]: value,
+        });
+    };
+
+    const handleEditClick = () => {
+        setIsDisabled(false); // Inputları yeniden düzenlenebilir hale getir
+    };
+
+    const handleSaveClickk = () => {
+        setIsSaveDisabled(true);
+        setTimeout(() => {
+            setIsSaveDisabled(false);
+            setIsDisabled(true);
+        }, 1000); // Örnek olarak 1 saniye sonra butonu tekrar aktif yapıyoruz
+    };
+
+
+
+    return (
+        <div className="home">
+            <Card className="search-card">
+                <Title level={4}>Ürün Bilgileri</Title>
+                <Form layout="vertical" className="product-search-form">
+                    <div className='d-flex'>
+
+                        <Form.Item label="Kodu">
+                            <Input className='position-relative' />
+                            <img className='position-absolute' style={{ left: "152px", top: "6px" }} src={Images.Search_blue} alt="search" placeholder="123544" />
+                        </Form.Item>
+                        <Form.Item label="Unvani" className='ms-3'>
+                            <Input className='position-relative' />
+                            <img className='position-absolute' style={{ left: "152px", top: "6px" }} src={Images.Search_blue} alt="search" placeholder="123544" />
+                        </Form.Item>
+                    </div>
+                    <div className="product-statss">
+                        <div>
+                            <span className='fs_16 fw_700'>Ürün No: 234</span>
+                            <span className='fs_16 mt-3 fw_700'>Entegre No: 12</span>
+                        </div>
+                    </div>
+                </Form>
+                <Form layout="inline" className="product-form">
+                    <Form.Item>
+                        <Button type="default" className="Delete_red" icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
+                        <Button type="default" style={{ marginLeft: '8px' }} className="Bin_Blue" icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
+                    </Form.Item>
+                </Form>
+            </Card>
+            <Tabs defaultActiveKey="1" className="product-tabs">
+                <TabPane tab="Genel" key="1">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button " >
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button" onClick={handleEditClick}>
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" onClick={handleSaveClickk} disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+                    <SearchModal
+                        show={show}
+                        handleClose={handleClose}
+                        handleClear={handleClear}
+                        formData={formData}
+                        handleInputChange={handleInputChange}
+                        handleShowModal2={handleShowModal2}
+                    />
+                    <SearchModal2
+                        show2={show2}
+                        handleClose={handleClose2}
+                        handleClear={handleClear}
+                    />
+                    <Divider />
+                    <Row gutter={16}>
+
+                        <Col span={24}>
+                            <Card className="info-card" title="Adress Bilgileri">
+                                <Form layout="Horizontal">
+                                    <Form.Item label="Adres">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input
+                                                value={inputs.product_code}
+                                                disabled={isDisabled}
+                                                onChange={handleInputChangee}
+                                                style={{ width: "240px" }}
+                                            />
+
+
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Il">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input
+                                                value={inputs.seller_code}
+                                                disabled={isDisabled}
+                                                onChange={handleInputChangee}
+                                                style={{ width: "240px" }} />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Ilce">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input
+                                                value={inputs.company}
+                                                disabled={isDisabled}
+                                                onChange={handleInputChangee}
+                                                style={{ width: "240px" }}
+                                            />
+                                        </div>
+                                    </Form.Item>
+                                </Form>
+                            </Card>
+
+                            <Card className="info-card " title="Ticari Bilgileri">
+
+                                <Form layout="Horizontal">
+                                    <Form.Item label="Vergi Idaresi">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px" }} />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Vergi Numarasi">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px" }} />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Branch">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px" }} className='position-relative' disabled />
+                                            <img className='position-absolute' style={{ top: "13px", right: "10px" }} src={Images.Down2_gray} alt="" />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Transfer Store">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px" }} className='position-relative' disabled />
+                                            <img className='position-absolute' style={{ top: "13px", right: "10px" }} src={Images.Down2_gray} alt="" />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="1C Doviz">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px" }} className='position-relative' disabled />
+                                            <img className='position-absolute' style={{ top: "13px", right: "10px" }} src={Images.Down2_gray} alt="" />
+                                        </div>
+                                    </Form.Item>
+                                    <h4 className='t_44 fs_16 fw_600 mt-5'>
+                                        Iletisim Bilgileri
+                                    </h4>
+                                    <div className="Line_E2"></div>
+
+                                    <Form layout="horizontal" className="mt-3">
+                                        <Form.Item label="Tel 1 - Tel 2">
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "110px" }} />
+                                                <Input style={{ width: "110px" }} className='ms-3' />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item label="GSM 1 - GSM 2">
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "110px" }} />
+                                                <Input style={{ width: "110px" }} className='ms-3' />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item label="Faks">
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px" }} />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item label="E- Posta">
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px" }} />
+                                            </div>
+                                        </Form.Item>
+                                    </Form>
+
+                                    <h4 className='t_44 fs_16 fw_600 mt-5'>
+                                        Entegrasyon Kodlari
+                                    </h4>
+                                    <div className="Line_E2"></div>
+
+                                    <Form layout="horizontal" className="mt-3">
+                                        <Form.Item label="B2B Kodu">
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px" }} />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item label="Vadeli">
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px" }} />
+                                            </div>
+                                        </Form.Item>
+
+                                        <h4 className='t_44 fs_16 fw_600 mt-5'>
+                                            Puan çarpani
+                                        </h4>
+                                        <div className="Line_E2"></div>
+
+                                        <Form layout="horizontal" className="mt-3">
+                                            <Form.Item label="Puan çarpani">
+                                                <div className='d-flex justify-content-end'>
+                                                    <Input style={{ width: "240px" }} />
+                                                </div>
+                                            </Form.Item>
+                                        </Form>
+                                    </Form>
+                                </Form>
+
+                            </Card>
+
+                        </Col>
+                    </Row>
+                </TabPane>
+                <TabPane tab="Diger Bilgileri" key="2">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button">
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+
+                    <Row gutter={16}>
+
+                        <Col span={24}>
+                            <Card className="info-card mt-3" title="Satiş Təmsilcisi">
+                                <Form layout="Horizontal">
+                                    <Form.Item label="Plasiyer">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px", height: "44px" }} className="position-relative" />
+                                            <img src={Images.Search_blue} className='position-absolute' style={{ right: "10px", top: "10px" }} />
+                                        </div>
+                                    </Form.Item>
+                                </Form>
+                            </Card>
+
+                            <Card className="info-card " title="Musteri Grupu">
+                                <Form layout="Horizontal">
+                                    <Form.Item label="Satis Kosulu">
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px", height: "40px" }} placeholder="0.00" />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Kullanici Sayisi" >
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px", height: "40px" }} placeholder="777777" />
+
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Kullanici Sayisi Android" >
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" disabled />
+                                            <img className='position-absolute' style={{ top: "16px", right: "12px" }} src={Images.Down2_gray} alt="" />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Kullanici Sayisi Ios" >
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" disabled />
+                                            <img className='position-absolute' style={{ top: "16px", right: "12px" }} src={Images.Down2_gray} alt="" />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item label="Cari Haraket Sifre" >
+                                        <div className='d-flex justify-content-end'>
+                                            <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" disabled />
+                                            <img className='position-absolute' style={{ top: "16px", right: "12px" }} src={Images.Down2_gray} alt="" />
+                                        </div>
+                                    </Form.Item>
+                                    <h4 className='t_44 fs_16 fw_600 mt-5'>
+                                        Grup Bilfileri
+                                    </h4>
+                                    <div className="Line_E2"></div>
+
+                                    <Form layout="horizontal" className="mt-4">
+                                        <Form.Item label="ISMaster" >
+                                            <div className='d-flex justify-content-end'>
+                                                <Checkbox />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item label="SparePart Customer" >
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" />
+                                                <img className='position-absolute' style={{ top: "11px", right: "51px" }} src={Images.search_gray} alt="" />
+                                                <img className='ms-3' src={Images.Close_gray} alt="" />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item label="Oil Customer" >
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" />
+                                                <img className='position-absolute' style={{ top: "11px", right: "51px" }} src={Images.search_gray} alt="" />
+                                                <img className='ms-3' src={Images.Close_gray} alt="" />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item label="Battery Customer" >
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" />
+                                                <img className='position-absolute' style={{ top: "11px", right: "51px" }} src={Images.search_gray} alt="" />
+                                                <img className='ms-3' src={Images.Close_gray} alt="" />
+                                            </div>
+                                        </Form.Item>
+                                    </Form>
+
+                                    <h4 className='t_44 fs_16 fw_600 mt-4'>
+                                        Limit Bilgileri
+                                    </h4>
+                                    <div className="Line_E2"></div>
+
+
+                                    <Form layout="Horizontal" className='mt-4'>
+                                        <Form.Item label="Kredi Limit">
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px", height: "44px" }} />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item label="Risk Limit">
+                                            <div className='d-flex justify-content-end'>
+                                                <Input style={{ width: "240px", height: "44px" }} />
+                                            </div>
+                                        </Form.Item>
+                                    </Form>
+
+                                    <div className='d-flex'>
+
+                                        <h4 className='t_44 fs_16 fw_600 mt-4'>
+                                            Odeme şekli
+                                        </h4>
+
+                                        <h4 className='t_44 fs_16 fw_600 mt-4' style={{ marginLeft: "560px" }}>
+                                            Sipariş Kilitle
+                                        </h4>
+                                    </div>
+                                    <div className="Line_E2"></div>
+                                    <div className='d-flex'>
+
+                                        <div>
+                                            <Form layout="Vertical" className='mt-4'>
+                                                <Form.Item>
+                                                    <Radio />
+                                                    <span className='fs_14 fw_400 t_44'>Pesin</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Radio />
+                                                    <span className='fs_14 fw_400 t_44'>Vadeli</span>
+                                                </Form.Item>
+
+                                            </Form>
+                                        </div>
+
+                                        <div style={{ marginLeft: "560px" }}>
+                                            <Form layout="Vertical" className='mt-4'>
+                                                <Form.Item>
+                                                    <Radio />
+                                                    <span className='fs_14 fw_400 t_44'>0</span>
+                                                </Form.Item>
+
+                                                <Form.Item >
+                                                    <div className='d-flex align-items-center justify-content-center'>
+
+                                                        <Radio />
+                                                        <span className='fs_14 fw_400 t_44'>1.Seviye</span>
+                                                        <div className='Comment d-flex align-items-center justify-content-center ms-2'>
+                                                            Mesaj
+                                                        </div>
+                                                    </div>
+                                                </Form.Item>
+
+                                                <Form.Item >
+                                                    <div className='d-flex align-items-center justify-content-center'>
+
+                                                        <Radio />
+                                                        <span className='fs_14 fw_400 t_44'>2.Seviye</span>
+                                                        <div className='Comment d-flex align-items-center justify-content-center ms-2'>
+                                                            Mesaj
+                                                        </div>
+                                                    </div>
+                                                </Form.Item>
+                                            </Form>
+                                        </div>
+                                    </div>
+
+
+                                    <h4 className='t_44 fs_16 fw_600 mt-4'>
+                                        Status
+                                    </h4>
+                                    <div className="Line_E2"></div>
+
+                                    <div className='d-flex'>
+
+                                        <div>
+                                            <Form layout="Vertical" className='mt-4'>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>B2B</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Aktif</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Kampaniya</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>İade Yapabilsin</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Yedek Parca</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Yag</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Aku</span>
+                                                </Form.Item>
+
+
+                                            </Form>
+                                        </div>
+
+                                        <div style={{ marginLeft: "509px" }}>
+                                            <Form layout="Vertical" className='mt-4'>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Sanalpos Direct Odeme</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Muşteri Kilitli</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Sepette Seçme işlemi</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Genel</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>WH Baku</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>WH Gence</span>
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    <Checkbox />
+                                                    <span className='fs_14 fw_400 t_44 ms-2'>Depo Transfer</span>
+                                                </Form.Item>
+                                            </Form>
+                                        </div>
+                                    </div>
+                                </Form>
+                            </Card>
+
+                        </Col>
+                    </Row>
+                </TabPane>
+                <TabPane tab="Aciklama" key="3">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button">
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+
+                    <Row gutter={16} className="mt-4">
+                        <Col span={24}>
+                            {/* <Description /> */}
+                        </Col>
+                    </Row>
+
+                </TabPane>
+                <TabPane tab="Pasif Ureticiler" key="4">
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button">
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+
+                    <Row gutter={16} className="mt-4" justify="space-around">
+                        <Col span={9}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Aktiv Uretici
+                            </span>
+                            <div className="mt-4"></div>
+                            <Description_active className="mt-4" />
+
+                        </Col>
+
+                        <Col span={9}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Pasif Uretici
+                            </span>
+                            <div className="mt-4"></div>
+                            <Description_passif className="mt-4" />
+
+                        </Col>
+
+                    </Row>
+                </TabPane>
+                <TabPane tab="Bagli Musteriler" key="5">
+
+                    <div>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Button type="default" className="button-margin bg_none add_button">
+                                    <img src={Images.add_circle_blue} alt="add" />
+                                    Yeni
+                                </Button>
+                                <Button type="default" className="button-margin bg_none edit_button">
+                                    <img src={Images.edit_green} alt="edit" />
+                                    Degistir
+                                </Button>
+                            </Col>
+                            <Col span={12} className="text-right">
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            </Col>
+                        </Row>
+
+                        <Row gutter={16}>
+                            <Col span={24}>
+                                <Customers />
+
+                            </Col>
+                        </Row>
+
+                    </div>
+
+
+
+                </TabPane>
+                <TabPane tab="Pasif urun" key="6">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button">
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin bg_none delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+                    <Row gutter={16} className="mt-4" justify="space-around">
+                        <Col span={11}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Aktiv Uretici
+                            </span>
+                            <div className="mt-4"></div>
+                            <Product_active className="mt-4" />
+
+                        </Col>
+
+                        <Col span={11}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Pasif Uretici
+                            </span>
+                            <div className="mt-4"></div>
+                            <Product_passive className="mt-4" />
+
+                        </Col>
+
+                    </Row>
+                </TabPane>
+                <TabPane tab="Lisans" key="7">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button">
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin bg_none delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+                    <Row gutter={16} className="mt-4">
+                        <Col span={24}>
+                            <Licence />
+
+
+                        </Col>
+                    </ Row >
+                </TabPane>
+                <TabPane tab="Lisans Mobil" key="8">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button">
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+
+                    <Row gutter={16} className="mt-4">
+                        <Col span={24}>
+                            <Licence_mobil />
+                        </Col>
+                    </Row>
+
+                </TabPane>
+                <TabPane tab="Login" key="9">
+                    <div>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
+                                    <img src={Images.add_circle_blue} alt="add" />
+                                    Yeni
+                                </Button>
+                                <Button type="default" className="button-margin bg_none edit_button">
+                                    <img src={Images.edit_green} alt="edit" />
+                                    Degistir
+                                </Button>
+                            </Col>
+                            <Col span={12} className="text-right">
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            </Col>
+                        </Row>
+
+                        <div className='mt-3'>
+
+                            <Login />
+                        </div>
+                    </div>
+                </TabPane>
+                <TabPane tab="Aramalar" key="10">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+
+                    <Row gutter={16}>
+                        <Col span={24}>
+                            <Card className="info-card mt-4 " title="Arama Detaylari" >
+                                <Form layout="inline">
+                                    <Form.Item>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <label>Tarih</label>
+                                            <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="2021-06-08" />
+                                            <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                            <label>Durum</label>
+                                            <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="Success" />
+                                            <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                            <label>Genel</label>
+                                            <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} />
+                                            <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                        </div>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                            <label>Üretici</label>
+                                            <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="*" />
+                                            <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                        </div>
+                                    </Form.Item>
+                                </Form>
+                                <div className="mt-3">
+                                    <Form layout="inline">
+                                        <Form.Item>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <label>Ana Grup</label>
+                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="12345" />
+                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                                <label>Alt Grup 1</label>
+                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="12345" />
+                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                                <label>Alt Grup 2</label>
+                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="12345" />
+                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            </div>
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                                <label>Arac Marka</label>
+                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="*" />
+                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            </div>
+                                        </Form.Item>
+                                    </Form>
+                                </div>
+                                <div className="mt-3">
+                                    <Form layout="inline">
+                                        <Form.Item>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <label>Arac Model</label>
+                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="12345" />
+                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            </div>
+                                        </Form.Item>
+                                        <div className='mt-4 d-flex'>
+
+                                            <Form.Item>
+                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
+                                                    <Checkbox />
+                                                    <label className='ms-2'>Kampanya</label>
+                                                </div>
+                                            </Form.Item>
+                                            <Form.Item>
+                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
+                                                    <Checkbox />
+                                                    <label className='ms-2'>Yeni urun</label>
+                                                </div>
+                                            </Form.Item>
+                                            <Form.Item>
+                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
+                                                    <Checkbox />
+                                                    <label className='ms-2'>Bugun Gelen</label>
+                                                </div>
+                                            </Form.Item>
+                                        </div>
+                                    </Form>
+                                </div>
+
+
+                            </Card >
+
+                            <Searches className="mt-4" />
+                        </Col >
+                    </Row>
+                </TabPane>
+                <TabPane tab="Banka Taksit Sayisi" key="11">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+                    <div className="mt-4"></div>
+                    <Bank />
+                </TabPane>
+                <TabPane tab="Ek Iskonto" key="12">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+                    <Row gutter={16} className="mt-4" justify="space-around">
+                        <Col span={9}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Aktiv Uretici
+                            </span>
+                            <div className="mt-4"></div>
+                            <Producer className="mt-4" />
+
+                        </Col>
+
+                        <Col span={9}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Pasif Uretici
+                            </span>
+                            <div className="mt-4"></div>
+                            <Discount className="mt-4" />
+
+                        </Col>
+
+                    </Row>
+
+                </TabPane>
+                <TabPane tab="Kullanicilar" key="13">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+                    <div className="mt-4"></div>
+
+                    <Users />
+
+                </TabPane>
+                <TabPane tab="Oil Satis isk" key="14">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+                    <div className="mt-4"></div>
+
+                    <Oil />
+                </TabPane>
+                <TabPane tab="Entegrasyon" key="15">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button type="default" className="button-margin bg_none edit_button">
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        </Col>
+                    </Row>
+
+                    <div className="mt-4"></div>
+                    <Card className="info-card " title="Entegrasyon">
+
+                        <Integrated />
+                        <div className="d-flex align-items-center justify-content-center mt-5">
+
+                            <div className='d-flex'>
+                                <div className="d-flex justify-content-center">
+                                    <Button type="default" className="button-margin bg_none add_button " >
+                                        <img src={Images.add_circle_blue} alt="add" />
+                                        Yeni Setir elave edin
+                                    </Button>
+                                </div>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green"></Button>
+                            </div>
+                        </div>
+
+                    </Card>
+                </TabPane>
+            </Tabs>
+        </div>
+    );
+};
+
+export default Clients;
