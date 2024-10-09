@@ -10,6 +10,7 @@ import Clients from './pages/Clients/Clients';
 import Orders from './pages/Orders/Orders';
 
 import { SearchProvider } from './searchprovider';
+import Delegates from './pages/Delegates';
 
 const App = () => {
     return (
@@ -27,6 +28,7 @@ const App = () => {
                                     <Route path="/" element={<Home />} />
                                     <Route path="/Clients" element={<Clients />} />
                                     <Route path="/Orders" element={<Orders/>} />
+                                    <Route path="/Delegates" element={<Delegates/>} />
                                 </Routes>
                             </MainContent>
                         </Layout.Content>

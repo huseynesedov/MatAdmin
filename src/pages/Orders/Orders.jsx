@@ -7,9 +7,7 @@ import OrderList from './Components/Order list';
 const { Title } = Typography;
 
 const Orders = () => {
-    const onChange = (date, dateString) => {
-        console.log(date, dateString);
-    };
+ 
 
     return (
         <div className="home">
@@ -19,8 +17,8 @@ const Orders = () => {
                     <div className='d-flex'>
                         <Form.Item label="Tarih Araligi">
                             <Space direction="inline">
-                                <DatePicker onChange={onChange} style={{ width: "240px", height: "40px" }} />
-                                <DatePicker onChange={onChange} style={{ width: "240px", height: "40px" }} />
+                                <DatePicker  style={{ width: "240px", height: "40px" }} />
+                                <DatePicker  style={{ width: "240px", height: "40px" }} />
                             </Space>
                         </Form.Item>
                     </div>
