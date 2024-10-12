@@ -5,12 +5,9 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MainContent from './components/MainContent';
 
-import Home from './pages/Home/Home';
-import Clients from './pages/Clients/Clients';
-import Orders from './pages/Orders/Orders';
 
 import { SearchProvider } from './searchprovider';
-import Delegates from './pages/Delegates';
+import RouteList from './Routes';
 
 const App = () => {
     return (
@@ -18,20 +15,20 @@ const App = () => {
             <Router>
                 <Layout style={{ minHeight: '100vh' }}>
                     <Layout.Sider width={250} className="site-layout-background">
+                        
+                        {/* Left Bar */}
                         <Sidebar />
                     </Layout.Sider>
                     <Layout>
+                        {/* Top Bar */}
                         <Header />
-                        <Layout.Content>
-                            <MainContent>
-                                <Routes>
-                                    <Route path="/" element={<Home />} />
-                                    <Route path="/Clients" element={<Clients />} />
-                                    <Route path="/Orders" element={<Orders/>} />
-                                    <Route path="/Delegates" element={<Delegates/>} />
-                                </Routes>
-                            </MainContent>
-                        </Layout.Content>
+
+                        <MainContent>
+
+                            {/* Pages */}
+                            <RouteList />
+
+                        </MainContent>
                     </Layout>
                 </Layout>
             </Router>
