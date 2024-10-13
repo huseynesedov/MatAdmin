@@ -1,0 +1,49 @@
+.Comment {
+  width: 61px;
+  height: 32px;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background-color: #E9EBF8;
+  border-radius: 8px;
+}
+
+.Passive {
+  background-color: rgba(1, 98, 221, 0.24);
+  color: #0162DD;
+  width: 136px;
+  height: 30px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.StatusSucces {
+  width: 80px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: rgba(52, 199, 89, 0.2);
+  color: #34C759;
+}
+
+.StatusDeaktiv {
+  width: 80px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: rgba(199, 52, 52, 0.2);
+  color: #c73434;
+}
+
+.pagination_number {
+  color: var(--primary-color);
+  border: none !important;
+  background-color: transparent !important;
+}
+
+/*# sourceMappingURL=Clients.css.map */
