@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Layout } from 'antd';
+import { Layout, Spin } from 'antd';
+
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MainContent from './components/MainContent';
@@ -8,32 +9,44 @@ import MainContent from './components/MainContent';
 
 import { SearchProvider } from './searchprovider';
 import RouteList from './Routes';
+import Login from './pages/Login/login';
+import { AuthProvider } from './AuthContext';
 
-const App = () => {
+const App = ({ loggedIn, loginLoading }) => {
     return (
-        <SearchProvider>
-            <Router>
+        <>
+            {loggedIn ? (
                 <Layout style={{ minHeight: '100vh' }}>
                     <Layout.Sider width={250} className="site-layout-background">
-                        
-                        {/* Left Bar */}
                         <Sidebar />
                     </Layout.Sider>
                     <Layout>
-                        {/* Top Bar */}
                         <Header />
-
                         <MainContent>
-
-                            {/* Pages */}
                             <RouteList />
-
                         </MainContent>
                     </Layout>
                 </Layout>
-            </Router>
-        </SearchProvider>
+            ) : (
+                // <Spin spinning={loginLoading} tip="Loading...">
+                    <Login />
+                // </Spin>
+            )}
+        </>
     );
 };
 
-export default App;
+
+const WrappedApp = () => {
+    return (
+        <AuthProvider>
+            <SearchProvider>
+                <Router>
+                    <App />
+                </Router>
+            </SearchProvider>
+        </AuthProvider>
+    );
+};
+
+export default WrappedApp;
