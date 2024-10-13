@@ -10,9 +10,13 @@ import MainContent from './components/MainContent';
 import { SearchProvider } from './searchprovider';
 import RouteList from './Routes';
 import Login from './pages/Login/login';
-import { AuthProvider } from './AuthContext';
+import { AuthProvider, useAuth } from './AuthContext';
 
-const App = ({ loggedIn, loginLoading }) => {
+const App = () => {
+
+  const { loggedIn , loginLoading } = useAuth();
+
+ 
     return (
         <>
             {loggedIn ? (
@@ -28,9 +32,9 @@ const App = ({ loggedIn, loginLoading }) => {
                     </Layout>
                 </Layout>
             ) : (
-                // <Spin spinning={loginLoading} tip="Loading...">
+                 <Spin spinning={loginLoading} tip="Loading...">
                     <Login />
-                // </Spin>
+               </Spin>
             )}
         </>
     );

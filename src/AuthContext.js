@@ -41,9 +41,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (userCode , customerCode , passwordHash) => {
+  const AdminLogin = (userCode , passwordHash) => {
     setLoginLoading(true);
-    AccountApi.Login({userCode, customerCode, passwordHash}).then((res) => {
+    AccountApi.AdminLogin({userCode, passwordHash}).then((res) => {
       console.log(res)
       setLoading(true)
       setLoggedIn(true);
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ loggedIn, loading, loginLoading,  login, logout , openNotification }}>
+    <AuthContext.Provider value={{ loggedIn, loading, loginLoading,  AdminLogin, logout , openNotification }}>
       {children}
     </AuthContext.Provider>
   );
