@@ -3,16 +3,20 @@ import { Input, Row, Col, Menu, Avatar, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import '../assets/styles/Topbar.scss';
 import Images from '../assets/images/js/Images';
+import { useAuth } from '../AuthContext';
 
-const profileMenu = (
-    <Menu>
-        <Menu.Item key="1">Profile</Menu.Item>
-        <Menu.Item key="2">Settings</Menu.Item>
-        <Menu.Item key="3">Logout</Menu.Item>
-    </Menu>
-);
+
 
 const Topbar = () => {
+    const { logout } = useAuth();
+    const profileMenu = (
+
+        <Menu>
+            <Menu.Item key="1">Profile</Menu.Item>
+            <Menu.Item key="2">Settings</Menu.Item>
+            <Menu.Item key="3" onClick={logout}>Logout</Menu.Item>
+        </Menu>
+    );
     return (
         <div className="topbar">
             <Row justify="space-between" align="middle" style={{ width: '100%' }}>

@@ -18,7 +18,8 @@ export const ProductApi = {
         return BaseApi.get(apiRoutes.product.encryptProduct, { ...params });
     },
     GetProductById(params) {
-        return BaseApi.get(apiRoutes.product.getById, { ...params });
+        console.log(apiRoutes, 'apiRoutes')
+        return BaseApi.get('/product/v1/Product/GetById', { ...params });
     },
     GetCrossListByProductId(params) {
         return BaseApi.get(apiRoutes.product.getCrossListByProductId, { ...params });
@@ -45,7 +46,8 @@ export const ProductApi = {
         return BaseApi.post(apiRoutes.product.getSearchTable, data);
     },
     GetShelfAdressesById(params) {
-        return BaseApi.get(apiRoutes.product.getShelfAdressesById, { ...params });
+        console.log(apiRoutes.product.getShelfAdressesById,'alalla')
+        return BaseApi.get('/product/v1/Product/GetShelfAdressesById', { ...params });
     },
     GetVehicleBrandById(params) {
         return BaseApi.get(apiRoutes.product.getVehicleBrandById, { ...params });

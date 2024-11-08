@@ -29,9 +29,17 @@ export const CatalogApi = {
     GetShipmentTypeList(params) {
         return BaseApi.get(apiRoutes.order.getShipmentTypeList, { ...params });
     },
-    OrderTest(params) {
-        return BaseApi.get(apiRoutes.order.test, { ...params });
+    getVehicleModel(data) {
+        return BaseApi.post(apiRoutes.catalog.getVehicleModels, data);
     },
+
+    // vehicle model
+
+    GetVehicleBrand(params) {
+        return BaseApi.get(apiRoutes.vehicleBrand.getListAsync, { ...params })
+    },
+
+
 
     // Product
     GetProductGroupList(params) {
@@ -42,6 +50,12 @@ export const CatalogApi = {
     },
     GetProductTypeList(params) {
         return BaseApi.get(apiRoutes.catalog.getProductTypeList, { ...params });
+    },
+    getShelfList(params) {
+        return BaseApi.get(apiRoutes.catalog.getShelfList, { ...params });
+    },
+    getCurrencyLists(params) {
+        return BaseApi.get(apiRoutes.catalog.getCurrencyList, { ...params });
     },
     ProductTest(params) {
         return BaseApi.get(apiRoutes.catalog.productTest, { ...params });

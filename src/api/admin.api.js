@@ -31,7 +31,8 @@ export const AdminApi = {
         return BaseApi.delete(apiRoutes.customer.deleteproductadditionaldiscount, { data: { id: userId } });
     },
     GetById(userId) {
-        return BaseApi.get(apiRoutes.customer.getById, { params: { id: userId } });
+        console.log(apiRoutes.adminProduct, 'adminProduct')
+        return BaseApi.get(apiRoutes.adminProduct.getById, userId);
     },
     GetCustomerListBySearch(data) {
         return BaseApi.post(apiRoutes.customer.getcustomerlistbysearch, data);
@@ -68,6 +69,13 @@ export const AdminApi = {
     },
 
 
+    /*Search*/
+
+
+    GetPaymentTermList() {
+        return BaseApi.get(apiRoutes.catalog.getPaymentTermList, '');
+    },
+
     // !!!!!!!!! Order !!!!!!!!!
     GetOrderList(data) {
         return BaseApi.post(apiRoutes.order.getOrderList, data);
@@ -90,9 +98,9 @@ export const AdminApi = {
 
 
     // !!!!!!!!! Product !!!!!!!!!
-    Add(data) {
+/*    Add(data) {
         return BaseApi.post(apiRoutes.product.add, data);
-    },
+    },*/
     AddOem(data) {
         return BaseApi.post(apiRoutes.product.addOem, data);
     },
@@ -115,7 +123,7 @@ export const AdminApi = {
         return BaseApi.get(`${apiRoutes.product.getOemListByGroupId}?type=${params.type}&productGroupId=${params.productGroupId}`);
     },
     GetProductGroupsById(userId) {
-        return BaseApi.get(apiRoutes.product.getProductGroupsById, { params: { id: userId } });
+        return BaseApi.get(apiRoutes.product.getProductGroupsById, { id: userId  });
     },
     GetProductPropertyValueTable(params) {
         return BaseApi.get(apiRoutes.product.getProductPropertyValueTable, { params });
@@ -139,15 +147,15 @@ export const AdminApi = {
         return BaseApi.put(apiRoutes.product.updateProductVehicleBrand, data);
     },
 
-
+/*
     // !!!!!!!!! Role !!!!!!!!!
-    Add(data) {
+    AddRole(data) {
         return BaseApi.post(apiRoutes.role.add, data);
     },
     Delete(userId) {
         return BaseApi.delete(apiRoutes.role.delete, { data: { id: userId } });
     },
-    GetById(userId) {
+    GetByIdRole(userId) {
         return BaseApi.get(apiRoutes.role.getById, { params: { id: userId } });
     },
     GetTable(params) {
@@ -205,4 +213,5 @@ export const AdminApi = {
     UpdateUserPassword(data) {
         return BaseApi.put(apiRoutes.user.updateUserPassword, data);
     }
+ */
 };

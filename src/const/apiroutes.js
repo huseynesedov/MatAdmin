@@ -144,8 +144,13 @@ export const apiRoutes = {
         
     },
 
+    adminProduct: {
+        getById: '/admin/v1/Product/GetById',
+    },
 
-    // Admin-role
+
+
+// Admin-role
     role: {
         add: '/admin/v1/User/AddCustomerUser',
         delete: '/admin/v1/User/AddSalesmanUser',
@@ -196,12 +201,16 @@ export const apiRoutes = {
     // Catalog
     catalog: {
         baseTest: '/catalog/v1/Base/Test',
+        getVehicleModels: '/catalog/v1/VehicleModel/GetList',
         getProductGroupList: '/catalog/v1/Product/GetProductGroupList',
         getProductGroupListByProductType: '/catalog/v1/Product/GetProductGroupListByProductType',
         getProductTypeList: '/catalog/v1/Product/GetProductTypeList',
+        getShelfList: '/catalog/v1/Product/GetShelfList',
+        getCurrencyList: '/catalog/v1/Currency/GetCurrencyList',
         productTest: '/catalog/v1/Product/Test',
         getBasketDetailStatusList: '/catalog/v1/BasketDetailStatus/GetBasketDetailStatusList',
         getPaymentTypeList: '/catalog/v1/PaymentType/GetPaymentTypeList',
+        getPaymentTermList: '/catalog/v1/PaymentTerm/GetPaymentTermList',
     },
     storage: {
         storageGetList: '/catalog/v1/Storage/GetList',

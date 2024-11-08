@@ -1,36 +1,41 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Layout, Spin } from 'antd';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {Layout, Spin} from 'antd';
 
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MainContent from './components/MainContent';
 
 
-import { SearchProvider } from './searchprovider';
+import {SearchProvider} from './searchprovider';
 import RouteList from './Routes';
 import Login from './pages/Login/login';
-import { AuthProvider } from './AuthContext';
+import {AuthProvider, useAuth} from './AuthContext';
 
-const App = ({ loggedIn, loginLoading }) => {
+const App = () => {
+
+    const {loggedIn, loginLoading} = useAuth()
+    const spinShow = (localStorage.getItem('spinShow'));
+
+
     return (
         <>
             {loggedIn ? (
-                <Layout style={{ minHeight: '100vh' }}>
+                <Layout style={{minHeight: '100vh'}}>
                     <Layout.Sider width={250} className="site-layout-background">
-                        <Sidebar />
+                        <Sidebar/>
                     </Layout.Sider>
                     <Layout>
-                        <Header />
+                        <Header/>
                         <MainContent>
-                            <RouteList />
+                            <RouteList/>
                         </MainContent>
                     </Layout>
                 </Layout>
             ) : (
-                // <Spin spinning={loginLoading} tip="Loading...">
-                    <Login />
-                // </Spin>
+                <Spin spinning={loginLoading} tip="Loading...">
+                    <Login/>
+                </Spin>
             )}
         </>
     );
@@ -42,7 +47,7 @@ const WrappedApp = () => {
         <AuthProvider>
             <SearchProvider>
                 <Router>
-                    <App />
+                    <App/>
                 </Router>
             </SearchProvider>
         </AuthProvider>
