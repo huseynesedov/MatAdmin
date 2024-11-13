@@ -36,6 +36,7 @@ import PhotoUpload from './components/Foto/upload';
 import {AdminApi} from "../../api/admin.api";
 import {ProductApi} from "../../api/product.api";
 import General from "./components/General";
+import {useNavigate, useParams} from "react-router-dom";
 
 const {Title} = Typography;
 const {TabPane} = Tabs;
@@ -44,6 +45,12 @@ const Home = () => {
     const [show, setShow] = useState(false);
     const [spinShow, setspinShow] = useState(false);
     const [show2, setShow2] = useState(false);
+    const [tabDisable, setTabDisable] = useState(false);
+    const [activeTab, setActiveTab] = useState(null);
+    const navigate = useNavigate();
+    const [isShowProduct, setShowProduct] = useState();
+    const pathname = window.location.pathname;
+    let { id } = useParams();
     const [formData, setFormData] = useState({
         kodu: '',
         uretici: '',
@@ -53,6 +60,30 @@ const Home = () => {
         rafAdresi: '',
         qemNo: '',
     });
+    useEffect(() => {
+        setActiveTab(1)
+        console.log(id, 'id')
+        if (id) {
+            onProductDatas(id);
+            onProductData();
+            setTabDisable(false)
+        } else {
+            setTabDisable( true)
+
+        }
+    }, [id]);
+
+    const onProductDatas = (values) => {
+        let data
+        AdminApi.GetById({id: values}).then((res) => {
+            data = res
+        }).catch((err) => {
+            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+        }).finally(r => {
+            setShowProduct(data);
+            console.log(data, '')
+        })
+    };
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
@@ -77,8 +108,10 @@ const Home = () => {
     };
 
     const handleShowModal2 = () => {
-        setShow(false);
         setShow2(true);
+    };
+    const handleShowModal = () => {
+        setShow(false);
     };
 
 
@@ -218,7 +251,6 @@ const Home = () => {
     };
 
 
-
     const [isSearchTables, setSearchTable] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
@@ -226,10 +258,23 @@ const Home = () => {
 
 
     useEffect(() => {
+
+    }, [isShowProduct]);
+
+    useEffect(() => {
         onInitialSearch(forms);
     }, [current, pageSize]);
 
-
+    const switchTab = (tab) => {
+        switch (tab) {
+            case 1:
+                return 'GetSearchTable'
+            case 2:
+                return ''
+            case 3:
+                return 'GetSearchEquivalentProducts'
+        }
+    }
     const getSearch = (values) => {
         const data = {
             page: current - 1,
@@ -237,34 +282,33 @@ const Home = () => {
             filters: values
         }
 
+        const searchUrl = switchTab(activeTab)
+            // AdminApi[searchUrl](data).then((res) => {
         AdminApi.GetSearchTable(data).then((res) => {
             if (res) {
                 setSearchTable(res);
                 handleShowModal2()
             }
         }).catch((error) => {
-           // openNotification('Xəta baş verdi', error.response.data.message, true)
+            // openNotification('Xəta baş verdi', error.response.data.message, true)
         });
     }
 
+
     const onInitialSearch = (values) => {
         console.log('Success:', values);
-
-        if(!values) return
-
+        if (!values) return
+        navigate(`/`);
         const result = Object.keys(values).filter(key => values[key] !== undefined && values[key] !== null && values[key] !== "").map((key) => ({
             value: values[key],
             fieldName: key,
             equalityType: key === 'paymentTermIdHash' ? 'Equal' : 'Contains'
         }));
-        console.log(result)
-
         getSearch(result);
     };
 
 
     const onSearchData = (values) => {
-        console.log(values, 'search data')
         onInitialSearch(values);
     };
 
@@ -274,21 +318,18 @@ const Home = () => {
         setdefaultforms(values.forms)
     };
 
-    const pathname = window.location.pathname;
 
-    useEffect(() => {
-        if(pathname !== '/') onProductData(pathname.split('/')[1]);
-    }, [pathname]);
 
-    const [isShowProduct, setShowProduct] = useState([]);
-    const onProductData = (values) => {
-        AdminApi.GetById({id: values}).then(res => {
-            console.log(res)
-            setShowProduct(res);
-            setShow2(false);
-        })
+
+
+    const onProductData = () => {
+        console.log('false ssss    dd modal')
+        setShow2(false);
     };
 
+    const handleTabChange = (activeKey) => {
+        setActiveTab(activeKey)
+    };
 
     return (
 
@@ -348,10 +389,10 @@ const Home = () => {
                         </Form.Item>
                     </Form>
                 </Card>
-                <Tabs defaultActiveKey="1" className="product-tabs">
-                    <TabPane tab="Genel" key="1">
+                <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
+                    <TabPane disabled={tabDisable} tab="Genel" key="1">
 
-                       {/* <Row gutter={16}>
+                        {/* <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button ">
                                     <img src={Images.add_circle_blue} alt="add"/>
@@ -385,6 +426,9 @@ const Home = () => {
                         <SearchModal2
                             shows={show2}
                             searchData={isSearchTables}
+
+                            activeTab={activeTab}
+
                             searchChange={onSearchData}
                             searchPageSize={onPageSize}
                             productData={onProductData}
@@ -393,127 +437,10 @@ const Home = () => {
                         />
                         <Divider/>
 
-                        <General checkData={isShowProduct}/>
+                        <General isSetData={isShowProduct}/>
 
                     </TabPane>
-                    <TabPane tab="Ek Bilgiler" key="2">
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add"/>
-                                    Yeni
-                                </Button>
-                                <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
-                                    Degistir
-                                </Button>
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                            </Col>
-                        </Row>
-
-
-                        <Row gutter={16}>
-
-                            <Col span={24}>
-                                <Card className="info-card mt-3" title="Ek bilgileri">
-                                    <Form layout="Horizontal">
-                                        <Form.Item label="Ek Bilgileri 1">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="Məhsul Kodu: 12345"/>
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Ek Bilgileri 2">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="İstehsalçı: XYZ Şirkəti"/>
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Ek Bilgileri 3">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="İstehsal Yeri: Almaniya"/>
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Ek Bilgileri 4">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="Qablaşdırma: 20 ədəd/sandroq"/>
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Ek Bilgileri 5">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="Zəmanət: 2 il"/>
-                                            </div>
-                                        </Form.Item>
-                                    </Form>
-                                </Card>
-
-                                <Card className="info-card " title="Cep Iskonto">
-                                    <Form layout="Horizontal">
-                                        <Form.Item label="Iskonto %">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "40px"}} placeholder="0.00"/>
-                                            </div>
-                                        </Form.Item>
-                                        <h4 className='t_44 fs_16 fw_600'>
-                                            Karlılık oranı
-                                        </h4>
-                                        <div className="Line_E2"></div>
-
-                                        <Form layout="horizontal" className="mt-4">
-                                            <Form.Item label="Karlılık">
-                                                <div className='d-flex justify-content-end'>
-                                                    <Input style={{width: "240px", height: "40px"}} placeholder="0.00"/>
-                                                </div>
-                                            </Form.Item>
-                                        </Form>
-
-                                        <h4 className='t_44 fs_16 fw_600'>
-                                            Bakıye pozısıyonları
-                                        </h4>
-                                        <div className="Line_E2"></div>
-                                        <div style={{width: "600px"}}
-                                             className='mt-4 d-flex flex-wrap justify-content-between'>
-                                            <Radio>
-                                            <span className='t_8F fs_16'>
-                                                Bakıye durumlarıne Gore
-                                            </span>
-                                            </Radio>
-                                            <Radio>
-                                            <span className='t_8F fs_16'>
-                                                Sureklı Mevcut Goster
-                                            </span>
-                                            </Radio>
-                                            <Radio>
-                                            <span className='t_8F fs_16'>
-                                                Yolda
-                                            </span>
-                                            </Radio>
-                                            <div className='mt-3'>
-
-                                                <Radio>
-                                                <span className='t_8F fs_16'>
-                                                    Sıparış uzerıne
-                                                </span>
-                                                </Radio>
-                                            </div>
-                                        </div>
-                                    </Form>
-                                </Card>
-
-                            </Col>
-                        </Row>
-                    </TabPane>
-                    <TabPane tab="Eşdeğer Ürünler" key="3">
+                    <TabPane disabled={tabDisable} tab="Eşdeğer Ürünler" key="3">
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button">
@@ -538,281 +465,12 @@ const Home = () => {
 
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
-                                <Equivalent/>
+                                <Equivalent activeKey={activeTab === '3'} showData={isShowProduct}/>
                             </Col>
                         </Row>
 
                     </TabPane>
-                    <TabPane tab="İlgili Ürünler" key="4">
-
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add"/>
-                                    Yeni
-                                </Button>
-                                <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
-                                    Degistir
-                                </Button>
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                            </Col>
-                        </Row>
-
-
-                        <Row gutter={16} className="mt-4">
-                            <Col span={24}>
-                                <Related/>
-                            </Col>
-                        </Row>
-                    </TabPane>
-                    <TabPane onClick={() => {
-                        setIsBarCode(false)
-                    }} tab="Ürün Barkod" key="5">
-                        {isBarCode ?
-                            <div>
-                                <Row gutter={16} className="mt-4">
-                                    <Col span={24}>
-                                        <Barcode/>
-                                    </Col>
-                                </Row>
-                            </div> :
-                            <div>
-                                <Row gutter={16}>
-                                    <Col span={12}>
-                                        <Button type="default" className="button-margin bg_none add_button">
-                                            <img src={Images.add_circle_blue} alt="add"/>
-                                            Yeni
-                                        </Button>
-                                        <Button type="default" className="button-margin bg_none edit_button">
-                                            <img src={Images.edit_green} alt="edit"/>
-                                            Degistir
-                                        </Button>
-                                        <Button type="default" className="button-margin bg_none print_button"
-                                                onClick={handlePrintClick}>
-                                            <img src={Images.Printer_orange} alt="edit"/>
-                                            Yazdir
-                                        </Button>
-                                        <Button type="default" className="button-margin add_button bg_none eye_button">
-
-                                            <img src={Images.Eye_gray} alt="edit"/>
-                                            Gosder
-                                        </Button>
-                                    </Col>
-                                    <Col span={12} className="text-right">
-                                        <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                                className="button-margin Search_blue" onClick={handleShow}></Button>
-                                        <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                                className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                        <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                                className="button-margin delete_red"
-                                                disabled={isDeleteDisabled}></Button>
-                                    </Col>
-                                </Row>
-
-                                <div className="position-relative">
-                                    <CSSTransition
-                                        in={showAlert}
-                                        timeout={500}
-                                        classNames="save-alert"
-                                        unmountOnExit
-                                    >
-                                        <SaveAlert onClose={handleCloseAlert}/>
-                                    </CSSTransition>
-                                </div>
-                                <Row gutter={16} className="mt-4">
-                                    <Col span={24}>
-                                        <Card className="info-card" title="Fiyat Bilgileri">
-                                            <Form layout="horizontal">
-                                                <Form.Item label="Kodu">
-                                                    <div className='d-flex justify-content-end'>
-                                                        <Input style={{width: "371px", height: "40px"}}
-                                                               placeholder="60H12"/>
-                                                    </div>
-                                                </Form.Item>
-                                                <Form.Item label="Adi">
-                                                    <div className='d-flex justify-content-end'>
-                                                        <Input style={{width: "371px", height: "40px"}}
-                                                               placeholder="asgdgfvshcfvb"/>
-                                                    </div>
-                                                </Form.Item>
-                                                <Form.Item label="Barkod">
-                                                    <div className='d-flex justify-content-end'>
-                                                        <Input style={{width: "137px"}} placeholder="43234"/>
-                                                        <Button type="default"
-                                                                className="button-margin ms-2 copy_button">
-                                                            <img src={Images.Copy_blue} alt="edit"/>
-                                                        </Button>
-                                                        <Input style={{width: "106px"}} placeholder="Koli Adadi"/>
-                                                        <Button type="default"
-                                                                icon={<img src={Images.Save_green} alt="save"/>}
-                                                                className="button-margin ms-2 Save_green"></Button>
-                                                    </div>
-                                                </Form.Item>
-                                                <Form.Item label="Raf Adresi">
-                                                    <div className='d-flex justify-content-end position-relative'>
-                                                        {!isUpVisible && (
-                                                            <img
-                                                                src={Images.Tableview_blue}
-                                                                style={{left: "0px", top: "7px", cursor: "pointer"}}
-                                                                className='position-absolute'
-                                                                alt=""
-                                                                onClick={handleToggleClick}
-
-                                                            />
-                                                        )}
-                                                        {isUpVisible && (
-                                                            <img
-                                                                src={Images.Up_gray}
-                                                                style={{left: "5px", top: "13px", cursor: "pointer"}}
-                                                                className='position-absolute'
-                                                                alt=""
-                                                                onClick={handleToggleClick}
-                                                            />
-                                                        )}
-                                                        <Input style={{width: "307px"}}
-                                                               placeholder="Qablaşdırma: 20 ədəd/sandroq"/>
-                                                        <Button type="default" onClick={handleSaveClick}
-                                                                icon={<img src={Images.Save_green} alt="save"/>}
-                                                                className="button-margin ms-2 Save_green"></Button>
-                                                    </div>
-                                                </Form.Item>
-                                                {isTableViewVisible && (
-                                                    <div className="Tableview">
-                                                        <TableView/>
-                                                    </div>
-                                                )}
-
-                                                <Form.Item label="Miktar">
-                                                    <div className='d-flex justify-content-end'>
-                                                        <Input style={{width: "371px", height: "40px"}}
-                                                               placeholder="Zəmanət: 2 il"/>
-                                                    </div>
-                                                </Form.Item>
-                                                <Form.Item label="Barkod Tipi">
-                                                    <div className='d-flex justify-content-end'>
-                                                        <Button
-                                                            className="position-relative"
-                                                            style={{width: "371px", height: "40px"}}
-                                                            onClick={toggleDropdown}
-                                                            onBlur={handleBlur}
-                                                        >
-                                                            <img
-                                                                className='position-absolute'
-                                                                src={Images.Down_gray}
-                                                                alt=""
-                                                                style={{right: "10px", top: "10px"}}
-                                                            />
-                                                        </Button>
-                                                        {isDropdownOpen && (
-                                                            <Dropdown.Menu
-                                                                show
-                                                                className='Drop position-absolute'
-                                                            >
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    1</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    2</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                                <Dropdown.Item onClick={handleItemClick} href="#">Option
-                                                                    3</Dropdown.Item>
-                                                            </Dropdown.Menu>
-                                                        )}
-                                                    </div>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Form layout="horizontal">
-
-                                                        <Form.Item label="Barkod Boy">
-                                                            <div className='d-flex justify-content-end'>
-
-                                                                <div
-                                                                    className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="A"/>
-                                                                    <span className='ms-2 t_8F'>105 * 70</span>
-                                                                </div>
-                                                                <div
-                                                                    className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="B"/>
-                                                                    <span className='ms-2 t_8F'>25 * 45</span>
-                                                                </div>
-                                                                <div
-                                                                    className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="C"/>
-                                                                    <span className='ms-2 t_8F'>30 * 60</span>
-                                                                </div>
-                                                            </div>
-                                                        </Form.Item>
-                                                    </Form>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Form layout="horizontal">
-
-                                                        <Form.Item label="Raf Boyutu">
-                                                            <div className='d-flex justify-content-end'>
-
-                                                                <div
-                                                                    className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="A"/>
-                                                                    <span className='ms-2 t_8F'>105 * 70</span>
-                                                                </div>
-                                                                <div
-                                                                    className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="B"/>
-                                                                    <span className='ms-2 t_8F'>40 * 58</span>
-                                                                </div>
-                                                                <div
-                                                                    className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="C"/>
-                                                                    <span className='ms-2 t_8F'>100 * 60</span>
-                                                                </div>
-                                                            </div>
-                                                        </Form.Item>
-                                                    </Form>
-                                                </Form.Item>
-                                            </Form>
-                                        </Card>
-                                    </Col>
-                                </Row>
-                            </div>
-
-                        }
-
-
-                    </TabPane>
-                    <TabPane tab="Oem No" key="6">
+                    <TabPane disabled={tabDisable} tab="Oem No" key="6">
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none edit_button">
@@ -847,39 +505,12 @@ const Home = () => {
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
                                 <Card className="info-card mt-3" title="Qem No">
-                                    <Qem/>
-                                    <div className='d-flex align-items-center justify-content-between'
-                                         style={{width: "967px"}}>
-                                        <div className='d-flex justify-content-between mt-5' style={{width: "788px"}}>
-                                            <Form layout="Inline">
-                                                <Form.Item label="Arac Marka">
-                                                    <Input style={{width: "240px"}} placeholder="123544"/>
-                                                </Form.Item>
-                                            </Form>
-                                            <Form layout="Inline">
-
-                                                <Form.Item label="Qem No">
-                                                    <Input style={{width: "240px"}} placeholder="123544"/>
-                                                </Form.Item>
-                                            </Form>
-                                        </div>
-                                        <img
-                                            src={Images.delete_red}
-                                            alt="Delete"
-                                            style={{cursor: 'pointer'}}
-                                        />
-                                    </div>
-                                    <div className="d-flex justify-content-center">
-                                        <Button type="default" className="button-margin bg_none add_button ">
-                                            <img src={Images.add_circle_blue} alt="add"/>
-                                            Yeni Setir elave edin
-                                        </Button>
-                                    </div>
+                                    <Qem activeKey={activeTab} />
                                 </Card>
                             </Col>
                         </ Row>
                     </TabPane>
-                    <TabPane tab="Rakip Kodlar" key="7">
+                    <TabPane disabled={tabDisable} tab="Rakip Kodlar" key="7">
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none edit_button">
@@ -914,39 +545,12 @@ const Home = () => {
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
                                 <Card className="info-card mt-3" title="Qem No">
-                                    <Qem/>
-                                    <div className='d-flex align-items-center justify-content-between'
-                                         style={{width: "967px"}}>
-                                        <div className='d-flex justify-content-between mt-5' style={{width: "788px"}}>
-                                            <Form layout="Inline">
-                                                <Form.Item label="Arac Marka">
-                                                    <Input style={{width: "240px"}} placeholder="123544"/>
-                                                </Form.Item>
-                                            </Form>
-                                            <Form layout="Inline">
-
-                                                <Form.Item label="Qem No">
-                                                    <Input style={{width: "240px"}} placeholder="123544"/>
-                                                </Form.Item>
-                                            </Form>
-                                        </div>
-                                        <img
-                                            src={Images.delete_red}
-                                            alt="Delete"
-                                            style={{cursor: 'pointer'}}
-                                        />
-                                    </div>
-                                    <div className="d-flex justify-content-center">
-                                        <Button type="default" className="button-margin bg_none add_button ">
-                                            <img src={Images.add_circle_blue} alt="add"/>
-                                            Yeni Setir elave edin
-                                        </Button>
-                                    </div>
+                                    <Qem activeKey={activeTab}/>
                                 </Card>
                             </Col>
                         </ Row>
                     </TabPane>
-                    <TabPane tab="Araç Bilgileri" key="8">
+                    <TabPane disabled={tabDisable} tab="Araç Bilgileri" key="8">
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button">
@@ -971,64 +575,61 @@ const Home = () => {
 
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
-                                <Cars_info/>
+                                <Cars_info activeKey={activeTab === '8'}/>
                             </Col>
                         </Row>
 
                     </TabPane>
-                    <TabPane
+                    <TabPane disabled={tabDisable}
                         onClick={() => {
                             setIsNewFoto(false)
                         }}
                         tab="Resim" key="9">
+
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Button type="default" className="button-margin bg_none add_button"
+                                        onClick={handleNewFotoClick}>
+                                    <img src={Images.add_circle_blue} alt="add"/>
+                                    Yeni
+                                </Button>
+                                <Button type="default" className="button-margin bg_none edit_button">
+                                    <img src={Images.edit_green} alt="edit"/>
+                                    Degistir
+                                </Button>
+                            </Col>
+                            <Col span={12} className="text-right">
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
+                                        className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
+                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
+                                        className="button-margin delete_red"
+                                        disabled={isDeleteDisabled}></Button>
+                            </Col>
+                        </Row>
+
                         {isNewFoto ?
                             <div>
                                 <Row gutter={16} className="mt-4">
                                     <Col span={24}>
                                         <PhotoUpload handleShow={handleShow} isSaveDisabled={isSaveDisabled}
                                                      isDeleteDisabled={isDeleteDisabled}/>
-
                                     </Col>
                                 </Row>
                             </div> :
                             <div>
-
-                                <Row gutter={16}>
-                                    <Col span={12}>
-                                        <Button type="default" className="button-margin bg_none add_button"
-                                                onClick={handleNewFotoClick}>
-                                            <img src={Images.add_circle_blue} alt="add"/>
-                                            Yeni
-                                        </Button>
-                                        <Button type="default" className="button-margin bg_none edit_button">
-                                            <img src={Images.edit_green} alt="edit"/>
-                                            Degistir
-                                        </Button>
-                                    </Col>
-                                    <Col span={12} className="text-right">
-                                        <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                                className="button-margin Search_blue" onClick={handleShow}></Button>
-                                        <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                                className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                        <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                                className="button-margin delete_red"
-                                                disabled={isDeleteDisabled}></Button>
-                                    </Col>
-                                </Row>
-
                                 <div className='mt-3'>
-
-                                    <Foto/>
+                                    <Foto activeKey={activeTab === '9'}/>
                                 </div>
                             </div>
                         }
                     </TabPane>
-                    <TabPane tab="Açıklama" key="10">
-                        <p>Açıklama içeriği burada olacak.</p>
-                    </TabPane>
-                    <TabPane tab="Tecdoc" key="11">
+
+                    {/*Tecdoc axırda*/}
+                   {/* <TabPane tab="Tecdoc" key="11">
                         <p>Tecdoc içeriği burada olacak.</p>
-                    </TabPane>
+                    </TabPane>*/}
                 </Tabs>
             </div>
         </Spin>

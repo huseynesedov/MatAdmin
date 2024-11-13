@@ -12,7 +12,7 @@ import {useNavigate} from "react-router-dom";
 
 const {Title} = Typography;
 
-const SearchModal2 = ({shows, searchData, handleClose, searchChange, productData, searchPageSize}) => {
+const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, productData, searchPageSize}) => {
     const [data, setData] = useState([]);
     const [paymentTermList, setPaymentTermList] = useState([]);
     const [manufacturerList, setManufacturerList] = useState([]);
@@ -80,7 +80,6 @@ const SearchModal2 = ({shows, searchData, handleClose, searchChange, productData
 
     const createData = () => {
         let arr = [];
-        console.log(searchData, 'bicbala')
         arr = searchData?.data?.map(res => {
             return {
                 id: res.idHash,
@@ -113,9 +112,9 @@ const SearchModal2 = ({shows, searchData, handleClose, searchChange, productData
         console.log(record, 'record')
         // onProduct(record);
 
-        navigate(`/${record.id}`);
+        navigate(`home/${record.id}`);
         setSelectedItem(record); // Tıklanan satırın verisini context'e kaydedin
-        // handleClose(); // Modalı kapatın
+        handleClose();
     };
     const columns = [
         {
@@ -363,7 +362,7 @@ const SearchModal2 = ({shows, searchData, handleClose, searchChange, productData
                                         </Form.Item>
                                     </Col>*/}
                                     <Col span={8} className="mb-0">
-                                        <div class="d-flex">
+                                        <div className="d-flex">
                                             <Form.Item name="ManufacturerName" className="w-100">
                                                 <Input placeholder="Üretici"/>
                                             </Form.Item>

@@ -6,13 +6,16 @@ import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {CatalogApi} from "../../../../api/catalog.api";
 import {AdminApi} from "../../../../api/admin.api";
 import Title from "antd/es/skeleton/Title";
-import { useNavigate } from 'react-router-dom';
-const General = (checkData) => {
+import {useNavigate, useParams} from 'react-router-dom';
+import {useAuth} from "../../../../AuthContext";
+
+const General = ({isSetData}) => {
     const [data, setData] = useState([]);
-    const [isDisabled, setIsDisabled] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(true);
     const navigate = useNavigate();
 
-    const { Option } = Select;
+    const { openNotification } = useAuth()
+    const {Option} = Select;
 
     const [productTypeList, setProductTypeList] = useState([]);
     const [paymentTermList, setPaymentTermList] = useState([]);
@@ -23,6 +26,15 @@ const General = (checkData) => {
     const [vehicleModel, setVehicleModel] = useState([]);
     const [checkVehicleBrand, setCheckVehicleBrand] = useState([]);
     const [checkVehicleModel, setCheckVehicleModel] = useState([]);
+    let { id } = useParams();
+
+
+    const [salesPrices, setSalesPrices] = useState([]);
+    const [purchasePrices, setPurchasePrices] = useState([]);
+    const [costPrices, setCostPrices] = useState([]);
+    const [raf, setRaf] = useState([]);
+
+    const [isShowProduct, setShowProduct] = useState();
 
     const [form] = Form.useForm();
     useEffect(() => {
@@ -31,7 +43,26 @@ const General = (checkData) => {
         currencyList();
         productTypeLists();
         getBrand();
+        manufacturerLists();
+
     }, []);
+    /*form.resetFields();*/
+
+
+    useEffect(() => {
+        if (!id) {
+            form.resetFields()
+            resetData()
+        }
+
+    }, [id]);
+
+
+    useEffect(() => {
+        setShowProduct(isSetData);
+        joinData(isSetData)
+    }, [isSetData]);
+
 
     const getBrand = () => {
         CatalogApi.GetVehicleBrand().then(res => {
@@ -42,9 +73,9 @@ const General = (checkData) => {
         })
     }
 
-
     useEffect(() => {
-        onChangeBrand(checkVehicleBrand)
+        if (checkVehicleBrand !== []) onChangeBrand(checkVehicleBrand)
+        console.log(checkVehicleBrand, 'checkVehicleBrand ss use')
     }, [checkVehicleBrand]);
     const onChangeBrand = (value) => {
         CatalogApi.getVehicleModel(value).then(res => {
@@ -52,56 +83,24 @@ const General = (checkData) => {
                 return {label: res.displayText, value: res.valueHash}
             })
             setVehicleModel(data);
+        }).catch((err) => {
+            openNotification('Xəta baş verdi' , err.response.data.message  , true )
         })
     };
 
 
-    useEffect(() => {
-        if (checkData) {
-            aak(checkData);
-        } else {
-            console.error('checkData is not an array');
-        }
-    }, [checkData]);
+    const joinData = (isShowProduct) => {
 
-    const aak = async (checkData) => {
-/*
+        console.log(isShowProduct, 'isShowProduct ffff')
 
-        const brands = []
-        const models = []
-
-        if (checkData.checkData.productVehicleBrand?.productVehicleBrands && checkData.checkData.productVehicleBrand?.productVehicleBrands.length > 0) {
-            for (let i = 0; i < checkData.checkData.productVehicleBrand.productVehicleBrands.length; i++) {
-                brands.push({
-                    label: checkData.checkData.productVehicleBrands?.productVehicleBrands[i].name,
-                    value: checkData.checkData.productVehicleBrands?.productVehicleBrands[i].vehicleBrandIdHash
-                })
-            }
-        }
-        if (checkData.checkData.productVehicleModel?.productVehicleModels && checkData.checkData.productVehicleModel?.productVehicleModels.length > 0) {
-            for (let i = 0; i < checkData.checkData.productVehicleModel?.productVehicleModels.length; i++) {
-                models.push({
-                    label: checkData.checkData.productVehicleModel?.productVehicleModels[i].name,
-                    value: checkData.checkData.productVehicleModel?.productVehicleModels[i].vehicleBrandIdHash
-                })
-            }
-        }
-        setVehicleBrand(brands)
-        setVehicleModel(models)
-*/
-
-
-
-        console.log(vehicleBrand, vehicleModel, 'aadrands VehicleBrand')
-
-        let costPrices = checkData.checkData.price?.costPrices.map(data => {
+        let costPrices = isShowProduct?.price?.costPrices?.map(data => {
             return {
                 value: data.value,
                 currencyIdHash: data.currencyIdHash
             }
         })
 
-        let purchasePrices = checkData.checkData.price?.purchasePrices.map(data => {
+        let purchasePrices = isShowProduct?.price?.purchasePrices?.map(data => {
             return {
                 value: data.value,
                 currencyIdHash: data.currencyIdHash
@@ -109,38 +108,61 @@ const General = (checkData) => {
         })
 
 
-        let salesPrices = checkData.checkData.price?.salesPrices.map(data => {
+        let salesPrices = isShowProduct?.price?.salesPrices?.map(data => {
             return {
                 value: data.value,
                 currencyIdHash: data.currencyIdHash
             }
         })
 
-        console.log(salesPrices, 'salesPrices ')
+        setSalesPrices(salesPrices)
+        setPurchasePrices(purchasePrices)
+        setCostPrices(costPrices)
 
-        let prices = {
-            costPrices,
-            purchasePrices,
-            salesPrices
+        if (isShowProduct?.productVehicleBrand?.productVehicleBrands.length > 0) {
+            setCheckVehicleBrand(isShowProduct?.productVehicleBrand.productVehicleBrands.map(data => data.vehicleBrandIdHash));
         }
+
+        if (isShowProduct?.productVehicleModel?.productVehicleModels.length > 0) {
+            setCheckVehicleModel(isShowProduct?.productVehicleModel.productVehicleModels.map(data => data.vehicleModelIdHash))
+        }
+
+        const shelf = isShowProduct?.productShelf?.shelves.map(data => {
+            return {
+                shelfIdHash: data.storageIdHash,
+                quantity: data.quantity
+            }
+        })
+
+        setShelfData(shelf);
 
         let data = {
-            price: prices,
-            manufacturerName: checkData.checkData.manufacturerName,
-            manufacturerCode: checkData.checkData.manufacturerCode,
-            paymentTermIdHash: checkData.checkData.paymentTermIdHash,
-            isNew: checkData.checkData.isNew,
-            productGroupName: checkData.checkData.productGroupName,
+            code: isShowProduct?.code,
+            name: isShowProduct?.name,
+            manufacturerCode: isShowProduct?.manufacturerCode,
+            paymentTermIdHash: isShowProduct?.paymentTermIdHash,
+            productTypeIdHash: isShowProduct?.productTypeIdHash,
+            isNew: isShowProduct?.isNew,
+            productGroupName: isShowProduct?.productGroupName,
+            minOrderAmount: isShowProduct?.minOrderAmount,
+            productPropertyValue: isShowProduct?.productPropertyValue,
+            vatRate: isShowProduct?.vatRate,
+            oemCode: isShowProduct?.oemCode,
+            status: isShowProduct?.status,
+            balance: isShowProduct?.balance,
+            manufacturerIdHash: isShowProduct?.manufacturerIdHash,
+            description: isShowProduct?.description,
         }
-        console.log(data,checkData, 'data');
         form.setFieldsValue(data)
     }
+
+
     const productTypeLists = () => {
         CatalogApi.GetProductTypeList().then(res => {
             let data = res.map(res => {
                 return {
-                    lable: res.valueHash,
-                    value: res.displayText
+                    label: res.displayText,
+                    value: res.valueHash
                 }
             })
             setProductTypeList(data);
@@ -152,7 +174,7 @@ const General = (checkData) => {
         CatalogApi.getCurrencyLists().then(res => {
             let data = res.map(res => {
                 return {
-                    lable: res.displayText,
+                    label: res.displayText,
                     value: res.valueHash
                 }
             })
@@ -168,8 +190,8 @@ const General = (checkData) => {
 
             let data = res.map(res => {
                 return {
-                    lable: res.valueHash,
-                    value: res.displayText
+                    label: res.displayText,
+                    value: res.valueHash
                 }
             })
 
@@ -177,19 +199,29 @@ const General = (checkData) => {
         })
     }
 
-    const onChangeGroupName = (value) => {
+    const onProductTypeIdHash = (value) => {
         console.log(`selected ${value}`, shelfLists);
         form.setFieldsValue({
-            paymentTermIdHash: value,
+            productTypeIdHash: value,
         });
     };
     const onChangeTermIdHash = (value) => {
         console.log(`selected ${value}`, shelfLists);
         form.setFieldsValue({
-            productGroupName: value,
+            paymentTermIdHash: value,
         });
     };
     const onSearch = (value) => {
+
+        let prices = {
+            costPrices,
+            purchasePrices,
+            salesPrices
+        }
+
+        console.log(prices, value, 'aaa data save')
+
+
         let model = checkVehicleModel.map(data => {
             return {
                 vehicleModelIdHash: data,
@@ -200,8 +232,29 @@ const General = (checkData) => {
                 vehicleBrandIdHash: data,
             }
         })
-        let data = {...value, ...{productVehicleBrands: brand}, ...{productVehicleModles: model}}
-        console.log('data', vehicleModel, value, data)
+        let data = {...value, ...{productVehicleBrands: brand}, ...{productVehicleModles: model}, ...{price: prices}}
+        console.log(value, data, prices, 'datassss')
+
+        if (id) {
+            AdminApi.UpdateProduct({...data, ...{idHash: id, code: isShowProduct?.code}}).then(res => {
+
+            }).catch((err) => {
+                openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            }).finally((r) => {
+                resetData()
+                isEdit()
+            })
+
+        } else {
+            AdminApi.AddProduct(data).then(res => {
+                console.log(res, 'alalal qoyma ')
+            }).catch((err) => {
+                openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            }).finally((r) => {
+                resetData()
+                isEdit()
+            })
+        }
 
     };
 
@@ -211,23 +264,155 @@ const General = (checkData) => {
                 return {label: res.displayText, value: res.valueHash}
             })
             setPaymentTermList(data);
-        }).catch((error) => {
-            console.log(error);
+        }).catch((err) => {
+            openNotification('Xəta baş verdi' , err.response.data.message  , true )
         })
     };
 
+    const [shelfData, setShelfData] = useState([]);
+
+    useEffect(() => {
+        form.setFieldsValue({
+            productShelves: shelfData
+        });
+    }, [shelfData, form]);
+
+    const handleShelfChange = (value, index, field) => {
+        const newData = [...shelfData];
+        newData[index][field] = value;
+        setShelfData(newData);
+    };
+
+
+    /*form.setFieldsValue({
+                price: {
+                    salesPrices: salesPrices,
+                    purchasePrices: purchasePrices,
+                    costPrices: costPrices
+                }
+            });*/
+
+    const handleValueChange = (setPriceFn, prices, index, key, value) => {
+        const updatedPrices = prices.map((price, i) => (
+            i === index ? {...price, [key]: value} : price
+        ));
+        setPriceFn(updatedPrices);
+    };
+
+    const handleAddPrice = (setPriceFn, prices) => {
+        if (prices) {
+            setPriceFn([...prices, {value: 1, currencyIdHash: ''}]);
+        } else {
+            setPriceFn([{value: 1, currencyIdHash: ''}]);
+        }
+        console.log(prices, 'prices ...')
+    };
+
+    const handleRemovePrice = (setPriceFn, prices, index) => {
+        const updatedPrices = prices.filter((_, i) => i !== index);
+        setPriceFn(updatedPrices);
+    };
+
+    const renderPriceList = (prices, setPriceFn, label) => (
+        <>
+            <Title level={4}>{label}</Title>
+            {prices?.map((price, index) => (
+                <Space key={index} style={{
+                    display: 'flex',
+                    marginBottom: 0,
+                    justifyContent: 'space-between',
+                    width: '100%'
+                }} align="baseline">
+                    <div>{label}:</div>
+                    <div className="d-flex align-items-center" style={{display: 'flex', marginBottom: 12}}>
+                        <InputNumber
+                            min={0}
+                            disabled={isDisabled}
+                            placeholder="Value"
+                            style={{width: '100%'}}
+                            value={price.value}
+                            onChange={(value) => handleValueChange(setPriceFn, prices, index, 'value', value)}
+                        />
+                        <Select
+                            style={{marginLeft: 8, minWidth: 80}}
+                            disabled={isDisabled}
+                            showSearch
+                            optionFilterProp="label"
+                            filterOption={(input, option) =>
+                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                            }
+                            value={price.currencyIdHash}
+                            onChange={(value) => handleValueChange(setPriceFn, prices, index, 'currencyIdHash', value)}
+                        >
+                            {currencyLists.map((currency) => (
+                                <Select.Option key={currency.value} value={currency.value} label={currency.label}>
+                                    {currency.label}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                        <MinusCircleOutlined onClick={() => handleRemovePrice(setPriceFn, prices, index)}
+                                             style={{marginLeft: 8}}/>
+                    </div>
+                </Space>
+            ))}
+            <Button type="dashed"
+                    disabled={isDisabled} onClick={() => handleAddPrice(setPriceFn, prices)} icon={<PlusOutlined/>}>
+                {label} Ekle
+            </Button>
+        </>
+    );
+
+    const [manufacturerList, setManufacturerList] = useState([]);
+
+    const manufacturerLists = () => {
+        CatalogApi.GetManufacturerList().then((res) => {
+            console.log(res, 'dataa GetManufacturerList')
+
+            const data = res.map(res => {
+                return {label: res.displayText, value: res.valueHash}
+            })
+            setManufacturerList(data);
+        })
+    }
+
+
+    const manufacturerIdHash = (value) => {
+        console.log(`selected ${value}`, shelfLists);
+
+        form.setFieldsValue({
+            manufacturerId: value,
+        });
+    };
+
+    const resetData = () => {
+        form.resetFields();
+        setSalesPrices([]);
+        setPurchasePrices([]);
+        setCostPrices([]);
+        setCheckVehicleBrand([]);
+        setCheckVehicleModel([]);
+
+    }
+
+    const isEdit = () => {
+        setIsDisabled(false)
+    }
+
     return (
         <>
-            <Form form={form} onFinish={onSearch} initialValues={{isActive: false, isNew: false}}>
+            <Form form={form} onFinish={onSearch} initialValues={{isActive: false, isNew: false, status: false}}>
 
-                <Row gutter={16}>
+                <Row gutter={16} className="mb-3">
                     <Col span={12}>
-                        <Button type="default" className="button-margin bg_none add_button ">
+                        <Button onClick={() => {
+                            resetData();
+                            isEdit();
+                            navigate(`home/`)
+                        }} type="default" className="button-margin bg_none add_button ">
                             <img src={Images.add_circle_blue} alt="add"/>
                             Yeni
                         </Button>
-                        <Button type="default" className="button-margin bg_none edit_button"
-                        >
+                        <Button onClick={isEdit} type="default" className="button-margin bg_none edit_button">
                             <img src={Images.edit_green} alt="edit"/>
                             Degistir
                         </Button>
@@ -235,59 +420,92 @@ const General = (checkData) => {
                     <Col span={12} className="text-right">
                         <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
                                 className="button-margin Search_blue"></Button>
-                        <Button type="default" htmlType="submit" icon={<img src={Images.Save_green} alt="save"/>}
+                        <Button disabled={isDisabled} type="default" htmlType="submit"
+                                icon={<img src={Images.Save_green} alt="save"/>}
                                 className="button-margin Save_green"
                         ></Button>
                         <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                                className="button-margin delete_red"></Button>
                     </Col>
                 </Row>
                 <Row gutter={16}>
                     <Col span={12}>
                         <Card className="info-card" title="Üretici Bilgileri">
-                            <Form.Item name="manufacturerName" label="Üretici">
+                            <Form.Item name="Code" label="Code">
                                 <Input className='position-relative'
                                        disabled={isDisabled}
                                        style={{width: "240px", float: 'right'}}
-                                       placeholder="123544"/>
+                                       placeholder="12356789"/>
                             </Form.Item>
+
+                            <Form.Item name="name" label="Name">
+                                <Input className='position-relative'
+                                       disabled={isDisabled}
+                                       style={{width: "240px", float: 'right'}}
+                                       placeholder="name"/>
+                            </Form.Item>
+                            {/*
+           <Form.Item name="manufacturerName" label="Üretici">
+                                <Input className='position-relative'
+                                       disabled={isDisabled}
+                                       style={{width: "240px", float: 'right'}}
+                                       placeholder="12356789"/>
+                            </Form.Item>
+*/}
+
+                            <Form.Item name="manufactureId" label="Üretici Bilgileri">
+                                <Select
+                                    optionFilterProp="label"
+                                    onChange={manufacturerIdHash}
+                                    disabled={isDisabled}
+                                    showSearch
+                                    style={{width: "240px", float: 'right'}}
+                                    filterOption={(input, option) =>
+                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
+                                    options={manufacturerList}/>
+                            </Form.Item>
+
                             {/*
                                         <img src={Images.Search_blue} className='position-absolute'
                                              style={{right: "10px", top: "6px"}}/>*/}
                             <Form.Item name="manufacturerCode" label="Üretici Kodu">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                    style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
-                            <Form.Item name="unit" label="Birim">
+                            <Form.Item name="productPropertyValue" label="Birim">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}}
-                                    placeholder="123544"/>
+                                    style={{width: "240px", float: 'right'}}/>
                             </Form.Item>
                         </Card>
 
                         <Card className="info-card " title="Grup Bilgileri">
 
-                            <Form.Item name="productGroupName" label="Tip">
+                            <Form.Item name="productTypeIdHash" label="Tip">
                                 <Select
                                     optionFilterProp="label"
-                                    onChange={onChangeGroupName}
+                                    disabled={isDisabled}
+                                    onChange={onProductTypeIdHash}
+                                    filterOption={(input, option) =>
+                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
                                     options={productTypeList}/>
                             </Form.Item>
                             {/*<Form.Item label="Grup 1">
                                     <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "240px"}} placeholder="123544"/>
+                                        <Input style={{width: "240px"}} placeholder="12356789"/>
                                     </div>
                                 </Form.Item>
                                 <Form.Item label="Grup 2">
                                     <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "240px"}} placeholder="123544"/>
+                                        <Input style={{width: "240px"}} placeholder="12356789"/>
                                     </div>
                                 </Form.Item>
                                 <Form.Item label="Grup 3">
                                     <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "240px"}} placeholder="123544"/>
+                                        <Input style={{width: "240px"}} placeholder="12356789"/>
                                     </div>
                                 </Form.Item>*/}
                             <h4 className='t_44 fs_16 fw_600'>
@@ -313,7 +531,7 @@ const General = (checkData) => {
                                         </div>
                                     </Form.Item>
 */}
-                                <Form.List name="productShelves">
+                                {/*<Form.List name="productShelves">
                                     {(fields, {add, remove}) => (
                                         <>
                                             {fields.map(({key, name, fieldKey, ...restField}) => (
@@ -362,7 +580,90 @@ const General = (checkData) => {
                                             </Form.Item>
                                         </>
                                     )}
+                                </Form.List>*/}
+                                <Form.List name="productShelves"
+                                           disabled={isDisabled}>
+                                    {(fields, {add, remove}) => (
+                                        <>
+                                            {fields.map(({key, name, fieldKey, ...restField}, index) => (
+                                                <Space key={key} style={{display: 'flex', marginBottom: 8}}
+                                                       align="baseline"
+                                                       disabled={isDisabled}>
+                                                    <Form.Item
+                                                        {...restField}
+                                                        name={[name, 'shelfIdHash']}
+                                                        style={{width: "240px"}}
+                                                        fieldKey={[fieldKey, 'shelfIdHash']}
+                                                        label="Adress"
+                                                        rules={[{
+                                                            required: true,
+                                                            message: 'Lütfen bir Shelf ID seçiniz'
+                                                        }]}
+                                                    >
+                                                        <Select
+                                                            disabled={isDisabled}
+                                                            className="w-100"
+                                                            showSearch
+                                                            placeholder="Bir raf seçiniz"
+                                                            optionFilterProp="label"
+                                                            filterOption={(input, option) =>
+                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                                            }
+                                                            options={shelfLists}
+                                                            onChange={(value) => handleShelfChange(value, index, 'shelfIdHash')}
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        {...restField}
+                                                        name={[name, 'quantity']}
+                                                        fieldKey={[fieldKey, 'quantity']}
+                                                        label="Sayı"
+                                                        rules={[{required: true, message: 'Lütfen Quantity giriniz'}]}
+                                                    >
+                                                        <InputNumber
+                                                            disabled={isDisabled}
+                                                            className="w-100"
+                                                            min={0}
+                                                            placeholder="Quantity"
+                                                            onChange={(value) => handleShelfChange(value, index, 'quantity')}
+                                                        />
+                                                    </Form.Item>
+
+                                                    <MinusCircleOutlined
+                                                        disabled={isDisabled} onClick={() => {
+                                                        const newData = shelfData.filter((_, idx) => idx !== index);
+                                                        setShelfData(newData);
+                                                        remove(name);
+                                                    }}/>
+                                                </Space>
+                                            ))}
+
+                                            <Form.Item>
+                                                <Button
+                                                    disabled={isDisabled}
+                                                    type="dashed"
+                                                    onClick={() => {
+                                                        if (shelfData) {
+                                                            add();
+                                                            setShelfData([...shelfData, {
+                                                                shelfIdHash: '',
+                                                                quantity: 0
+                                                            }]);
+                                                        } else {
+                                                            add();
+                                                            setShelfData([{shelfIdHash: '', quantity: 0}]);
+                                                        }
+                                                    }}
+                                                    icon={<PlusOutlined/>}
+                                                >
+                                                    Raf Ekle
+                                                </Button>
+                                            </Form.Item>
+                                        </>
+                                    )}
                                 </Form.List>
+
                             </div>
 
                             <h4 className='t_44 fs_16 fw_600'>
@@ -371,22 +672,28 @@ const General = (checkData) => {
                             <div className="Line_E2"></div>
 
                             <div className="mt-3">
-                                <Form.Item label="Marka" name="brandSelect">
+                                <Form.Item label="Marka">
                                     <Select
-                                        style={{ width: "240px" }}
+                                        style={{width: "240px", float: 'right'}}
                                         placeholder="Bir marka seçin"
                                         optionFilterProp="label"
+                                        disabled={isDisabled}
                                         showSearch
+                                        mode="multiple"
+                                        value={checkVehicleBrand}
+                                        onChange={setCheckVehicleBrand}
+                                        onSearch={onSearch}
                                         // `value` prop'u otomatik olarak `Form.Item` ile eşleşir, bu yüzden ayrıca belirtmeye gerek yok
                                         filterOption={(input, option) =>
                                             (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                         }
+                                        options={vehicleBrand}
                                     >
-                                        {vehicleBrand.map((brand) => (
+                                        {/* {vehicleBrand.map((brand) => (
                                             <Option key={brand.value} value={brand.value} label={brand.label}>
                                                 {brand.label}
                                             </Option>
-                                        ))}
+                                        ))}*/}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="Model">
@@ -395,6 +702,7 @@ const General = (checkData) => {
                                         showSearch
                                         mode="multiple"
                                         placeholder="Select a person"
+                                        disabled={isDisabled}
                                         optionFilterProp="label"
                                         value={checkVehicleModel}
                                         onChange={setCheckVehicleModel}
@@ -414,16 +722,16 @@ const General = (checkData) => {
                                         <Input
                                             disabled={isDisabled}
                                             style={{width: "240px"}}
-                                            placeholder="123544"/>
+                                            placeholder="12356789"/>
                                     </div>
                                 </Form.Item>*/}
 
                             <Form.Item name="paymentTermIdHash" label="Koşul Kodu">
                                 <Select
                                     style={{width: "240px", float: 'right'}}
+                                    disabled={isDisabled}
                                     optionFilterProp="label"
                                     onChange={onChangeTermIdHash}
-                                    onSearch={onSearch}
                                     filterOption={(input, option) =>
                                         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                     }
@@ -432,16 +740,19 @@ const General = (checkData) => {
                             </Form.Item>
                             <Form.Item name="minOrderAmount" label="Min.Sip.Acl">
                                 <Input
-                                    style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                    disabled={isDisabled}
+                                    style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
                             <Form.Item name="vatRate" label="KDV">
                                 <Input
-                                    style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                    disabled={isDisabled}
+                                    style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
-                            <Form.Item label="Kodu Grubu">
+                            {/* <Form.Item label="Kodu Grubu">
                                 <Input
-                                    style={{width: "240px", float: 'right'}} placeholder="123544"/>
-                            </Form.Item>
+                                    disabled={isDisabled}
+                                    style={{width: "240px", float: 'right'}} placeholder="12356789"/>
+                            </Form.Item>*/}
                             <h4 className='t_44 mt-4 fs_16 fw_600'>
                                 Bakiye
                             </h4>
@@ -450,15 +761,18 @@ const General = (checkData) => {
                             <div className="mt-3">
                                 <Form.Item name="balance" label="Mevcut">
                                     <Input
-                                        style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                        disabled={isDisabled}
+                                        style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                                 </Form.Item>
                                 <Form.Item name="OemCode" label="Oem Code">
                                     <Input
-                                        style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                        disabled={isDisabled}
+                                        style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                                 </Form.Item>
 
                                 <div className="d-flex align-items-center">
-                                    <Form.Item name="isActive" valuePropName="checked" label="Mehsul Statusu"
+                                    <Form.Item name="isActive"
+                                               disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
                                                className="mb-0">
                                         <Checkbox/>
                                     </Form.Item>
@@ -466,7 +780,8 @@ const General = (checkData) => {
                                 </div>
 
                                 <div className="d-flex align-items-center">
-                                    <Form.Item name="isNew" valuePropName="checked" label="Mehsul Statusu"
+                                    <Form.Item name="isNew"
+                                               disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
                                                className="mb-0">
                                         <Checkbox/>
                                     </Form.Item>
@@ -474,7 +789,8 @@ const General = (checkData) => {
                                 </div>
 
                                 <div className="d-flex align-items-center">
-                                    <Form.Item label="Mehsul Statusu"
+                                    <Form.Item name="status"
+                                               disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
                                                className="mb-0">
                                         <Checkbox/>
                                     </Form.Item>
@@ -503,8 +819,8 @@ const General = (checkData) => {
                         </Card>
                     </Col>
                     <Col span={12}>
-                        <Card className="info-card" title="Fiyat Bilgileri">
-                            {/*<Form layout="horizontal">
+                        {/* <Card className="info-card" title="Fiyat Bilgileri">
+                            <Form layout="horizontal">
                                 <Form.Item label="Satış Fiyatı">
                                     <div className='d-flex justify-content-end'>
                                         <Input style={{width: "77px"}} placeholder="250$"/>
@@ -532,7 +848,7 @@ const General = (checkData) => {
                                              src={Images.Down2_gray} alt=""/>
                                     </div>
                                 </Form.Item>
-                            </Form>*/}
+                            </Form>
                             <Form.List name={['price', 'salesPrices']}>
                                 {(fields, {add, remove}) => (
                                     <>
@@ -580,7 +896,8 @@ const General = (checkData) => {
                                                             }>
 
                                                             {currencyLists.map((brand) => (
-                                                                <Option key={brand.value} value={brand.value} label={brand.label}>
+                                                                <Option key={brand.value} value={brand.value}
+                                                                        label={brand.label}>
                                                                     {brand.label}
                                                                 </Option>
                                                             ))}
@@ -602,7 +919,7 @@ const General = (checkData) => {
                                 )}
                             </Form.List>
 
-                            {/* Purchase Prices */}
+                             Purchase Prices
                             <Title level={4}>Purchase Prices</Title>
                             <Form.List name={['price', 'purchasePrices']}>
                                 {(fields, {add, remove}) => (
@@ -668,7 +985,7 @@ const General = (checkData) => {
                                 )}
                             </Form.List>
 
-                            {/* Cost Prices */}
+                             Cost Prices
                             <Title level={4}>Cost Prices</Title>
                             <Form.List name={['price', 'costPrices']}>
                                 {(fields, {add, remove}) => (
@@ -732,8 +1049,24 @@ const General = (checkData) => {
                                 )}
                             </Form.List>
 
+                        </Card>*/}
+                        <Card className="info-card" title="Fiyat Bilgileri">
+                            <Form layout="horizontal">
+                                {renderPriceList(salesPrices, setSalesPrices, 'Satış Fiyatı')}
+                                {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
+                                {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
+                            </Form>
+                        </Card>
+
+                        <Card className="info-card" title="Ek bilgiler">
+                            <Form.Item layout="horizontal" name="description" valuePropName="checked" label="Mehsul Statusu"
+                                       className="mb-0">
+                                <Input.TextArea placeholder="açıklama"
+                                                disabled={isDisabled}  rows={3}/>
+                            </Form.Item>
                         </Card>
                     </Col>
+
                 </Row>
             </Form>
 

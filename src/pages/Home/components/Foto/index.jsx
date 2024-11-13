@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Checkbox, Table } from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
+import {useParams} from "react-router-dom";
 
 const Equivalent = () => {
     const [data, setData] = useState([]);
+    let { id } = useParams();
 
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
@@ -23,11 +26,15 @@ const Equivalent = () => {
 
     useEffect(() => {
         createData();
+        getData()
     }, []);
 
 
-
-
+    const getData = () => {
+        AdminApi.GetProductFileByProductId({ProductId: id}).then(res => {
+            console.log(res, 'photo list')
+        })
+    }
 
     const columns = [
         {
