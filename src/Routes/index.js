@@ -1,25 +1,74 @@
-import { Route, Routes } from "react-router-dom";
-import React from "react";
+import React, { lazy, Suspense } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
+import { Spin } from "antd";
 
-import Home from '../pages/Home/Home';
+// Sayfaların lazy olarak yüklenmesi
+const Home = lazy(() => import("../pages/Home/Home"));
+const Clients = lazy(() => import("../pages/Clients/Clients"));
+const Orders = lazy(() => import("../pages/Orders/Orders"));
+const Delegates = lazy(() => import("../pages/Delegates"));
+const Login = lazy(() => import("../pages/Login/login"));
 
-import Clients from '../pages/Clients/Clients';
-
-import Orders from '../pages/Orders/Orders';
-
-import Delegates from '../pages/Delegates';
-
+const PrivateRoute = ({ children }) => {
+    const { logged } = useAuth();
+    return logged ? children : <Navigate to="/login" replace />;
+};
 
 const RouteList = () => {
-    return <>
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/:id" element={<Home />} />
-            <Route path="/Clients" element={<Clients />} />
-            <Route path="/Orders" element={<Orders />} />
-            <Route path="/Delegates" element={<Delegates />} />
-        </Routes>
-    </>
-}
+    return (
+        <Suspense fallback={<Spin tip="Yükleniyor..." />}>
+            <Routes>
+                {/* Public Route */}
+                <Route path="/login" element={<Login />} />
 
-export default RouteList
+                {/* Private Routes */}
+                <Route
+                    path="/"
+                    element={
+                        <PrivateRoute>
+                            <Home />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/home/:id"
+                    element={
+                        <PrivateRoute>
+                            <Home />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/clients"
+                    element={
+                        <PrivateRoute>
+                            <Clients />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/orders"
+                    element={
+                        <PrivateRoute>
+                            <Orders />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/delegates"
+                    element={
+                        <PrivateRoute>
+                            <Delegates />
+                        </PrivateRoute>
+                    }
+                />
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </Suspense>
+    );
+};
+
+export default RouteList;

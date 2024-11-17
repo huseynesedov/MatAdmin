@@ -1,38 +1,36 @@
-import { useEffect, useState } from 'react';
-import { Checkbox, Table } from 'antd';
+import {useEffect, useState} from 'react';
+import {Checkbox, Table} from 'antd';
 import {AdminApi} from "../../../../api/admin.api";
 import {useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
 
-const Equivalent = () => {
+const Equivalent = (activeKey) => {
     const [data, setData] = useState([]);
-    let { id } = useParams();
+    let {id} = useParams();
 
+    const {openNotification} = useAuth()
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
-    const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                foto: `https://www.timeoutdubai.com/cloud/timeoutdubai/2021/09/14/yvA5SpUH-IMG-Worlds.jpg`,
-                foto_name: `img 128323544565698`,
-            });
-        }
-        setData(arr);
-    };
-
     useEffect(() => {
-        createData();
         getData()
-    }, []);
+    }, [activeKey]);
 
 
     const getData = () => {
         AdminApi.GetProductFileByProductId({ProductId: id}).then(res => {
             console.log(res, 'photo list')
+            let data = res.map(da => {
+                return {
+                    key: da.productFileIdHash,
+                    foto: da.file.path,
+                    foto_name: da.file.visibleName,
+                }
+            })
+            setData(data)
+        }).catch((err) => {
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     }
 
@@ -42,7 +40,7 @@ const Equivalent = () => {
             width: 10,
             dataIndex: 'checkbox',
             key: 'checkbox',
-            render: () => <Checkbox />,
+            render: () => <Checkbox/>,
         },
         {
             title: 'Resim',
@@ -52,7 +50,7 @@ const Equivalent = () => {
             sorter: true,
             render: (text) => <div className="age-column">
                 <div className='d-flex align-items-center foto_page'>
-                    <img src={text} alt="" />
+                    <img src={text} alt=""/>
                 </div>
             </div>,
         },

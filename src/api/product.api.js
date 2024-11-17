@@ -42,6 +42,9 @@ export const ProductApi = {
     GetProductQuantitiesById(params) {
         return BaseApi.get(apiRoutes.product.getProductQuantitiesById, { ...params });
     },
+    AddProductFile(data) {
+        return BaseApi.post(apiRoutes.photos.addProductFile, data);
+    },
     GetSearchTable(data) {
         return BaseApi.post(apiRoutes.product.getSearchTable, data);
     },

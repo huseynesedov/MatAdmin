@@ -9,14 +9,16 @@ import Title from "antd/es/skeleton/Title";
 import {useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from "../../../../AuthContext";
 
-const General = ({isSetData}) => {
+const General = ({isSetData, handleShowModal2}) => {
     const [data, setData] = useState([]);
     const [isDisabled, setIsDisabled] = useState(true);
     const navigate = useNavigate();
 
-    const { openNotification } = useAuth()
+    const {openNotification} = useAuth()
     const {Option} = Select;
 
+    const [productPropertys, setProductProperty] = useState([]);
+    const [productPropertyVal, setproductPropertyValue] = useState([]);
     const [productTypeList, setProductTypeList] = useState([]);
     const [paymentTermList, setPaymentTermList] = useState([]);
     const [shelfLists, setShelfList] = useState([]);
@@ -24,11 +26,13 @@ const General = ({isSetData}) => {
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
     const [vehicleBrand, setVehicleBrand] = useState([]);
     const [vehicleModel, setVehicleModel] = useState([]);
+    const [defaultCheckVehicleBrand, setDefaultCheckVehicleBrand] = useState([]);
     const [checkVehicleBrand, setCheckVehicleBrand] = useState([]);
     const [checkVehicleModel, setCheckVehicleModel] = useState([]);
-    let { id } = useParams();
+    let {id} = useParams();
 
 
+    const [shelfData, setShelfData] = useState([]);
     const [salesPrices, setSalesPrices] = useState([]);
     const [purchasePrices, setPurchasePrices] = useState([]);
     const [costPrices, setCostPrices] = useState([]);
@@ -42,6 +46,7 @@ const General = ({isSetData}) => {
         shelfList();
         currencyList();
         productTypeLists();
+        productProperty();
         getBrand();
         manufacturerLists();
 
@@ -50,6 +55,7 @@ const General = ({isSetData}) => {
 
 
     useEffect(() => {
+        getBrand();
         if (!id) {
             form.resetFields()
             resetData()
@@ -67,7 +73,11 @@ const General = ({isSetData}) => {
     const getBrand = () => {
         CatalogApi.GetVehicleBrand().then(res => {
             const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+                if (id) {
+                    return {label: res.displayText, value: res.valueHash, productVehicleBrandIdHash: ''}
+                } else {
+                    return {label: res.displayText, value: res.valueHash}
+                }
             })
             setVehicleBrand(data);
         })
@@ -84,7 +94,7 @@ const General = ({isSetData}) => {
             })
             setVehicleModel(data);
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     };
 
@@ -93,46 +103,140 @@ const General = ({isSetData}) => {
 
         console.log(isShowProduct, 'isShowProduct ffff')
 
-        let costPrices = isShowProduct?.price?.costPrices?.map(data => {
-            return {
-                value: data.value,
-                currencyIdHash: data.currencyIdHash
+        let costPrices = isShowProduct?.price?.costPrices?.map(data => ({
+            value: data.value,
+            currencyIdHash: data.currencyIdHash,
+            ...(id && {priceIdHash: data.priceIdHash})
+        }));
+
+        let purchasePrices = isShowProduct?.price?.purchasePrices?.map(data => ({
+            value: data.value,
+            currencyIdHash: data.currencyIdHash,
+            ...(id && {priceIdHash: data.priceIdHash})
+        }));
+
+        let salesPrices = isShowProduct?.price?.salesPrices?.map(data => ({
+            value: data.value,
+            currencyIdHash: data.currencyIdHash,
+            ...(id && {priceIdHash: data.priceIdHash})
+        }));
+
+        setSalesPrices(salesPrices);
+        setPurchasePrices(purchasePrices);
+        setCostPrices(costPrices);
+
+
+        /* if (isShowProduct?.productVehicleBrand?.productVehicleBrands.length > 0) {
+             setCheckVehicleBrand(isShowProduct?.productVehicleBrand.productVehicleBrands.map(data => data.vehicleBrandIdHash));
+         }
+
+         if (isShowProduct?.productVehicleModel?.productVehicleModels.length > 0) {
+             setCheckVehicleModel(isShowProduct?.productVehicleModel.productVehicleModels.map(data => data.vehicleModelIdHash))
+         }*/
+
+        if (id) {
+            if (isShowProduct?.productVehicleBrand?.productVehicleBrands.length > 0) {
+                const fetchedBrands = isShowProduct.productVehicleBrand.productVehicleBrands.map((data) => {
+                    return {
+                        value: data.vehicleBrandIdHash,
+                        productVehicleBrandIdHash: data.idHash
+                    }
+                });
+                const fetchedBrandsCheck = isShowProduct.productVehicleBrand.productVehicleBrands.map((data) => data.vehicleBrandIdHash);
+                /* const updatedBrands = vehicleBrand.map((brand) => {
+                     console.log(brand, fetchedBrands, 'brand fetchedBrands')
+                     if (fetchedBrands.value === brand.value) {
+                         return {...brand, isDeleted: false}; // Gelen verilerde varsa, isDeleted=false
+                     }
+                     return brand; // Diğer durumlar etkilenmez
+                 });*/
+
+                const list = vehicleBrand
+
+               fetchedBrands.forEach((item) => {
+                    const index = vehicleBrand.findIndex(product => product.value === item.value)
+
+                    if (index !== -1) {
+                        list[index].productVehicleBrandIdHash = item.productVehicleBrandIdHash;
+                    }
+
+                });
+
+                console.log(list, 'list list list list ')
+
+
+
+                setVehicleBrand(list); // Güncellenmiş liste
+                setCheckVehicleBrand(fetchedBrandsCheck);
+                setDefaultCheckVehicleBrand(fetchedBrandsCheck)
             }
-        })
+        } else {
 
-        let purchasePrices = isShowProduct?.price?.purchasePrices?.map(data => {
-            return {
-                value: data.value,
-                currencyIdHash: data.currencyIdHash
-            }
-        })
-
-
-        let salesPrices = isShowProduct?.price?.salesPrices?.map(data => {
-            return {
-                value: data.value,
-                currencyIdHash: data.currencyIdHash
-            }
-        })
-
-        setSalesPrices(salesPrices)
-        setPurchasePrices(purchasePrices)
-        setCostPrices(costPrices)
-
-        if (isShowProduct?.productVehicleBrand?.productVehicleBrands.length > 0) {
-            setCheckVehicleBrand(isShowProduct?.productVehicleBrand.productVehicleBrands.map(data => data.vehicleBrandIdHash));
         }
+        /*if (isShowProduct?.productVehicleBrand?.productVehicleBrands.length > 0) {
+            const fetchedBrands = isShowProduct.productVehicleBrand.productVehicleBrands.map((data) => data.vehicleBrandIdHash);
+
+            // Gelen verilerle vehicleBrand'i güncelle
+            const updatedBrands = vehicleBrand.map((brand) => {
+                if (fetchedBrands.includes(brand.value)) {
+                    return { ...brand, isDeleted: false }; // Gelen verilerde varsa, isDeleted=false
+                }
+                return brand; // Diğer durumlar etkilenmez
+            });
+
+            console.log(updatedBrands, 'updatedBrands updatedBrands updatedBrands updatedBrands ')
+            console.log(fetchedBrands, 'fetchedBrands fetchedBrands fetchedBrands fetchedBrands')
+
+            setVehicleBrand(updatedBrands); // Güncellenmiş liste
+            setCheckVehicleBrand(fetchedBrands); // Seçili markalar
+        }*/
 
         if (isShowProduct?.productVehicleModel?.productVehicleModels.length > 0) {
-            setCheckVehicleModel(isShowProduct?.productVehicleModel.productVehicleModels.map(data => data.vehicleModelIdHash))
+            const fetchedModels = isShowProduct.productVehicleModel.productVehicleModels.map((data) => data.vehicleModelIdHash);
+
+            // Gelen verilerle vehicleModel'i güncelle
+            const updatedModels = vehicleModel.map((model) => {
+                if (fetchedModels.includes(model.value)) {
+                    return {...model, isDeleted: false}; // Gelen verilerde varsa, isDeleted=false
+                }
+                return model; // Diğer durumlar etkilenmez
+            });
+
+            setVehicleModel(updatedModels); // Güncellenmiş liste
+            setCheckVehicleModel(fetchedModels); // Seçili modeller
         }
 
-        const shelf = isShowProduct?.productShelf?.shelves.map(data => {
-            return {
-                shelfIdHash: data.storageIdHash,
-                quantity: data.quantity
-            }
-        })
+
+        console.log(productPropertys, 'productPropertys')
+
+        if (productPropertys) {
+            const productProp = productPropertys.filter(r => r.label === isShowProduct.productPropertyValue)
+
+            setproductPropertyValue(productProp)
+        }
+
+
+
+        let shelf
+
+        if (id) {
+            shelf = isShowProduct?.productShelf?.shelves.map(data => {
+                return {
+                    shelfIdHash: data.idHash,
+                    quantity: data.quantity,
+                    productShelfIdHash: data.productShelfIdHash,
+                    isDeleted: false,
+                }
+            })
+        } else {
+            shelf = isShowProduct?.productShelf?.shelves.map(data => {
+                return {
+                    shelfIdHash: data.idHash,
+                    quantity: data.quantity
+                }
+            })
+        }
+
 
         setShelfData(shelf);
 
@@ -150,7 +254,7 @@ const General = ({isSetData}) => {
             oemCode: isShowProduct?.oemCode,
             status: isShowProduct?.status,
             balance: isShowProduct?.balance,
-            manufacturerIdHash: isShowProduct?.manufacturerIdHash,
+            manufactureIdHash: isShowProduct?.manufacturerIdHash,
             description: isShowProduct?.description,
         }
         form.setFieldsValue(data)
@@ -166,6 +270,18 @@ const General = ({isSetData}) => {
                 }
             })
             setProductTypeList(data);
+        })
+    }
+
+    const productProperty = () => {
+        AdminApi.GetProductPropertyValueTable().then(res => {
+            let data = res.map(res => {
+                return {
+                    label: res.name,
+                    value: res.idHash
+                }
+            })
+            setProductProperty(data);
         })
     }
 
@@ -185,8 +301,6 @@ const General = ({isSetData}) => {
 
     const shelfList = () => {
         CatalogApi.getShelfList().then(res => {
-            console.log(res, 'GetShelfAdressesById')
-
 
             let data = res.map(res => {
                 return {
@@ -219,7 +333,7 @@ const General = ({isSetData}) => {
             salesPrices
         }
 
-        console.log(prices, value, 'aaa data save')
+        console.log(checkVehicleBrand, 'checkVehicleBrand')
 
 
         let model = checkVehicleModel.map(data => {
@@ -230,29 +344,45 @@ const General = ({isSetData}) => {
         let brand = checkVehicleBrand.map(data => {
             return {
                 vehicleBrandIdHash: data,
+                isTecDoc: false,
+                isDomesticVehicle: false
             }
         })
-        let data = {...value, ...{productVehicleBrands: brand}, ...{productVehicleModles: model}, ...{price: prices}}
+
+        console.log(checkVehicleBrand, 'checkVehicleBrand checkVehicleBrand')
+
+
+        console.log(productPropertyVal, 'productPropertyVal');
+
+       /* let productProperti = productPropertyVal.map(data => {
+            return {
+                propertyValueIdHash: productPropertyVal,
+            }
+        })*/
+
+
+        let data = {...value, ...{productVehicleBrands: brand}, ...{productVehicleModels: model}, ...{price: prices},}
         console.log(value, data, prices, 'datassss')
 
         if (id) {
             AdminApi.UpdateProduct({...data, ...{idHash: id, code: isShowProduct?.code}}).then(res => {
-
+                openNotification('Uğurlu əməliyyat..', `Məhsul yeniləndi`, false)
             }).catch((err) => {
-                openNotification('Xəta baş verdi' , err.response.data.message  , true )
+                openNotification('Xəta baş verdi', err.response.data.message, true)
             }).finally((r) => {
-                resetData()
-                isEdit()
+                /* resetData()
+                 isEdit()*/
             })
 
         } else {
-            AdminApi.AddProduct(data).then(res => {
+            AdminApi.AddProduct({...data, ...{productProperties: [{ propertyValueIdHash: productPropertyVal}]}}).then(res => {
                 console.log(res, 'alalal qoyma ')
+                openNotification('Uğurlu əməliyyat..', `Məhsul yaradıldı`, false)
             }).catch((err) => {
-                openNotification('Xəta baş verdi' , err.response.data.message  , true )
+                openNotification('Xəta baş verdi', err.response.data.message, true)
             }).finally((r) => {
-                resetData()
-                isEdit()
+                /* resetData()
+                 isEdit()*/
             })
         }
 
@@ -265,22 +395,22 @@ const General = ({isSetData}) => {
             })
             setPaymentTermList(data);
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     };
-
-    const [shelfData, setShelfData] = useState([]);
 
     useEffect(() => {
         form.setFieldsValue({
             productShelves: shelfData
         });
+        console.log(shelfData, 'shelfData shelfData shelfData shelfData')
     }, [shelfData, form]);
 
     const handleShelfChange = (value, index, field) => {
         const newData = [...shelfData];
         newData[index][field] = value;
         setShelfData(newData);
+        console.log()
     };
 
 
@@ -300,16 +430,20 @@ const General = ({isSetData}) => {
     };
 
     const handleAddPrice = (setPriceFn, prices) => {
-        if (prices) {
-            setPriceFn([...prices, {value: 1, currencyIdHash: ''}]);
-        } else {
-            setPriceFn([{value: 1, currencyIdHash: ''}]);
-        }
-        console.log(prices, 'prices ...')
+        const newPrice = {
+            value: 0,
+            currencyIdHash: '',
+            ...(id && {priceIdHash: '',}) // Eğer id varsa yeni özellikleri ekle
+        };
+        setPriceFn([...prices, newPrice]);
     };
 
     const handleRemovePrice = (setPriceFn, prices, index) => {
-        const updatedPrices = prices.filter((_, i) => i !== index);
+        console.log(setPriceFn, prices, index, 'setPriceFn, prices, index')
+        const updatedPrices = [...prices];
+
+        updatedPrices.splice(index, 1);
+
         setPriceFn(updatedPrices);
     };
 
@@ -366,7 +500,6 @@ const General = ({isSetData}) => {
 
     const manufacturerLists = () => {
         CatalogApi.GetManufacturerList().then((res) => {
-            console.log(res, 'dataa GetManufacturerList')
 
             const data = res.map(res => {
                 return {label: res.displayText, value: res.valueHash}
@@ -380,7 +513,7 @@ const General = ({isSetData}) => {
         console.log(`selected ${value}`, shelfLists);
 
         form.setFieldsValue({
-            manufacturerId: value,
+            manufactureIdHash: value,
         });
     };
 
@@ -390,7 +523,9 @@ const General = ({isSetData}) => {
         setPurchasePrices([]);
         setCostPrices([]);
         setCheckVehicleBrand([]);
+        setproductPropertyValue([]);
         setCheckVehicleModel([]);
+        setShelfData([]);
 
     }
 
@@ -398,27 +533,121 @@ const General = ({isSetData}) => {
         setIsDisabled(false)
     }
 
+
+// Select değişikliklerini işleme
+    const handleBrandChange = (selectedValues) => {
+        setCheckVehicleBrand(selectedValues);
+    };
+
+    const handleModelChange = (selectedValues) => {
+        const updatedModels = vehicleModel.map((model) => ({
+            ...model,
+            isDeleted: !selectedValues.includes(model.value), // Seçili değilse isDeleted true
+        }));
+        setCheckVehicleModel(selectedValues); // Seçili modelleri güncelle
+        setVehicleModel(updatedModels); // Güncellenmiş modeller
+    };
+
+// Select'ten seçim kaldırma (isDeleted işlevselliği)
+    const handleRemoveBrand = (brandId) => {
+        const updatedBrands = vehicleBrand.map((brand) =>
+            brand.value === brandId ? {...brand, isDeleted: true} : brand
+        );
+        /*setVehicleBrand(updatedBrands);*/
+    };
+
+    const handleRemoveModel = (modelId) => {
+        const updatedModels = vehicleModel.map((model) =>
+            model.value === modelId ? {...model, isDeleted: true} : model
+        );
+        setVehicleModel(updatedModels);
+    };
+
+// Gönderilecek veriyi hazırlama
+    const prepareDataForSubmission = () => {
+        let brand, model;
+
+        if (id) {
+
+            let getBrands = []
+
+            vehicleBrand.forEach((item, index) => {
+                if (item.productVehicleBrandIdHash) {
+                    getBrands.push(item)
+                }
+            });
+
+
+            const uniqueToProducts = getBrands.filter(
+                product1 => !checkVehicleBrand.some(product2 => product1 === product2.value) // id'ye göre karşılaştırma
+            );
+
+            console.log(uniqueToProducts, ' alalalal');
+            console.log(vehicleBrand, ' www');
+
+
+            // Edit Durumu
+            brand = vehicleBrand.map((data) => ({
+                productVehicleBrandIdHash: data.productVehicleBrandIdHash || "",
+                vehicleBrandIdHash: data.value,
+                isTecDoc: false, // Varsayılan false
+                isDomesticVehicle: false, // Varsayılan false
+                isDeleted: data.isDeleted || false,
+            }));
+
+            model = vehicleModel.map((data) => ({
+                productVehicleModelIdHash: data.productVehicleModelIdHash || "",
+                vehicleModelIdHash: data.value,
+                isDeleted: data.isDeleted || false,
+            }));
+        } else {
+            // Add Durumu
+            brand = vehicleBrand.map((data) => ({
+                vehicleBrandIdHash: data.value,
+                isTecDoc: true, // Varsayılan true
+                isDomesticVehicle: true, // Varsayılan true
+            }));
+
+            model = vehicleModel.map((data) => ({
+                vehicleModelIdHash: data.value,
+            }));
+        }
+
+        return {
+            productVehicleBrands: brand,
+            productVehicleModels: model,
+        };
+    };
+
+// Gönderme işlemi
+    const handleSubmit = () => {
+        const requestData = prepareDataForSubmission();
+        console.log("Gönderilecek Veri:", requestData);
+        // Burada API çağrısı yapılabilir
+    };
+
     return (
         <>
-            <Form form={form} onFinish={onSearch} initialValues={{isActive: false, isNew: false, status: false}}>
+            <Form form={form} onFinish={onSearch} initialValues={{isNew: false, status: false}}>
 
                 <Row gutter={16} className="mb-3">
                     <Col span={12}>
                         <Button onClick={() => {
                             resetData();
                             isEdit();
-                            navigate(`home/`)
+                            navigate(`/`)
                         }} type="default" className="button-margin bg_none add_button ">
                             <img src={Images.add_circle_blue} alt="add"/>
                             Yeni
                         </Button>
-                        <Button onClick={isEdit} type="default" className="button-margin bg_none edit_button">
+                        <Button onClick={isEdit}  disabled={true} type="default" className="button-margin bg_none edit_button">
                             <img src={Images.edit_green} alt="edit"/>
                             Degistir
                         </Button>
                     </Col>
                     <Col span={12} className="text-right">
-                        <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
+                        <Button onClick={() => handleShowModal2()} type="default"
+                                icon={<img src={Images.Search_blue} alt="search"/>}
                                 className="button-margin Search_blue"></Button>
                         <Button disabled={isDisabled} type="default" htmlType="submit"
                                 icon={<img src={Images.Save_green} alt="save"/>}
@@ -431,7 +660,7 @@ const General = ({isSetData}) => {
                 <Row gutter={16}>
                     <Col span={12}>
                         <Card className="info-card" title="Üretici Bilgileri">
-                            <Form.Item name="Code" label="Code">
+                            <Form.Item name="code" label="Code">
                                 <Input className='position-relative'
                                        disabled={isDisabled}
                                        style={{width: "240px", float: 'right'}}
@@ -453,7 +682,7 @@ const General = ({isSetData}) => {
                             </Form.Item>
 */}
 
-                            <Form.Item name="manufactureId" label="Üretici Bilgileri">
+                            <Form.Item name="manufactureIdHash" label="Üretici Bilgileri">
                                 <Select
                                     optionFilterProp="label"
                                     onChange={manufacturerIdHash}
@@ -474,11 +703,29 @@ const General = ({isSetData}) => {
                                     disabled={isDisabled}
                                     style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
-                            <Form.Item name="productPropertyValue" label="Birim">
+                            {/*<Form.Item name="productPropertyValue" label="Birim">
                                 <Input
                                     disabled={isDisabled}
                                     style={{width: "240px", float: 'right'}}/>
+                            </Form.Item>*/}
+
+                            <Form.Item label="Birim">
+                                <Select
+                                    style={{width: "240px", float: 'right'}}
+                                    placeholder="Bir birim seçin"
+                                    optionFilterProp="label"
+                                    disabled={isDisabled}
+                                    showSearch
+                                    value={productPropertyVal}
+                                    onChange={setproductPropertyValue}
+                                    filterOption={(input, option) =>
+                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
+                                    options={productPropertys}
+                                >
+                                </Select>
                             </Form.Item>
+
                         </Card>
 
                         <Card className="info-card " title="Grup Bilgileri">
@@ -587,14 +834,13 @@ const General = ({isSetData}) => {
                                         <>
                                             {fields.map(({key, name, fieldKey, ...restField}, index) => (
                                                 <Space key={key} style={{display: 'flex', marginBottom: 8}}
-                                                       align="baseline"
-                                                       disabled={isDisabled}>
+                                                       align="baseline" disabled={isDisabled}>
                                                     <Form.Item
                                                         {...restField}
                                                         name={[name, 'shelfIdHash']}
                                                         style={{width: "240px"}}
                                                         fieldKey={[fieldKey, 'shelfIdHash']}
-                                                        label="Adress"
+                                                        label="Adres"
                                                         rules={[{
                                                             required: true,
                                                             message: 'Lütfen bir Shelf ID seçiniz'
@@ -631,11 +877,20 @@ const General = ({isSetData}) => {
                                                     </Form.Item>
 
                                                     <MinusCircleOutlined
-                                                        disabled={isDisabled} onClick={() => {
-                                                        const newData = shelfData.filter((_, idx) => idx !== index);
-                                                        setShelfData(newData);
-                                                        remove(name);
-                                                    }}/>
+                                                        disabled={isDisabled}
+                                                        onClick={() => {
+                                                            const newData = [...shelfData];
+                                                            if (!newData[index].productShelfIdHash) {
+                                                                // productShelfIdHash boşsa, item'ı tamamen kaldır
+                                                                newData.splice(index, 1);
+                                                                remove(name);
+                                                            } else {
+                                                                // productShelfIdHash doluysa, isDeleted alanını true yap
+                                                                newData[index].isDeleted = true;
+                                                            }
+                                                            setShelfData(newData);
+                                                        }}
+                                                    />
                                                 </Space>
                                             ))}
 
@@ -644,15 +899,16 @@ const General = ({isSetData}) => {
                                                     disabled={isDisabled}
                                                     type="dashed"
                                                     onClick={() => {
+                                                        add(); // Yeni form alanı ekle
+                                                        const newShelf = {
+                                                            shelfIdHash: '',
+                                                            quantity: 0,
+                                                            ...(id && {productShelfIdHash: '', isDeleted: false})
+                                                        };
                                                         if (shelfData) {
-                                                            add();
-                                                            setShelfData([...shelfData, {
-                                                                shelfIdHash: '',
-                                                                quantity: 0
-                                                            }]);
+                                                            setShelfData([...shelfData, newShelf]);
                                                         } else {
-                                                            add();
-                                                            setShelfData([{shelfIdHash: '', quantity: 0}]);
+                                                            setShelfData([newShelf]);
                                                         }
                                                     }}
                                                     icon={<PlusOutlined/>}
@@ -674,46 +930,43 @@ const General = ({isSetData}) => {
                             <div className="mt-3">
                                 <Form.Item label="Marka">
                                     <Select
-                                        style={{width: "240px", float: 'right'}}
+                                        style={{width: "240px", float: "right"}}
                                         placeholder="Bir marka seçin"
                                         optionFilterProp="label"
                                         disabled={isDisabled}
                                         showSearch
                                         mode="multiple"
                                         value={checkVehicleBrand}
-                                        onChange={setCheckVehicleBrand}
-                                        onSearch={onSearch}
-                                        // `value` prop'u otomatik olarak `Form.Item` ile eşleşir, bu yüzden ayrıca belirtmeye gerek yok
+                                        onChange={handleBrandChange}
+                                        onDeselect={handleRemoveBrand} // Seçim kaldırıldığında tetiklenir
                                         filterOption={(input, option) =>
-                                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                                         }
                                         options={vehicleBrand}
-                                    >
-                                        {/* {vehicleBrand.map((brand) => (
-                                            <Option key={brand.value} value={brand.value} label={brand.label}>
-                                                {brand.label}
-                                            </Option>
-                                        ))}*/}
-                                    </Select>
+                                    />
                                 </Form.Item>
+
                                 <Form.Item label="Model">
                                     <Select
-                                        style={{width: "240px", float: 'right'}}
+                                        style={{width: "240px", float: "right"}}
+                                        placeholder="Bir model seçin"
+                                        optionFilterProp="label"
+                                        disabled={isDisabled}
                                         showSearch
                                         mode="multiple"
-                                        placeholder="Select a person"
-                                        disabled={isDisabled}
-                                        optionFilterProp="label"
                                         value={checkVehicleModel}
-                                        onChange={setCheckVehicleModel}
-                                        onSearch={onSearch}
+                                        onChange={handleModelChange}
+                                        onDeselect={handleRemoveModel} // Seçim kaldırıldığında tetiklenir
                                         filterOption={(input, option) =>
-                                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                                         }
                                         options={vehicleModel}
                                     />
                                 </Form.Item>
 
+                                {/*<Button type="primary" onClick={handleSubmit}>
+                                    Kaydet
+                                </Button>*/}
                             </div>
                         </Card>
                         <Card className="info-card" title="Diğer Bilgiler">
@@ -739,14 +992,14 @@ const General = ({isSetData}) => {
                                 </Select>
                             </Form.Item>
                             <Form.Item name="minOrderAmount" label="Min.Sip.Acl">
-                                <Input
-                                    disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}} placeholder="12356789"/>
+                                <InputNumber min={0}
+                                             disabled={isDisabled}
+                                             style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
                             <Form.Item name="vatRate" label="KDV">
-                                <Input
-                                    disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}} placeholder="12356789"/>
+                                <InputNumber min={0}
+                                             disabled={isDisabled}
+                                             style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
                             {/* <Form.Item label="Kodu Grubu">
                                 <Input
@@ -760,24 +1013,24 @@ const General = ({isSetData}) => {
 
                             <div className="mt-3">
                                 <Form.Item name="balance" label="Mevcut">
-                                    <Input
-                                        disabled={isDisabled}
-                                        style={{width: "240px", float: 'right'}} placeholder="12356789"/>
+                                    <InputNumber min={0}
+                                                 disabled={isDisabled}
+                                                 style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                                 </Form.Item>
-                                <Form.Item name="OemCode" label="Oem Code">
+                                <Form.Item name="oemCode" label="Oem Code">
                                     <Input
                                         disabled={isDisabled}
                                         style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                                 </Form.Item>
 
-                                <div className="d-flex align-items-center">
+                                {/*  <div className="d-flex align-items-center">
                                     <Form.Item name="isActive"
                                                disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
                                                className="mb-0">
                                         <Checkbox/>
                                     </Form.Item>
                                     <span className='ms-2 t_8F'>Yeni Urun</span>
-                                </div>
+                                </div>*/}
 
                                 <div className="d-flex align-items-center">
                                     <Form.Item name="isNew"
@@ -1056,13 +1309,17 @@ const General = ({isSetData}) => {
                                 {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
                                 {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
                             </Form>
+                           {/* <Form.Item name="discount" label="Endirim">
+                                <InputNumber min={0} placeholder="Value"
+                                             style={{width: '100%'}}/>
+                            </Form.Item>*/}
                         </Card>
 
                         <Card className="info-card" title="Ek bilgiler">
-                            <Form.Item layout="horizontal" name="description" valuePropName="checked" label="Mehsul Statusu"
+                            <Form.Item layout="horizontal" name="description" label="Mehsul Statusu"
                                        className="mb-0">
                                 <Input.TextArea placeholder="açıklama"
-                                                disabled={isDisabled}  rows={3}/>
+                                                disabled={isDisabled} rows={3}/>
                             </Form.Item>
                         </Card>
                     </Col>

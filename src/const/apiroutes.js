@@ -153,7 +153,7 @@ export const apiRoutes = {
 
 
     photos: {
-        addProductFile: 'admin/v1/Product/AddProductFile',
+        addProductFile: '/admin/v1/Product/AddProductFile',
         getProductFileByProductId: '/admin/v1/Product/GetProductFileByProductId',
         deleteByProductFileId: '/admin/v1/Product/DeleteByProductFileId',
     },

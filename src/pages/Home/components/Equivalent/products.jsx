@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Table} from 'antd';
 import {AdminApi} from "../../../../api/admin.api";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../../../../AuthContext";
 
 const Equivalent = ({activeKey, showData}) => {
     const [data, setData] = useState([]);
+
+    let { id } = useParams();
 
     const { openNotification } = useAuth()
 
@@ -25,7 +27,7 @@ const Equivalent = ({activeKey, showData}) => {
                 pageSize: 10,
                 filters: []
             },
-            productIdHash: pathname.split('/')[1]
+            productIdHash: id
         }
 
         AdminApi.GetSearchEquivalentProducts(data).then(res => {
@@ -46,50 +48,6 @@ const Equivalent = ({activeKey, showData}) => {
         }).catch((err) => {
             openNotification('Xəta baş verdi' , err.response.data.message  , true )
         })
-
-        // Generate 10 items
-        let arr = [];
-        /*{
-    "idHash": "B42dtlhLBFQ=",
-    "name": "Моторное масло",
-    "code": "Pennol-10W-40-B4-1LT",
-    "unit": null,
-    "description": "130731 NULL",
-    "groupIdHash": "PG+bEiGim4s=",
-    "manufacturerName": "Pennol",
-    "price": {
-        "priceIdHash": "B42dtlhLBFQ=",
-        "value": 24.14,
-        "currencyIdHash": "xFsQPkFTRN0=",
-        "currencyName": "AZN",
-        "currencyCode": "₼",
-        "currencyDescription": "Azərbaycan manatı"
-    }
-}*/
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                product_code: `test${i + 1}`,
-                product_name: `test`,
-                seller_code: `test`,
-                seller: 'test',
-                company: 'test',
-                case: 'test',
-                foregin_selling_rate: 'test',
-                raf_address: 'test',
-                photo: 'test',
-                balance_1: 'test',
-                balance_2: 'test',
-                selling_rate: 'test',
-                buy_rate: 'test',
-                code: `code${i + 1}`,
-                name: `name${i + 1}`,
-                sale_price: `price${i + 1}`,
-                id: i + 1,
-                equivalent_id: `equivalent${i + 1}`
-            });
-        }
-        setData(arr);
     };
 
     useEffect(() => {

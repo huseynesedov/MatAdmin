@@ -138,7 +138,7 @@ export const AdminApi = {
         return BaseApi.get(apiRoutes.product.getProductGroupsById, { id: userId  });
     },
     GetProductPropertyValueTable(params) {
-        return BaseApi.get(apiRoutes.product.getProductPropertyValueTable, { params });
+        return BaseApi.get(apiRoutes.product.getProductPropertyValueTable, { ...params });
     },
     GetSearchTable(data) {
         return BaseApi.post(apiRoutes.product.getSearchTable, data);

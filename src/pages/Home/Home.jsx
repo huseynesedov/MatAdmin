@@ -192,6 +192,10 @@ const Home = () => {
     const {selectedItem} = useContext(SearchContext);
 
     useEffect(() => {
+        console.log(isNewFoto,
+        'isNewFoto')
+    }, [isNewFoto])
+    useEffect(() => {
         if (selectedItem) {
             setInputs({
                 product_code: selectedItem.product_code || '',
@@ -373,12 +377,12 @@ const Home = () => {
                             {/* <Form.Item label="Adı">
                             <Input placeholder="123544"/>
                         </Form.Item>*/}
-                            <div className="product-statss">
+                            {/*<div className="product-statss">
                                 <div>
                                     <span className='fs_16 fw_700'>Ürün No: 234</span>
                                     <span className='fs_16 mt-3 fw_700'>Entegre No: 12</span>
                                 </div>
-                            </div>
+                            </div>*/}
                         </div>
 
                         <Form.Item>
@@ -437,7 +441,7 @@ const Home = () => {
                         />
                         <Divider/>
 
-                        <General isSetData={isShowProduct}/>
+                        <General isSetData={isShowProduct} handleShowModal2={handleShowModal2}/>
 
                     </TabPane>
                     <TabPane disabled={tabDisable} tab="Eşdeğer Ürünler" key="3">
@@ -582,7 +586,7 @@ const Home = () => {
                     </TabPane>
                     <TabPane disabled={tabDisable}
                         onClick={() => {
-                            setIsNewFoto(false)
+                            setIsNewFoto(false);
                         }}
                         tab="Resim" key="9">
 
@@ -593,19 +597,23 @@ const Home = () => {
                                     <img src={Images.add_circle_blue} alt="add"/>
                                     Yeni
                                 </Button>
-                                <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
-                                    Degistir
-                                </Button>
+                                {isNewFoto && (
+                                    <Button  type="default" onClick={() => {
+                                        setIsNewFoto(false);
+                                    }} className="button-margin bg_none edit_button">
+                                        ←
+                                    </Button>
+                                )}
+
                             </Col>
                             <Col span={12} className="text-right">
                                 <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
                                         className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
+                                {/*<Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
                                         className="button-margin Save_green" disabled={isSaveDisabled}></Button>
                                 <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
                                         className="button-margin delete_red"
-                                        disabled={isDeleteDisabled}></Button>
+                                        disabled={isDeleteDisabled}></Button>*/}
                             </Col>
                         </Row>
 
