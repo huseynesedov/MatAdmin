@@ -129,6 +129,7 @@ export const apiRoutes = {
         addOem: '/admin/v1/Product/AddOem',
         addProductVehicleBrand: '/admin/v1/Product/AddProductVehicleBrand',
         deleteOem: '/admin/v1/Product/DeleteOem',
+        deleteProduct: '/admin/v1/Product/Delete',
         deleteProductVehicleBrand: '/admin/v1/Product/DeleteProductVehicleBrand',
         getCurrencyTable: '/admin/v1/Product/GetCurrencyTable',
         getManufacturersWithProductCount: '/admin/v1/Product/GetManufacturersWithProductCount',

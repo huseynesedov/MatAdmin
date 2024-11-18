@@ -15,12 +15,38 @@ export const AuthProvider = ({ children }) => {
   const [loginLoading, setLoginLoading] = useState(false);
   const navigate = useNavigate();
 
+  const openNotification = (message, description, error) => {
+    if (error) {
+      notification.error({
+        message,
+        description,
+        placement: 'topRight'
+      });
+    } else {
+      notification.info({
+        message,
+        description,
+        placement: 'topRight'
+      });
+    }
+  };
+
+  useEffect(() => {
+    const storedLoggedIn = localStorage.getItem('loggedIn');
+    if (storedLoggedIn) {
+      setLoggedIn(JSON.parse(storedLoggedIn));
+    } else {
+      setLoggedIn(false);
+    }
+    setLoading(false);
+  }, []);
+
   const AdminLogin = (userCode, passwordHash) => {
     setLoginLoading(true);
     AccountApi.AdminLogin({ userCode, passwordHash })
         .then((res) => {
           setLoggedIn(true);
-         // localStorage.setItem("loggedIn", true);
+          localStorage.setItem("loggedIn", true);
           localStorage.setItem("loggedIns", true);
           localStorage.setItem("token", res.accessToken);
           localStorage.setItem("refreshToken", res.refreshToken);
@@ -72,6 +98,7 @@ export const AuthProvider = ({ children }) => {
             loginLoading,
             AdminLogin,
             logout,
+              openNotification
           }}
       >
         {children}

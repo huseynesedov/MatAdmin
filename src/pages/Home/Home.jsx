@@ -169,6 +169,10 @@ const Home = () => {
     const handleNewFotoClick = () => {
         setIsNewFoto(true)
     };
+    const handleNewPhotoPropClick = (value) => {
+        console.log(value, 'handleNewFotoClick')
+        setIsNewFoto(value)
+    };
 
     const [inputs, setInputs] = useState({
         product_code: '',
@@ -445,7 +449,7 @@ const Home = () => {
 
                     </TabPane>
                     <TabPane disabled={tabDisable} tab="Eşdeğer Ürünler" key="3">
-                        <Row gutter={16}>
+                        {/*<Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button">
                                     <img src={Images.add_circle_blue} alt="add"/>
@@ -464,7 +468,7 @@ const Home = () => {
                                 <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
                                         className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                             </Col>
-                        </Row>
+                        </Row>*/}
 
 
                         <Row gutter={16} className="mt-4">
@@ -621,7 +625,7 @@ const Home = () => {
                             <div>
                                 <Row gutter={16} className="mt-4">
                                     <Col span={24}>
-                                        <PhotoUpload handleShow={handleShow} isSaveDisabled={isSaveDisabled}
+                                        <PhotoUpload handleShow={handleNewPhotoPropClick}  isSaveDisabled={isSaveDisabled}
                                                      isDeleteDisabled={isDeleteDisabled}/>
                                     </Col>
                                 </Row>

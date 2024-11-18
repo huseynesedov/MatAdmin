@@ -26,9 +26,9 @@ const General = ({isSetData, handleShowModal2}) => {
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
     const [vehicleBrand, setVehicleBrand] = useState([]);
     const [vehicleModel, setVehicleModel] = useState([]);
-    const [defaultCheckVehicleBrand, setDefaultCheckVehicleBrand] = useState([]);
     const [checkVehicleBrand, setCheckVehicleBrand] = useState([]);
     const [checkVehicleModel, setCheckVehicleModel] = useState([]);
+    const [checkVehicleModelHistory, setCheckVehicleModelHistory] = useState([]);
     let {id} = useParams();
 
 
@@ -66,6 +66,9 @@ const General = ({isSetData, handleShowModal2}) => {
 
     useEffect(() => {
         setShowProduct(isSetData);
+        form.resetFields()
+        resetData()
+
         joinData(isSetData)
     }, [isSetData]);
 
@@ -84,41 +87,56 @@ const General = ({isSetData, handleShowModal2}) => {
     }
 
     useEffect(() => {
-        if (checkVehicleBrand !== []) onChangeBrand(checkVehicleBrand)
-        console.log(checkVehicleBrand, 'checkVehicleBrand ss use')
+        if (checkVehicleBrand.length > 0) onChangeBrand(checkVehicleBrand)
+        console.log(checkVehicleBrand, 'checkVehicleBrand ss use');
     }, [checkVehicleBrand]);
+
+
     const onChangeBrand = (value) => {
-        CatalogApi.getVehicleModel(value).then(res => {
-            const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+        CatalogApi.getVehicleModel(value)
+            .then((res) => {
+                const data = res.map((item) => ({
+                    label: item.displayText,
+                    value: item.valueHash,
+                    productVehicleModelIdHash: '',
+                }));
+                setVehicleModel(data);
             })
-            setVehicleModel(data);
-        }).catch((err) => {
-            openNotification('Xəta baş verdi', err.response.data.message, true)
-        })
+            .catch((err) => {
+                openNotification("Xəta baş verdi", err.response?.data?.message || "Bilinmeyen hata", true);
+            });
     };
 
+    useEffect(() => {
+        checkMapRemove()
+    }, [vehicleModel]);
 
+    const checkMapRemove = () => {
+        const updatedCheckVehicleModel = checkVehicleModel.filter((item) => {
+            return vehicleModel.some((data) => data.value === item);
+        });
+
+        setCheckVehicleModel(updatedCheckVehicleModel);
+        console.log(updatedCheckVehicleModel, "final updated model");
+    };
     const joinData = (isShowProduct) => {
-
-        console.log(isShowProduct, 'isShowProduct ffff')
 
         let costPrices = isShowProduct?.price?.costPrices?.map(data => ({
             value: data.value,
             currencyIdHash: data.currencyIdHash,
-            ...(id && {priceIdHash: data.priceIdHash})
+            ...(id && {priceIdIdHash: data.priceIdHash})
         }));
 
         let purchasePrices = isShowProduct?.price?.purchasePrices?.map(data => ({
             value: data.value,
             currencyIdHash: data.currencyIdHash,
-            ...(id && {priceIdHash: data.priceIdHash})
+            ...(id && {priceIdIdHash: data.priceIdHash})
         }));
 
         let salesPrices = isShowProduct?.price?.salesPrices?.map(data => ({
             value: data.value,
             currencyIdHash: data.currencyIdHash,
-            ...(id && {priceIdHash: data.priceIdHash})
+            ...(id && {priceIdIdHash: data.priceIdHash})
         }));
 
         setSalesPrices(salesPrices);
@@ -126,49 +144,59 @@ const General = ({isSetData, handleShowModal2}) => {
         setCostPrices(costPrices);
 
 
-        /* if (isShowProduct?.productVehicleBrand?.productVehicleBrands.length > 0) {
-             setCheckVehicleBrand(isShowProduct?.productVehicleBrand.productVehicleBrands.map(data => data.vehicleBrandIdHash));
-         }
-
-         if (isShowProduct?.productVehicleModel?.productVehicleModels.length > 0) {
-             setCheckVehicleModel(isShowProduct?.productVehicleModel.productVehicleModels.map(data => data.vehicleModelIdHash))
-         }*/
-
         if (id) {
-            if (isShowProduct?.productVehicleBrand?.productVehicleBrands.length > 0) {
-                const fetchedBrands = isShowProduct.productVehicleBrand.productVehicleBrands.map((data) => {
-                    return {
-                        value: data.vehicleBrandIdHash,
-                        productVehicleBrandIdHash: data.idHash
-                    }
-                });
-                const fetchedBrandsCheck = isShowProduct.productVehicleBrand.productVehicleBrands.map((data) => data.vehicleBrandIdHash);
-                /* const updatedBrands = vehicleBrand.map((brand) => {
-                     console.log(brand, fetchedBrands, 'brand fetchedBrands')
-                     if (fetchedBrands.value === brand.value) {
-                         return {...brand, isDeleted: false}; // Gelen verilerde varsa, isDeleted=false
-                     }
-                     return brand; // Diğer durumlar etkilenmez
-                 });*/
+            // Vehicle Brand
+            if (isShowProduct?.productVehicleBrand?.productVehicleBrands?.length > 0) {
+                const fetchedBrands = isShowProduct.productVehicleBrand.productVehicleBrands.map((data) => ({
+                    value: data.vehicleBrandIdHash,
+                    productVehicleBrandIdHash: data.idHash,
+                }));
 
-                const list = vehicleBrand
+                const fetchedBrandsCheck = fetchedBrands.map((brand) => brand.value);
 
-               fetchedBrands.forEach((item) => {
-                    const index = vehicleBrand.findIndex(product => product.value === item.value)
-
-                    if (index !== -1) {
-                        list[index].productVehicleBrandIdHash = item.productVehicleBrandIdHash;
-                    }
-
+                setVehicleBrand((prevBrands) => {
+                    const updatedBrands = [...prevBrands];
+                    fetchedBrands.forEach((item) => {
+                        const index = updatedBrands.findIndex((product) => product.value === item.value);
+                        if (index !== -1) {
+                            updatedBrands[index] = {
+                                ...updatedBrands[index],
+                                productVehicleBrandIdHash: item.productVehicleBrandIdHash,
+                            };
+                        }
+                    });
+                    return updatedBrands;
                 });
 
-                console.log(list, 'list list list list ')
+                console.log(fetchedBrandsCheck, 'fetchedBrandsCheck fetchedBrandsCheck')
 
-
-
-                setVehicleBrand(list); // Güncellenmiş liste
                 setCheckVehicleBrand(fetchedBrandsCheck);
-                setDefaultCheckVehicleBrand(fetchedBrandsCheck)
+            }
+            if (isShowProduct?.productVehicleModel?.productVehicleModels?.length > 0) {
+                const fetchedModels = isShowProduct.productVehicleModel.productVehicleModels.map((data) => ({
+                    value: data.vehicleModelIdHash,
+                    productVehicleModelIdHash: data.idHash,
+                }));
+
+                const fetchedModelsCheck = fetchedModels.map((model) => model.value);
+
+                setVehicleModel((prevModels) => {
+                    const updatedModels = [...prevModels];
+                    fetchedModels.forEach((item) => {
+                        const index = updatedModels.findIndex((product) => product.value === item.value);
+                        if (index !== -1) {
+                            updatedModels[index] = {
+                                ...updatedModels[index],
+                                productVehicleModelIdHash: item.productVehicleModelIdHash,
+                            };
+                        }
+                    });
+                    return updatedModels;
+                });
+
+                console.log(fetchedModelsCheck, 'fetchedModelsCheck fetchedModelsCheck fetchedModelsCheck v ')
+                setCheckVehicleModel(fetchedModelsCheck);
+                setCheckVehicleModelHistory(fetchedModels);
             }
         } else {
 
@@ -191,30 +219,14 @@ const General = ({isSetData, handleShowModal2}) => {
             setCheckVehicleBrand(fetchedBrands); // Seçili markalar
         }*/
 
-        if (isShowProduct?.productVehicleModel?.productVehicleModels.length > 0) {
-            const fetchedModels = isShowProduct.productVehicleModel.productVehicleModels.map((data) => data.vehicleModelIdHash);
 
-            // Gelen verilerle vehicleModel'i güncelle
-            const updatedModels = vehicleModel.map((model) => {
-                if (fetchedModels.includes(model.value)) {
-                    return {...model, isDeleted: false}; // Gelen verilerde varsa, isDeleted=false
-                }
-                return model; // Diğer durumlar etkilenmez
-            });
+        if (productPropertys && isShowProduct?.productPropertyValue) {
+            const productProp = productPropertys.filter(
+                (r) => r.label === isShowProduct.productPropertyValue
+            );
 
-            setVehicleModel(updatedModels); // Güncellenmiş liste
-            setCheckVehicleModel(fetchedModels); // Seçili modeller
+            setproductPropertyValue(productProp);
         }
-
-
-        console.log(productPropertys, 'productPropertys')
-
-        if (productPropertys) {
-            const productProp = productPropertys.filter(r => r.label === isShowProduct.productPropertyValue)
-
-            setproductPropertyValue(productProp)
-        }
-
 
 
         let shelf
@@ -260,6 +272,9 @@ const General = ({isSetData, handleShowModal2}) => {
         form.setFieldsValue(data)
     }
 
+    const joinModel = () => {
+
+    }
 
     const productTypeLists = () => {
         CatalogApi.GetProductTypeList().then(res => {
@@ -314,72 +329,162 @@ const General = ({isSetData, handleShowModal2}) => {
     }
 
     const onProductTypeIdHash = (value) => {
-        console.log(`selected ${value}`, shelfLists);
         form.setFieldsValue({
             productTypeIdHash: value,
         });
     };
     const onChangeTermIdHash = (value) => {
-        console.log(`selected ${value}`, shelfLists);
         form.setFieldsValue({
             paymentTermIdHash: value,
         });
     };
     const onSearch = (value) => {
-
+        let brand, model
         let prices = {
             costPrices,
             purchasePrices,
             salesPrices
         }
 
-        console.log(checkVehicleBrand, 'checkVehicleBrand')
+
+        if (id) {
+            let getBrands = [];
+
+            vehicleBrand.forEach((item) => {
+                if (item.productVehicleBrandIdHash) {
+                    getBrands.push(item);
+                }
+            });
+
+            const difference = getBrands
+                .filter((item1) => !checkVehicleBrand.some((item2) => item1.value === item2))
+                .map((item) => ({
+                    ...item,
+                    isDeleted: true,
+                    isTecDoc: false,
+                    isDomesticVehicle: false,
+                }));
 
 
-        let model = checkVehicleModel.map(data => {
-            return {
-                vehicleModelIdHash: data,
+            const brandsLists = [];
+
+            checkVehicleBrand.forEach((item) => {
+                const brandsList = vehicleBrand.find((item1) => item1.value === item);
+                if (brandsList) {
+                    brandsLists.push({
+                        productVehicleBrandIdHash: brandsList.productVehicleBrandIdHash,
+                        vehicleBrandIdHash: brandsList.value,
+                        isDeleted: false,
+                        isTecDoc: false,
+                        isDomesticVehicle: false,
+                    });
+                }
+            });
+
+            if (difference.length > 0) {
+                brandsLists.push(...difference);
             }
-        })
-        let brand = checkVehicleBrand.map(data => {
-            return {
-                vehicleBrandIdHash: data,
-                isTecDoc: false,
-                isDomesticVehicle: false
+
+
+            console.log(brandsLists, 'brandsLists')
+
+
+            let getModel = [];
+
+            vehicleModel.forEach((item) => {
+                if (item.productVehicleModelIdHash) {
+                    getModel.push(item);
+                }
+            });
+            const differenceModel = getModel.filter((item1) => !checkVehicleModel.some((item2) => item1.value === item2))
+                .map((item) => ({
+                    ...item,
+                    isDeleted: true,
+                }));
+
+            console.log(differenceModel, 'differenceModel')
+
+
+            const modelsLists = [];
+
+            checkVehicleModel.forEach((item) => {
+                const modelsList = vehicleModel.find((item1) => item1.value === item);
+                if (modelsList) {
+                    modelsLists.push({
+                        productVehicleModelIdHash: modelsList.productVehicleModelIdHash,
+                        vehicleModelIdHash: modelsList.value,
+                        isDeleted: false,
+                    });
+                }
+            });
+
+
+            checkVehicleModelHistory.forEach((item) => {
+                const index = modelsLists.findIndex((product) => product.vehicleModelIdHash === item.value);
+                if (index !== -1) {
+                    modelsLists[index] = {
+                        ...modelsLists[index],
+                        productVehicleModelIdHash: item.productVehicleModelIdHash
+                    };
+                } else {
+                    let data = {
+                        productVehicleModelIdHash: item.productVehicleModelIdHash,
+                        vehicleModelIdHash: item.value,
+                        isDeleted: true,
+                    }
+                    modelsLists.push(data)
+                }
+            });
+
+
+            if (differenceModel.length > 0) {
+                modelsLists.push(...differenceModel);
             }
-        })
+            console.log(modelsLists, 'modelsLists')
 
-        console.log(checkVehicleBrand, 'checkVehicleBrand checkVehicleBrand')
+            brand = brandsLists;
+            model = modelsLists
 
 
-        console.log(productPropertyVal, 'productPropertyVal');
+        } else {
+            model = checkVehicleModel.map(data => {
+                return {
+                    vehicleModelIdHash: data,
+                }
+            })
+            brand = checkVehicleBrand.map(data => {
+                return {
+                    vehicleBrandIdHash: data,
+                    isTecDoc: false,
+                    isDomesticVehicle: false
+                }
+            })
+        }
 
-       /* let productProperti = productPropertyVal.map(data => {
-            return {
-                propertyValueIdHash: productPropertyVal,
-            }
-        })*/
+        /* let productProperti = productPropertyVal.map(data => {
+             return {
+                 propertyValueIdHash: productPropertyVal,
+             }
+         })*/
 
 
         let data = {...value, ...{productVehicleBrands: brand}, ...{productVehicleModels: model}, ...{price: prices},}
-        console.log(value, data, prices, 'datassss')
 
         if (id) {
             AdminApi.UpdateProduct({...data, ...{idHash: id, code: isShowProduct?.code}}).then(res => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yeniləndi`, false)
             }).catch((err) => {
-                openNotification('Xəta baş verdi', err.response.data.message, true)
+                openNotification('Xəta baş verdi', '-', true)
             }).finally((r) => {
                 /* resetData()
                  isEdit()*/
             })
 
         } else {
-            AdminApi.AddProduct({...data, ...{productProperties: [{ propertyValueIdHash: productPropertyVal}]}}).then(res => {
-                console.log(res, 'alalal qoyma ')
+            AdminApi.AddProduct({...data, ...{productProperties: [{propertyValueIdHash: productPropertyVal}]}}).then(res => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yaradıldı`, false)
             }).catch((err) => {
-                openNotification('Xəta baş verdi', err.response.data.message, true)
+                openNotification('Xəta baş verdi', '-', true)
             }).finally((r) => {
                 /* resetData()
                  isEdit()*/
@@ -403,14 +508,12 @@ const General = ({isSetData, handleShowModal2}) => {
         form.setFieldsValue({
             productShelves: shelfData
         });
-        console.log(shelfData, 'shelfData shelfData shelfData shelfData')
     }, [shelfData, form]);
 
     const handleShelfChange = (value, index, field) => {
         const newData = [...shelfData];
         newData[index][field] = value;
         setShelfData(newData);
-        console.log()
     };
 
 
@@ -439,7 +542,6 @@ const General = ({isSetData, handleShowModal2}) => {
     };
 
     const handleRemovePrice = (setPriceFn, prices, index) => {
-        console.log(setPriceFn, prices, index, 'setPriceFn, prices, index')
         const updatedPrices = [...prices];
 
         updatedPrices.splice(index, 1);
@@ -510,7 +612,6 @@ const General = ({isSetData, handleShowModal2}) => {
 
 
     const manufacturerIdHash = (value) => {
-        console.log(`selected ${value}`, shelfLists);
 
         form.setFieldsValue({
             manufactureIdHash: value,
@@ -526,6 +627,7 @@ const General = ({isSetData, handleShowModal2}) => {
         setproductPropertyValue([]);
         setCheckVehicleModel([]);
         setShelfData([]);
+        setCheckVehicleModelHistory([]);
 
     }
 
@@ -540,12 +642,7 @@ const General = ({isSetData, handleShowModal2}) => {
     };
 
     const handleModelChange = (selectedValues) => {
-        const updatedModels = vehicleModel.map((model) => ({
-            ...model,
-            isDeleted: !selectedValues.includes(model.value), // Seçili değilse isDeleted true
-        }));
-        setCheckVehicleModel(selectedValues); // Seçili modelleri güncelle
-        setVehicleModel(updatedModels); // Güncellenmiş modeller
+        setCheckVehicleModel(selectedValues);
     };
 
 // Select'ten seçim kaldırma (isDeleted işlevselliği)
@@ -560,71 +657,21 @@ const General = ({isSetData, handleShowModal2}) => {
         const updatedModels = vehicleModel.map((model) =>
             model.value === modelId ? {...model, isDeleted: true} : model
         );
-        setVehicleModel(updatedModels);
+        /* setVehicleModel(updatedModels);*/
     };
 
-// Gönderilecek veriyi hazırlama
-    const prepareDataForSubmission = () => {
-        let brand, model;
+    const deleteProduct = () => {
+        /*AdminApi.DeleteOem*/
+        AdminApi.deleteProduct(id).then(res => {
+            console.log(res.status, 'res')
+            form.resetFields()
+            resetData()
+            openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
+        }).catch((err) => {
+            openNotification('Xəta baş verdi', err.response.data.message, true)
+        })
+    }
 
-        if (id) {
-
-            let getBrands = []
-
-            vehicleBrand.forEach((item, index) => {
-                if (item.productVehicleBrandIdHash) {
-                    getBrands.push(item)
-                }
-            });
-
-
-            const uniqueToProducts = getBrands.filter(
-                product1 => !checkVehicleBrand.some(product2 => product1 === product2.value) // id'ye göre karşılaştırma
-            );
-
-            console.log(uniqueToProducts, ' alalalal');
-            console.log(vehicleBrand, ' www');
-
-
-            // Edit Durumu
-            brand = vehicleBrand.map((data) => ({
-                productVehicleBrandIdHash: data.productVehicleBrandIdHash || "",
-                vehicleBrandIdHash: data.value,
-                isTecDoc: false, // Varsayılan false
-                isDomesticVehicle: false, // Varsayılan false
-                isDeleted: data.isDeleted || false,
-            }));
-
-            model = vehicleModel.map((data) => ({
-                productVehicleModelIdHash: data.productVehicleModelIdHash || "",
-                vehicleModelIdHash: data.value,
-                isDeleted: data.isDeleted || false,
-            }));
-        } else {
-            // Add Durumu
-            brand = vehicleBrand.map((data) => ({
-                vehicleBrandIdHash: data.value,
-                isTecDoc: true, // Varsayılan true
-                isDomesticVehicle: true, // Varsayılan true
-            }));
-
-            model = vehicleModel.map((data) => ({
-                vehicleModelIdHash: data.value,
-            }));
-        }
-
-        return {
-            productVehicleBrands: brand,
-            productVehicleModels: model,
-        };
-    };
-
-// Gönderme işlemi
-    const handleSubmit = () => {
-        const requestData = prepareDataForSubmission();
-        console.log("Gönderilecek Veri:", requestData);
-        // Burada API çağrısı yapılabilir
-    };
 
     return (
         <>
@@ -640,7 +687,8 @@ const General = ({isSetData, handleShowModal2}) => {
                             <img src={Images.add_circle_blue} alt="add"/>
                             Yeni
                         </Button>
-                        <Button onClick={isEdit}  disabled={true} type="default" className="button-margin bg_none edit_button">
+                        <Button onClick={isEdit} disabled={!id} type="default"
+                                className="button-margin bg_none edit_button">
                             <img src={Images.edit_green} alt="edit"/>
                             Degistir
                         </Button>
@@ -653,7 +701,8 @@ const General = ({isSetData, handleShowModal2}) => {
                                 icon={<img src={Images.Save_green} alt="save"/>}
                                 className="button-margin Save_green"
                         ></Button>
-                        <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
+                        <Button onClick={deleteProduct} disabled={!id} type="default"
+                                icon={<img src={Images.delete_red} alt="delete"/>}
                                 className="button-margin delete_red"></Button>
                     </Col>
                 </Row>
@@ -673,14 +722,7 @@ const General = ({isSetData, handleShowModal2}) => {
                                        style={{width: "240px", float: 'right'}}
                                        placeholder="name"/>
                             </Form.Item>
-                            {/*
-           <Form.Item name="manufacturerName" label="Üretici">
-                                <Input className='position-relative'
-                                       disabled={isDisabled}
-                                       style={{width: "240px", float: 'right'}}
-                                       placeholder="12356789"/>
-                            </Form.Item>
-*/}
+
 
                             <Form.Item name="manufactureIdHash" label="Üretici Bilgileri">
                                 <Select
@@ -695,19 +737,11 @@ const General = ({isSetData, handleShowModal2}) => {
                                     options={manufacturerList}/>
                             </Form.Item>
 
-                            {/*
-                                        <img src={Images.Search_blue} className='position-absolute'
-                                             style={{right: "10px", top: "6px"}}/>*/}
                             <Form.Item name="manufacturerCode" label="Üretici Kodu">
                                 <Input
                                     disabled={isDisabled}
                                     style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
-                            {/*<Form.Item name="productPropertyValue" label="Birim">
-                                <Input
-                                    disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}}/>
-                            </Form.Item>*/}
 
                             <Form.Item label="Birim">
                                 <Select
@@ -761,73 +795,6 @@ const General = ({isSetData, handleShowModal2}) => {
                             <div className="Line_E2"></div>
 
                             <div className="mt-3">
-                                {/* <Form.Item name="productShelf" label="Adress">
-                                        <div className='d-flex justify-content-end'>
-                                            <Select
-                                                style={{width: "240px"}}
-                                                showSearch
-                                                placeholder="Select a person"
-                                                optionFilterProp="label"
-                                                onChange={onChange}
-                                                onSearch={onSearch}
-                                                filterOption={(input, option) =>
-                                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                }
-                                                options={shelfLists}
-                                            />
-                                        </div>
-                                    </Form.Item>
-*/}
-                                {/*<Form.List name="productShelves">
-                                    {(fields, {add, remove}) => (
-                                        <>
-                                            {fields.map(({key, name, fieldKey, ...restField}) => (
-                                                <Space key={key} style={{display: 'flex', marginBottom: 8}}
-                                                       align="baseline">
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'shelfIdHash']}
-                                                        fieldKey={[fieldKey, 'shelfIdHash']}
-                                                        label="Adress"
-                                                        rules={[{
-                                                            required: true,
-                                                            message: 'Lütfen bir Shelf ID seçiniz'
-                                                        }]}
-                                                    >
-                                                        <Select
-                                                            className="w-100"
-                                                            showSearch
-                                                            placeholder="Bir raf seçiniz"
-                                                            optionFilterProp="label"
-                                                            filterOption={(input, option) =>
-                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                            }
-                                                            options={shelfLists}
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'quantity']}
-                                                        fieldKey={[fieldKey, 'quantity']}
-                                                        label="Sayı"
-                                                        rules={[{required: true, message: 'Lütfen Quantity giriniz'}]}
-                                                    >
-                                                        <InputNumber className="w-100" min={0} placeholder="Quantity"/>
-                                                    </Form.Item>
-
-                                                    <MinusCircleOutlined onClick={() => remove(name)}/>
-                                                </Space>
-                                            ))}
-
-                                            <Form.Item>
-                                                <Button type="dashed" onClick={() => add()} icon={<PlusOutlined/>}>
-                                                    Raf Ekle
-                                                </Button>
-                                            </Form.Item>
-                                        </>
-                                    )}
-                                </Form.List>*/}
                                 <Form.List name="productShelves"
                                            disabled={isDisabled}>
                                     {(fields, {add, remove}) => (
@@ -963,10 +930,6 @@ const General = ({isSetData, handleShowModal2}) => {
                                         options={vehicleModel}
                                     />
                                 </Form.Item>
-
-                                {/*<Button type="primary" onClick={handleSubmit}>
-                                    Kaydet
-                                </Button>*/}
                             </div>
                         </Card>
                         <Card className="info-card" title="Diğer Bilgiler">
@@ -1001,11 +964,7 @@ const General = ({isSetData, handleShowModal2}) => {
                                              disabled={isDisabled}
                                              style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
-                            {/* <Form.Item label="Kodu Grubu">
-                                <Input
-                                    disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}} placeholder="12356789"/>
-                            </Form.Item>*/}
+
                             <h4 className='t_44 mt-4 fs_16 fw_600'>
                                 Bakiye
                             </h4>
@@ -1309,7 +1268,7 @@ const General = ({isSetData, handleShowModal2}) => {
                                 {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
                                 {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
                             </Form>
-                           {/* <Form.Item name="discount" label="Endirim">
+                            {/* <Form.Item name="discount" label="Endirim">
                                 <InputNumber min={0} placeholder="Value"
                                              style={{width: '100%'}}/>
                             </Form.Item>*/}

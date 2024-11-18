@@ -1,8 +1,12 @@
-import {useEffect, useState} from 'react';
-import {Checkbox, Table} from 'antd';
+import React, {useEffect, useState} from 'react';
+import {Checkbox, Table, Modal} from 'antd';
 import {AdminApi} from "../../../../api/admin.api";
 import {useParams} from "react-router-dom";
 import {useAuth} from "../../../../AuthContext";
+import {ExclamationCircleFilled} from "@ant-design/icons";
+import Images from "../../../../assets/images/js/Images";
+
+const { confirm } = Modal;
 
 const Equivalent = (activeKey) => {
     const [data, setData] = useState([]);
@@ -23,6 +27,7 @@ const Equivalent = (activeKey) => {
             console.log(res, 'photo list')
             let data = res.map(da => {
                 return {
+                    id: da.file.idHash,
                     key: da.productFileIdHash,
                     foto: da.file.path,
                     foto_name: da.file.visibleName,
@@ -33,6 +38,36 @@ const Equivalent = (activeKey) => {
             openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     }
+
+    const showDeleteConfirm = (id) => {
+        console.log(id, ';;;')
+        confirm({
+            title: 'Are you sure delete this task?',
+            icon: <ExclamationCircleFilled />,
+            content: 'Some descriptions',
+            okText: 'Sil',
+            okType: 'danger',
+            cancelText: 'Legv et',
+            onOk() {
+                console.log('OK', id);
+                handleDelete(id);
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    };
+
+    const handleDelete = (id) => {
+        /*AdminApi.DeleteOem*/
+        AdminApi.deleteProductPhoto(id).then(res => {
+            console.log(res.status, 'res')
+            openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
+        }).catch((err) => {
+            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+        })
+        console.log(id, 'sss')
+    };
 
     const columns = [
         {
@@ -61,7 +96,21 @@ const Equivalent = (activeKey) => {
             key: 'foto_name',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
-        }
+        },
+        {
+            title: '',
+            width: 1,
+            dataIndex: 'key',
+            key: 'key',
+            render: (_, record) => (
+                <img
+                    src={Images.delete_red}
+                    alt="Delete"
+                    onClick={() => showDeleteConfirm(record.key)}
+                    style={{ cursor: 'pointer' }}
+                />
+            ),
+        },
     ];
 
     return (

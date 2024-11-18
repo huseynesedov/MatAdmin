@@ -3,27 +3,29 @@ import { Upload, Button, Progress, Input, Row, Col, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {ProductApi} from "../../../../api/product.api";
 import {useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
 
 
-const PhotoUpload = () => {
+const PhotoUpload = ({handleShow}) => {
     const [fileList, setFileList] = useState([]);
     const [description, setDescription] = useState('');
     let { id } = useParams();
+    const { openNotification } = useAuth()
+
 
     // Dosyayı Base64'e çeviren fonksiyon
     const getBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]); // Sadece base64 string alıyoruz
+            reader.onload = () => resolve(reader.result.split(',')[1]);
             reader.onerror = (error) => reject(error);
         });
     };
 
     const handleUpload = async ({ file, fileList }) => {
-        const selectedFile = file.originFileObj || file; // originFileObj varsa onu kullan, yoksa doğrudan file'i kullan
+        const selectedFile = file.originFileObj || file;
 
-        // Dosyayı Base64'e çevirip listeye ekle
         try {
             const base64Content = await getBase64(selectedFile);
             const updatedFileList = fileList.map(item =>
@@ -59,6 +61,10 @@ const PhotoUpload = () => {
 
         ProductApi.AddProductFile(formData).then(res => {
             console.log(res, 'payload res payload')
+            openNotification('Uğurlu əməliyyat..', `-`, false)
+            handleShow(false)
+        }).catch(err => {
+            openNotification('Xəta baş verdi', '-', true)
         })
 
         console.log(payload, 'payloadpayloadpayloadpayload')
@@ -93,7 +99,7 @@ const PhotoUpload = () => {
                         <div style={{ border: '1px solid gray', marginBottom: '10px', padding: '8px 10px' }} key={file.uid}>
                             <div style={{ flex: 1 }}>{file.name}</div>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
-                                <Progress percent={Math.round((file.percent || 0) * 100)} style={{ flex: 4 }} />
+                                <Progress percent={100} style={{ flex: 4 }} />
                                 <Button type="text" onClick={() => handleRemove(file)} danger style={{ marginLeft: 8 }}>X</Button>
                             </div>
                         </div>

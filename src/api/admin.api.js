@@ -116,6 +116,9 @@ export const AdminApi = {
     DeleteOem(userId) {
         return BaseApi.delete(apiRoutes.product.deleteOem, { ...{ id: userId } });
     },
+    deleteProduct(userId) {
+        return BaseApi.delete(apiRoutes.product.deleteProduct, { ...{ id: userId } });
+    },
     DeleteProductVehicleBrand(userId) {
         return BaseApi.delete(apiRoutes.product.deleteProductVehicleBrand, userId );
     },
@@ -124,6 +127,9 @@ export const AdminApi = {
     },
     GetProductFileByProductId(userId) {
         return BaseApi.get(apiRoutes.photos.getProductFileByProductId, {...userId});
+    },
+    deleteProductPhoto(userId) {
+        return BaseApi.delete(apiRoutes.photos.deleteByProductFileId, { ...{ id: userId } });
     },
     GetVehicleBrandProductId(params) {
         return BaseApi.get(apiRoutes.adminProduct.getVehicleBrandListByProductId, { ...params });

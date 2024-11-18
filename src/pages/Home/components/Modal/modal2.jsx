@@ -94,7 +94,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
                 photo: res.photoCheck ? 'Var' : 'Yoxdu',
                 balance_1: res.balance,
                 balance_2: 'test',
-                selling_rate: res.price.salesPrices[0].formattedPrice + ' ' + res.price.salesPrices[0].currencyCode || '-',
+                selling_rate: res?.price?.salesPrices[0]?.formattedPrice + ' ' + res?.price?.salesPrices[0]?.currencyCode || '-',
                 buy_rate: 'test',
             }
         })
@@ -351,11 +351,11 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
                                             <Input className='position-relative' placeholder="Kod"/>
                                         </Form.Item>
                                     </Col>
-                                    <Col span={8} className="mb-0">
+                                   {/* <Col span={8} className="mb-0">
                                         <Form.Item name="code">
                                             <Input className='position-relative' placeholder="Ürün Kodu"/>
                                         </Form.Item>
-                                    </Col>
+                                    </Col>*/}
                                     {/*<Col span={8}>
                                         <Form.Item name="ShelfCode">
                                             <Input placeholder="Raf Adresi" />
