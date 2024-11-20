@@ -29,9 +29,9 @@ const Qem = ({activeKey}) => {
     const showDeleteConfirm = (id) => {
         console.log(id, ';;;')
         confirm({
-            title: 'Are you sure delete this task?',
+            title: 'Silməyə əminsinizmi?',
             icon: <ExclamationCircleFilled />,
-            content: 'Some descriptions',
+            content: '',
             okText: 'Sil',
             okType: 'danger',
             cancelText: 'Legv et',
@@ -127,7 +127,6 @@ const Qem = ({activeKey}) => {
             openNotification('Xəta baş verdi' , err.response.data.message  , true )
         })
 
-     //   setOemType(oemTypes)
 
     }
 
@@ -144,15 +143,7 @@ const Qem = ({activeKey}) => {
         },
     };
 
-   /* const onSelectAllChange = (e) => {
-        const checked = e.target.checked;
-        const allRowKeys = checked ? data.map((item) => item.key) : [];
-        setSelectedRowKeys(allRowKeys);
-        setSelectAll(checked);
-    };*/
-
     const handleDelete = (id) => {
-        /*AdminApi.DeleteOem*/
         AdminApi.DeleteOem(id).then(res => {
             console.log(res.status, 'res')
             getOemsByTypeLists(oemType[0].valueHash)
@@ -160,7 +151,6 @@ const Qem = ({activeKey}) => {
         }).catch((err) => {
             openNotification('Xəta baş verdi' , err.response.data.message  , true )
         })
-        console.log(id, 'sss')
     };
 
     const columns = [
@@ -201,7 +191,7 @@ const Qem = ({activeKey}) => {
                 />
             ),
         },
-    ];  /*onClick={() => handleDelete(record.idHash)}*/
+    ];
     const [loading, setLoading] = useState(false);
 
     const onFinish = (values) => {
@@ -213,21 +203,22 @@ const Qem = ({activeKey}) => {
             oemTypeIdHash: oemType[0].valueHash
         };
 
-        // API isteği
         AdminApi.AddOem(data)
             .then((response) => {
                 console.log('Başarılı:', response);
                 getOemsByTypeLists(oemType[0].valueHash)
                 form.resetFields();
-                // Başarılı işlem bildirimi
             })
             .catch((error) => {
                 console.error('Hata:', error);
-                // Hata bildirimi
             })
             .finally(() => {
                 setLoading(false);
             });
+    };
+
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
     };
     return (
         <>
@@ -236,63 +227,54 @@ const Qem = ({activeKey}) => {
                 columns={columns}
                 dataSource={data}
                 rowSelection={rowSelection}
-                pagination={false} // Pagination'ı devre dışı bırak
+                pagination={false}
 
             />
 
-            <div className="d-flex align-items-center justify-content-center mt-4" style={{width: "967px"}}>
-                <Form form={form} layout="inline" onFinish={onFinish}>
-                 {/*   <Form.Item
-                        name="carBrand"
-                        label="Araç Marka"
-                        rules={[{required: true, message: 'Araç markasını girin!'}]}
-                    >
-                        <Input style={{width: "240px"}} placeholder="Araç Markası"/>
-                    </Form.Item>*/}
+            <div className="d-flex align-items-center justify-content-center mt-4 w-100" style={{width: "967px"}}>
+                <Form form={form} layout="inline" onFinish={onFinish}
+                      onFinishFailed={onFinishFailed}>
                     <Form.Item
-                        name="vehicleBrandIdHash" label="Marka">
+                        name="vehicleBrandIdHash" label="Marka" rules={[{
+                        required: true,
+                        message: 'Zəhmət olmasa məlumat doldurun.'
+                    }]}>
                         <Select
                             style={{width: "240px", float: 'right'}}
                             placeholder="Bir marka seçin"
                             optionFilterProp="label"
                             showSearch
-                            // `value` prop'u otomatik olarak `Form.Item` ile eşleşir, bu yüzden ayrıca belirtmeye gerek yok
                             filterOption={(input, option) =>
                                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                             }
                             options={vehicleBrand}
                         >
-                            {/* {vehicleBrand.map((brand) => (
-                                            <Option key={brand.value} value={brand.value} label={brand.label}>
-                                                {brand.label}
-                                            </Option>
-                                        ))}*/}
                         </Select>
                     </Form.Item>
                     <Form.Item
-                        name="productGroupIdHash" label="Group">
+                        name="productGroupIdHash" label="Group" rules={[{
+                        required: true,
+                        message: 'Zəhmət olmasa məlumat doldurun.'
+                    }]}>
                         <Select
                             style={{width: "240px", float: 'right'}}
                             placeholder="Bir group seçin"
                             optionFilterProp="label"
                             showSearch
-                            // `value` prop'u otomatik olarak `Form.Item` ile eşleşir, bu yüzden ayrıca belirtmeye gerek yok
                             filterOption={(input, option) =>
                                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                             }
                             options={groupList}
                         >
-                            {/* {vehicleBrand.map((brand) => (
-                                            <Option key={brand.value} value={brand.value} label={brand.label}>
-                                                {brand.label}
-                                            </Option>
-                                        ))}*/}
                         </Select>
                     </Form.Item>
                     <Form.Item
                         name="oemCode"
                         label="OEM No"
-                        rules={[{required: true, message: 'OEM numarasını girin!'}]}
+                        rules={[{
+                            required: true,
+                            message: 'Zəhmət olmasa məlumat doldurun.'
+                        }]}
                     >
                         <Input style={{width: "240px"}} placeholder="OEM No"/>
                     </Form.Item>
@@ -305,33 +287,6 @@ const Qem = ({activeKey}) => {
                 </Form>
             </div>
 
-            {/*<div className='d-flex align-items-center justify-content-between'
-                 style={{width: "967px"}}>
-                <div className='d-flex justify-content-between mt-5' style={{width: "788px"}}>
-                    <Form layout="Inline">
-                        <Form.Item label="Arac Marka">
-                            <Input style={{width: "240px"}} placeholder="123544"/>
-                        </Form.Item>
-                    </Form>
-                    <Form layout="Inline">
-
-                        <Form.Item label="Qem No">
-                            <Input style={{width: "240px"}} placeholder="123544"/>
-                        </Form.Item>
-                    </Form>
-                </div>
-                <img
-                    src={Images.delete_red}
-                    alt="Delete"
-                    style={{cursor: 'pointer'}}
-                />
-            </div>
-            <div className="d-flex justify-content-center">
-                <Button type="default" className="button-margin bg_none add_button ">
-                    <img src={Images.add_circle_blue} alt="add"/>
-                    Yeni Setir elave edin
-                </Button>
-            </div>*/}
         </>
     );
 }

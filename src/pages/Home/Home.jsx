@@ -559,26 +559,7 @@ const Home = () => {
                         </ Row>
                     </TabPane>
                     <TabPane disabled={tabDisable} tab="Araç Bilgileri" key="8">
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add"/>
-                                    Yeni
-                                </Button>
-                                <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
-                                    Degistir
-                                </Button>
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                            </Col>
-                        </Row>
+
 
 
                         <Row gutter={16} className="mt-4">
@@ -613,11 +594,6 @@ const Home = () => {
                             <Col span={12} className="text-right">
                                 <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
                                         className="button-margin Search_blue" onClick={handleShow}></Button>
-                                {/*<Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red"
-                                        disabled={isDeleteDisabled}></Button>*/}
                             </Col>
                         </Row>
 

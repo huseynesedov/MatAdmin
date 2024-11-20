@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Card, Checkbox, Col, Form, Input, InputNumber, Row, Select, Space} from 'antd';
+import {Button, Card, Checkbox, Col, Form, Input, InputNumber, Modal, Row, Select, Space} from 'antd';
 
 import Images from '../../../../assets/images/js/Images';
-import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
+import {ExclamationCircleFilled, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {CatalogApi} from "../../../../api/catalog.api";
 import {AdminApi} from "../../../../api/admin.api";
 import Title from "antd/es/skeleton/Title";
 import {useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from "../../../../AuthContext";
+const { confirm } = Modal;
 
 const General = ({isSetData, handleShowModal2}) => {
     const [data, setData] = useState([]);
@@ -195,8 +196,10 @@ const General = ({isSetData, handleShowModal2}) => {
                 });
 
                 console.log(fetchedModelsCheck, 'fetchedModelsCheck fetchedModelsCheck fetchedModelsCheck v ')
-                setCheckVehicleModel(fetchedModelsCheck);
-                setCheckVehicleModelHistory(fetchedModels);
+               setTimeout(() => {
+                   setCheckVehicleModel(fetchedModelsCheck);
+                   setCheckVehicleModelHistory(fetchedModels);
+               }, 1000)
             }
         } else {
 
@@ -538,7 +541,7 @@ const General = ({isSetData, handleShowModal2}) => {
             currencyIdHash: '',
             ...(id && {priceIdHash: '',}) // Eğer id varsa yeni özellikleri ekle
         };
-        setPriceFn([...prices, newPrice]);
+        setPriceFn(Array.isArray(prices) && prices.length > 0 ? [...prices, newPrice] : [newPrice]);
     };
 
     const handleRemovePrice = (setPriceFn, prices, index) => {
@@ -666,6 +669,7 @@ const General = ({isSetData, handleShowModal2}) => {
             console.log(res.status, 'res')
             form.resetFields()
             resetData()
+            navigate(`/`)
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
             openNotification('Xəta baş verdi', err.response.data.message, true)
@@ -673,9 +677,32 @@ const General = ({isSetData, handleShowModal2}) => {
     }
 
 
+    const showDeleteConfirm = (id) => {
+        console.log(id, ';;;')
+        confirm({
+            title: 'Silməyə əminsinizmi?',
+            icon: <ExclamationCircleFilled />,
+            content: '',
+            okText: 'Sil',
+            okType: 'danger',
+            cancelText: 'Legv et',
+            onOk() {
+                deleteProduct();
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    };
+
+
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    };
     return (
         <>
-            <Form form={form} onFinish={onSearch} initialValues={{isNew: false, status: false}}>
+            <Form form={form} onFinish={onSearch} initialValues={{isNew: false, status: false}}
+                  onFinishFailed={onFinishFailed}>
 
                 <Row gutter={16} className="mb-3">
                     <Col span={12}>
@@ -701,7 +728,7 @@ const General = ({isSetData, handleShowModal2}) => {
                                 icon={<img src={Images.Save_green} alt="save"/>}
                                 className="button-margin Save_green"
                         ></Button>
-                        <Button onClick={deleteProduct} disabled={!id} type="default"
+                        <Button onClick={showDeleteConfirm} disabled={!id} type="default"
                                 icon={<img src={Images.delete_red} alt="delete"/>}
                                 className="button-margin delete_red"></Button>
                     </Col>
@@ -709,14 +736,22 @@ const General = ({isSetData, handleShowModal2}) => {
                 <Row gutter={16}>
                     <Col span={12}>
                         <Card className="info-card" title="Üretici Bilgileri">
-                            <Form.Item name="code" label="Code">
+                            <Form.Item name="code" label="Code"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <Input className='position-relative'
                                        disabled={isDisabled}
                                        style={{width: "240px", float: 'right'}}
                                        placeholder="12356789"/>
                             </Form.Item>
 
-                            <Form.Item name="name" label="Name">
+                            <Form.Item name="name" label="Name"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <Input className='position-relative'
                                        disabled={isDisabled}
                                        style={{width: "240px", float: 'right'}}
@@ -724,7 +759,11 @@ const General = ({isSetData, handleShowModal2}) => {
                             </Form.Item>
 
 
-                            <Form.Item name="manufactureIdHash" label="Üretici Bilgileri">
+                            <Form.Item name="manufactureIdHash" label="Üretici Bilgileri"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <Select
                                     optionFilterProp="label"
                                     onChange={manufacturerIdHash}
@@ -737,13 +776,21 @@ const General = ({isSetData, handleShowModal2}) => {
                                     options={manufacturerList}/>
                             </Form.Item>
 
-                            <Form.Item name="manufacturerCode" label="Üretici Kodu">
+                            <Form.Item name="manufacturerCode" label="Üretici Kodu"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <Input
                                     disabled={isDisabled}
                                     style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
 
-                            <Form.Item label="Birim">
+                            <Form.Item label="Birim"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <Select
                                     style={{width: "240px", float: 'right'}}
                                     placeholder="Bir birim seçin"
@@ -762,9 +809,17 @@ const General = ({isSetData, handleShowModal2}) => {
 
                         </Card>
 
-                        <Card className="info-card " title="Grup Bilgileri">
+                        <Card className="info-card " title="Grup Bilgileri"
+                              rules={[{
+                                  required: true,
+                                  message: 'Zəhmət olmasa məlumat doldurun.'
+                              }]}>
 
-                            <Form.Item name="productTypeIdHash" label="Tip">
+                            <Form.Item name="productTypeIdHash" label="Tip"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <Select
                                     optionFilterProp="label"
                                     disabled={isDisabled}
@@ -905,7 +960,7 @@ const General = ({isSetData, handleShowModal2}) => {
                                         mode="multiple"
                                         value={checkVehicleBrand}
                                         onChange={handleBrandChange}
-                                        onDeselect={handleRemoveBrand} // Seçim kaldırıldığında tetiklenir
+                                        onDeselect={handleRemoveBrand}
                                         filterOption={(input, option) =>
                                             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                                         }
@@ -923,7 +978,7 @@ const General = ({isSetData, handleShowModal2}) => {
                                         mode="multiple"
                                         value={checkVehicleModel}
                                         onChange={handleModelChange}
-                                        onDeselect={handleRemoveModel} // Seçim kaldırıldığında tetiklenir
+                                        onDeselect={handleRemoveModel}
                                         filterOption={(input, option) =>
                                             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                                         }
@@ -942,7 +997,11 @@ const General = ({isSetData, handleShowModal2}) => {
                                     </div>
                                 </Form.Item>*/}
 
-                            <Form.Item name="paymentTermIdHash" label="Koşul Kodu">
+                            <Form.Item name="paymentTermIdHash" label="Koşul Kodu"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <Select
                                     style={{width: "240px", float: 'right'}}
                                     disabled={isDisabled}
@@ -954,12 +1013,20 @@ const General = ({isSetData, handleShowModal2}) => {
                                     options={paymentTermList}>
                                 </Select>
                             </Form.Item>
-                            <Form.Item name="minOrderAmount" label="Min.Sip.Acl">
+                            <Form.Item name="minOrderAmount" label="Min.Sip.Acl"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <InputNumber min={0}
                                              disabled={isDisabled}
                                              style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                             </Form.Item>
-                            <Form.Item name="vatRate" label="KDV">
+                            <Form.Item name="vatRate" label="KDV"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}>
                                 <InputNumber min={0}
                                              disabled={isDisabled}
                                              style={{width: "240px", float: 'right'}} placeholder="12356789"/>
@@ -971,25 +1038,24 @@ const General = ({isSetData, handleShowModal2}) => {
                             <div className="Line_E2"></div>
 
                             <div className="mt-3">
-                                <Form.Item name="balance" label="Mevcut">
+                                <Form.Item name="balance" label="Mevcut"
+                                           rules={[{
+                                               required: true,
+                                               message: 'Zəhmət olmasa məlumat doldurun.'
+                                           }]}>
                                     <InputNumber min={0}
                                                  disabled={isDisabled}
                                                  style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                                 </Form.Item>
-                                <Form.Item name="oemCode" label="Oem Code">
+                                <Form.Item name="oemCode" label="Oem Code"
+                                           rules={[{
+                                               required: true,
+                                               message: 'Zəhmət olmasa məlumat doldurun.'
+                                           }]}>
                                     <Input
                                         disabled={isDisabled}
                                         style={{width: "240px", float: 'right'}} placeholder="12356789"/>
                                 </Form.Item>
-
-                                {/*  <div className="d-flex align-items-center">
-                                    <Form.Item name="isActive"
-                                               disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
-                                               className="mb-0">
-                                        <Checkbox/>
-                                    </Form.Item>
-                                    <span className='ms-2 t_8F'>Yeni Urun</span>
-                                </div>*/}
 
                                 <div className="d-flex align-items-center">
                                     <Form.Item name="isNew"
@@ -1008,260 +1074,11 @@ const General = ({isSetData, handleShowModal2}) => {
                                     </Form.Item>
                                     <span className='ms-2 t_8F'>Katlanarak gitsin</span>
                                 </div>
-
-                                {/*<Form.Item label="Mehsul Statusu">
-                                    <div className='d-flex justify-content-end'>
-                                        <div className='d-flex align-items-center justify-content-center'>
-                                            <Checkbox name="isActive" value="A" style={{lineHeight: '32px'}}/>
-                                            <span className='ms-2 t_8F'>Yeni Urun</span>
-                                        </div>
-                                        <div
-                                            className='d-flex ms-5 me-5 align-items-center justify-content-center'>
-                                            <Checkbox name="isNew" value="A" style={{lineHeight: '32px'}}/>
-                                            <span className='ms-2 t_8F'>Aktiv</span>
-                                        </div>
-                                        <div className='d-flex align-items-center '>
-                                            <Checkbox name="" value="A" style={{lineHeight: '32px'}}/>
-                                            <span className='ms-2 t_8F'>Katlanarak gitsin</span>
-                                        </div>
-                                    </div>
-                                </Form.Item>*/}
                             </div>
 
                         </Card>
                     </Col>
                     <Col span={12}>
-                        {/* <Card className="info-card" title="Fiyat Bilgileri">
-                            <Form layout="horizontal">
-                                <Form.Item label="Satış Fiyatı">
-                                    <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "77px"}} placeholder="250$"/>
-                                        <Input className='ms-3 position-relative' style={{width: "77px"}}
-                                               disabled/>
-                                        <img className='position-absolute' style={{top: "13px", right: "10px"}}
-                                             src={Images.Down2_gray} alt=""/>
-                                    </div>
-                                </Form.Item>
-                                <Form.Item label="Alış Fiyatı">
-                                    <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "77px"}} placeholder="250$"/>
-                                        <Input className='ms-3 position-relative' style={{width: "77px"}}
-                                               disabled/>
-                                        <img className='position-absolute' style={{top: "13px", right: "10px"}}
-                                             src={Images.Down2_gray} alt=""/>
-                                    </div>
-                                </Form.Item>
-                                <Form.Item label="Motorlu Taşıtlar Vergisi">
-                                    <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "77px"}} placeholder="250$"/>
-                                        <Input className='ms-3 position-relative' style={{width: "77px"}}
-                                               disabled/>
-                                        <img className='position-absolute' style={{top: "13px", right: "10px"}}
-                                             src={Images.Down2_gray} alt=""/>
-                                    </div>
-                                </Form.Item>
-                            </Form>
-                            <Form.List name={['price', 'salesPrices']}>
-                                {(fields, {add, remove}) => (
-                                    <>
-                                        {fields.map(({key, name, fieldKey, ...restField}) => (
-                                            <Space key={key} style={{
-                                                display: 'flex',
-                                                marginBottom: 0,
-                                                justifyContent: 'space-between',
-                                                width: '100%'
-                                            }} align="baseline">
-                                                <div>
-                                                    Satış fiyatı:
-                                                </div>
-                                                <div className="d-flex align-items-center"
-                                                     style={{display: 'flex', marginBottom: 12,}}>
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'value']}
-                                                        style={{width: '100%', marginLeft: 'auto', marginBottom: 0,}}
-                                                        fieldKey={[fieldKey, 'value']}
-                                                        rules={[{required: true, message: 'Lütfen bir değer giriniz'}]}
-                                                    >
-                                                        <div className='d-flex justify-content-end'>
-                                                            <InputNumber min={0} placeholder="Value"
-                                                                         style={{width: '100%'}}/>
-                                                        </div>
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'currencyIdHash']}
-                                                        style={{marginBottom: 0, marginLeft: 8}}
-                                                        fieldKey={[fieldKey, 'currencyIdHash']}
-                                                        rules={[{
-                                                            required: true,
-                                                            message: 'Lütfen bir para birimi seçiniz'
-                                                        }]}
-                                                    >
-                                                        <Select
-                                                            style={{minWidth: 80}}
-                                                            showSearch
-                                                            optionFilterProp="label"
-                                                            filterOption={(input, option) =>
-                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                            }>
-
-                                                            {currencyLists.map((brand) => (
-                                                                <Option key={brand.value} value={brand.value}
-                                                                        label={brand.label}>
-                                                                    {brand.label}
-                                                                </Option>
-                                                            ))}
-                                                        </Select>
-                                                    </Form.Item>
-
-                                                    <MinusCircleOutlined onClick={() => remove(name)}
-                                                                         style={{marginLeft: 8}}/>
-                                                </div>
-                                            </Space>
-                                        ))}
-                                        <Form.Item>
-                                            <Button type="dashed" onClick={() => add()}
-                                                    icon={<PlusOutlined/>}>
-                                                Satış fiyatı Ekle
-                                            </Button>
-                                        </Form.Item>
-                                    </>
-                                )}
-                            </Form.List>
-
-                             Purchase Prices
-                            <Title level={4}>Purchase Prices</Title>
-                            <Form.List name={['price', 'purchasePrices']}>
-                                {(fields, {add, remove}) => (
-                                    <>
-                                        {fields.map(({key, name, fieldKey, ...restField}) => (
-                                            <Space key={key} style={{
-                                                display: 'flex',
-                                                marginBottom: 0,
-                                                justifyContent: 'space-between',
-                                                width: '100%'
-                                            }}
-                                                   align="baseline">
-                                                <div>
-                                                    Aliş fıyatı:
-                                                </div>
-                                                <div className="d-flex align-items-center"
-                                                     style={{display: 'flex', marginBottom: 12,}}>
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'value']}
-                                                        style={{width: '100%', marginLeft: 'auto', marginBottom: 0,}}
-                                                        fieldKey={[fieldKey, 'value']}
-                                                        rules={[{required: true, message: 'Lütfen bir değer giriniz'}]}
-                                                    >
-                                                        <div className='d-flex justify-content-end'>
-                                                            <InputNumber min={0} placeholder="Value"
-                                                                         style={{width: '100%'}}/>
-                                                        </div>
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'currencyIdHash']}
-                                                        style={{marginBottom: 0, marginLeft: 8, minWidth: 80}}
-                                                        fieldKey={[fieldKey, 'currencyIdHash']}
-                                                        rules={[{
-                                                            required: true,
-                                                            message: 'Lütfen bir para birimi seçiniz'
-                                                        }]}
-                                                    >
-                                                        <Select
-                                                            showSearch
-                                                            optionFilterProp="label"
-                                                            filterOption={(input, option) =>
-                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                            }
-                                                            options={currencyLists}
-                                                        />
-                                                    </Form.Item>
-
-                                                    <MinusCircleOutlined onClick={() => remove(name)}
-                                                                         style={{marginLeft: 8}}/>
-                                                </div>
-                                            </Space>
-                                        ))}
-                                        <Form.Item>
-                                            <Button type="dashed" onClick={() => add()}
-                                                    icon={<PlusOutlined/>}>
-                                                Aliş fıyatı Ekle
-                                            </Button>
-                                        </Form.Item>
-                                    </>
-                                )}
-                            </Form.List>
-
-                             Cost Prices
-                            <Title level={4}>Cost Prices</Title>
-                            <Form.List name={['price', 'costPrices']}>
-                                {(fields, {add, remove}) => (
-                                    <>
-                                        {fields.map(({key, name, fieldKey, ...restField}) => (
-                                            <Space key={key} style={{
-                                                display: 'flex',
-                                                marginBottom: 0,
-                                                justifyContent: 'space-between',
-                                                width: '100%'
-                                            }} align="baseline">
-                                                <div>
-                                                    Maaliyat:
-                                                </div>
-                                                <div className="d-flex align-items-center"
-                                                     style={{display: 'flex', marginBottom: 12,}}>
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'value']}
-                                                        fieldKey={[fieldKey, 'value']}
-                                                        style={{width: '100%', marginLeft: 'auto', marginBottom: 0,}}
-                                                        rules={[{required: true, message: 'Lütfen bir değer giriniz'}]}
-                                                    >
-                                                        <div className='d-flex justify-content-end'>
-                                                            <InputNumber min={0} placeholder="Value"
-                                                                         style={{width: '100%'}}/>
-                                                        </div>
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'currencyIdHash']}
-                                                        fieldKey={[fieldKey, 'currencyIdHash']}
-                                                        style={{marginBottom: 0, marginLeft: 8, minWidth: 80}}
-                                                        rules={[{
-                                                            required: true,
-                                                            message: 'Lütfen bir para birimi seçiniz'
-                                                        }]}
-                                                    >
-                                                        <Select
-                                                            showSearch
-                                                            optionFilterProp="label"
-                                                            filterOption={(input, option) =>
-                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                            }
-                                                            options={currencyLists}
-                                                        />
-                                                    </Form.Item>
-
-                                                    <MinusCircleOutlined onClick={() => remove(name)}
-                                                                         style={{marginLeft: 8}}/>
-                                                </div>
-                                            </Space>
-                                        ))}
-                                        <Form.Item>
-                                            <Button type="dashed" onClick={() => add()} icon={<PlusOutlined/>}>
-                                                Maaliyat ekle
-                                            </Button>
-                                        </Form.Item>
-                                    </>
-                                )}
-                            </Form.List>
-
-                        </Card>*/}
                         <Card className="info-card" title="Fiyat Bilgileri">
                             <Form layout="horizontal">
                                 {renderPriceList(salesPrices, setSalesPrices, 'Satış Fiyatı')}
@@ -1276,6 +1093,10 @@ const General = ({isSetData, handleShowModal2}) => {
 
                         <Card className="info-card" title="Ek bilgiler">
                             <Form.Item layout="horizontal" name="description" label="Mehsul Statusu"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Zəhmət olmasa məlumat doldurun.'
+                                       }]}
                                        className="mb-0">
                                 <Input.TextArea placeholder="açıklama"
                                                 disabled={isDisabled} rows={3}/>

@@ -42,9 +42,9 @@ const Equivalent = (activeKey) => {
     const showDeleteConfirm = (id) => {
         console.log(id, ';;;')
         confirm({
-            title: 'Are you sure delete this task?',
+            title: 'Silməyə əminsinizmi?',
             icon: <ExclamationCircleFilled />,
-            content: 'Some descriptions',
+            content: '',
             okText: 'Sil',
             okType: 'danger',
             cancelText: 'Legv et',
