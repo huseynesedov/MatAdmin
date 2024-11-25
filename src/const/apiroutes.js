@@ -129,6 +129,7 @@ export const apiRoutes = {
         addOem: '/admin/v1/Product/AddOem',
         addProductVehicleBrand: '/admin/v1/Product/AddProductVehicleBrand',
         deleteOem: '/admin/v1/Product/DeleteOem',
+        deleteProduct: '/admin/v1/Product/Delete',
         deleteProductVehicleBrand: '/admin/v1/Product/DeleteProductVehicleBrand',
         getCurrencyTable: '/admin/v1/Product/GetCurrencyTable',
         getManufacturersWithProductCount: '/admin/v1/Product/GetManufacturersWithProductCount',
@@ -146,8 +147,17 @@ export const apiRoutes = {
 
     adminProduct: {
         getById: '/admin/v1/Product/GetById',
+        equivalentProducts: '/admin/v1/Product/GetEquivalentProducts',
+        getOemsByType: '/admin/v1/Product/GetOemsByType',
+        getVehicleBrandListByProductId: '/admin/v1/Product/GetVehicleBrandListByProductId',
     },
 
+
+    photos: {
+        addProductFile: '/admin/v1/Product/AddProductFile',
+        getProductFileByProductId: '/admin/v1/Product/GetProductFileByProductId',
+        deleteByProductFileId: '/admin/v1/Product/DeleteByProductFileId',
+    },
 
 
 // Admin-role
@@ -200,6 +210,7 @@ export const apiRoutes = {
 
     // Catalog
     catalog: {
+        oemTypeList: '/catalog/v1/Product/GetOemTypeList',
         baseTest: '/catalog/v1/Base/Test',
         getVehicleModels: '/catalog/v1/VehicleModel/GetList',
         getProductGroupList: '/catalog/v1/Product/GetProductGroupList',
@@ -211,6 +222,7 @@ export const apiRoutes = {
         getBasketDetailStatusList: '/catalog/v1/BasketDetailStatus/GetBasketDetailStatusList',
         getPaymentTypeList: '/catalog/v1/PaymentType/GetPaymentTypeList',
         getPaymentTermList: '/catalog/v1/PaymentTerm/GetPaymentTermList',
+        getProductGroupListByProductId: '/catalog/v1/Product/GetProductGroupListByProductId',
     },
     storage: {
         storageGetList: '/catalog/v1/Storage/GetList',

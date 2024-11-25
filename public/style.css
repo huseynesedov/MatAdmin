@@ -22,7 +22,6 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 1500px;
     margin: 0 auto;
 }
 a{
@@ -502,4 +501,17 @@ a{
 
 .fs_100 {
     font-size: 100px;
+}
+
+@media (min-width: 1199px) {
+    .main-container {
+        min-width: 1199px;
+    }
+}
+
+.main {
+    width: calc(100% - 300px);
+}
+.ant-form-item-explain-error {
+    float: right !important;
 }

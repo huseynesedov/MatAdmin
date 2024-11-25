@@ -1,45 +1,59 @@
 import { useEffect, useState } from 'react';
 import { Table} from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
+import {useNavigate, useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
 
-const Equivalent = () => {
+const Equivalent = ({activeKey, showData}) => {
     const [data, setData] = useState([]);
+
+    let { id } = useParams();
+
+    const { openNotification } = useAuth()
+
+    const navigate = useNavigate();
 
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
     const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                product_code: `test${i + 1}`,
-                product_name: `test`,
-                seller_code: `test`,
-                seller: 'test',
-                company: 'test',
-                case: 'test',
-                foregin_selling_rate: 'test',
-                raf_address: 'test',
-                photo: 'test',
-                balance_1: 'test',
-                balance_2: 'test',
-                selling_rate: 'test',
-                buy_rate: 'test',
-                code: `code${i + 1}`,
-                name: `name${i + 1}`,
-                sale_price: `price${i + 1}`,
-                id: i + 1,
-                equivalent_id: `equivalent${i + 1}`
-            });
+
+        const pathname = window.location.pathname;
+
+        const data = {
+            pagingRequest: {
+                page: 0,
+                pageSize: 10,
+                filters: []
+            },
+            productIdHash: id
         }
-        setData(arr);
+
+        AdminApi.GetSearchEquivalentProducts(data).then(res => {
+            console.log(res, 'ekvivalent ssss')
+            const data = res.data.map(rest => {
+                return {
+                    seller: rest.manufacturerName,
+                    code: rest.code,
+                    name: rest.name,
+                    unit: rest.unit,
+                    sale_price: rest.price.value,
+                    foregin_selling_rate: rest.price.currencyName,
+                    id: rest.idHash,
+                    equivalent_id: rest.groupIdHash,
+                }
+            })
+            setData(data)
+        }).catch((err) => {
+            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+        })
     };
 
     useEffect(() => {
         createData();
-    }, []);
+        console.log(data)
+    }, [activeKey]);
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
@@ -65,13 +79,6 @@ const Equivalent = () => {
     };
 
     const columns = [
-        {
-            title: "",
-            width: 10,
-            dataIndex: 'checkbox',
-            key: 'checkbox',
-            
-        },
         {
             title: 'Uretici',
             width: 77,
@@ -99,8 +106,8 @@ const Equivalent = () => {
         {
             title: 'Birim',
             width: 100,
-            dataIndex: 'company',
-            key: 'company',
+            dataIndex: 'unit',
+            key: 'unit',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },

@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
-const SearchModal2 = ({ shows, searchData, handleClose, searchChange, productData, searchPageSize }) => {
+const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, productData, searchPageSize}) => {
     const [data, setData] = useState([]);
     const [paymentTermList, setPaymentTermList] = useState([]);
     const [manufacturerList, setManufacturerList] = useState([]);
@@ -76,7 +76,6 @@ const SearchModal2 = ({ shows, searchData, handleClose, searchChange, productDat
 
     const createData = () => {
         let arr = [];
-        console.log(searchData, 'bicbala')
         arr = searchData?.data?.map(res => {
             return {
                 id: res.idHash,
@@ -91,7 +90,7 @@ const SearchModal2 = ({ shows, searchData, handleClose, searchChange, productDat
                 photo: res.photoCheck ? 'Var' : 'Yoxdu',
                 balance_1: res.balance,
                 balance_2: 'test',
-                selling_rate: res.price.salesPrices[0].formattedPrice + ' ' + res.price.salesPrices[0].currencyCode || '-',
+                selling_rate: res?.price?.salesPrices[0]?.formattedPrice + ' ' + res?.price?.salesPrices[0]?.currencyCode || '-',
                 buy_rate: 'test',
             }
         })
@@ -109,8 +108,9 @@ const SearchModal2 = ({ shows, searchData, handleClose, searchChange, productDat
         console.log(record, 'record')
         // onProduct(record);
 
-        navigate(`/${record.id}`);
+        navigate(`home/${record.id}`);
         setSelectedItem(record); // Tıklanan satırın verisini context'e kaydedin
+        handleClose();
     };
     const columns = [
         {
@@ -347,18 +347,18 @@ const SearchModal2 = ({ shows, searchData, handleClose, searchChange, productDat
                                             <Input className='position-relative' placeholder="Kod" />
                                         </Form.Item>
                                     </Col>
-                                    <Col span={8} className="mb-0">
+                                   {/* <Col span={8} className="mb-0">
                                         <Form.Item name="code">
                                             <Input className='position-relative' placeholder="Ürün Kodu" />
                                         </Form.Item>
-                                    </Col>
+                                    </Col>*/}
                                     {/*<Col span={8}>
                                         <Form.Item name="ShelfCode">
                                             <Input placeholder="Raf Adresi" />
                                         </Form.Item>
                                     </Col>*/}
                                     <Col span={8} className="mb-0">
-                                        <div class="d-flex">
+                                        <div className="d-flex">
                                             <Form.Item name="ManufacturerName" className="w-100">
                                                 <Input placeholder="Üretici" />
                                             </Form.Item>

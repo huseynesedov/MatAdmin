@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Table} from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
+import {useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
 
-const Cars_info = () => {
+const Cars_info = ({activeKey}) => {
     const [data, setData] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
+    let { id } = useParams();
 
+    const { openNotification } = useAuth()
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
@@ -26,21 +31,35 @@ const Cars_info = () => {
                 Kw: 'test',
             });
         }
-        setData(arr);
     };
 
     useEffect(() => {
         createData();
-    }, []);
+        getData()
+    }, [activeKey]);
+
+    const getData = () => {
+        AdminApi.GetVehicleBrandProductId({productId: id}).then((res) => {
+            console.log(res);
+
+            const data = res.data.map(re => {
+                return {
+                    car_brend: re.vehicleBrandName,
+                    vehicle_model: re.vehicleModelName,
+                    vehicle_type: re.vehicleModelType,
+                    engine_code: re.vehicleModelEngineCode,
+                    date: re.vehicleModelDate,
+                    Hp: re.hp,
+                    Kw: re.kw,
+                }
+            })
+            setData(data);
+        }).catch((err) => {
+            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+        })
+    }
 
     const columns = [
-        {
-            title: "",
-            width: 10,
-            dataIndex: 'checkbox',
-            key: 'checkbox',
-            
-        },
         {
             title: 'Arac Marka',
             width: 77,

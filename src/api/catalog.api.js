@@ -48,6 +48,9 @@ export const CatalogApi = {
     GetProductGroupListByProductType(params) {
         return BaseApi.get(apiRoutes.catalog.getProductGroupListByProductType, { ...params });
     },
+    GetOemTypeList(params) {
+        return BaseApi.get(apiRoutes.catalog.oemTypeList, { ...params });
+    },
     GetProductTypeList(params) {
         return BaseApi.get(apiRoutes.catalog.getProductTypeList, { ...params });
     },
@@ -56,6 +59,9 @@ export const CatalogApi = {
     },
     getCurrencyLists(params) {
         return BaseApi.get(apiRoutes.catalog.getCurrencyList, { ...params });
+    },
+    getProductGroupList(params) {
+        return BaseApi.get(apiRoutes.catalog.getProductGroupListByProductId, { ...params });
     },
     ProductTest(params) {
         return BaseApi.get(apiRoutes.catalog.productTest, { ...params });

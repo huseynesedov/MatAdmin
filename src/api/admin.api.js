@@ -101,6 +101,12 @@ export const AdminApi = {
 /*    Add(data) {
         return BaseApi.post(apiRoutes.product.add, data);
     },*/
+    AddProduct(data) {
+        return BaseApi.post(apiRoutes.product.add, data);
+    },
+    AddEquivalentProducts(data) {
+        return BaseApi.post(apiRoutes.adminProduct.equivalentProducts, data);
+    },
     AddOem(data) {
         return BaseApi.post(apiRoutes.product.addOem, data);
     },
@@ -108,13 +114,25 @@ export const AdminApi = {
         return BaseApi.post(apiRoutes.product.addProductVehicleBrand, data);
     },
     DeleteOem(userId) {
-        return BaseApi.delete(apiRoutes.product.deleteOem, { data: { id: userId } });
+        return BaseApi.delete(apiRoutes.product.deleteOem, { ...{ id: userId } });
+    },
+    deleteProduct(userId) {
+        return BaseApi.delete(apiRoutes.product.deleteProduct, { ...{ id: userId } });
     },
     DeleteProductVehicleBrand(userId) {
-        return BaseApi.delete(apiRoutes.product.deleteProductVehicleBrand, { data: { id: userId } });
+        return BaseApi.delete(apiRoutes.product.deleteProductVehicleBrand, userId );
     },
     GetCurrencyTable(params) {
         return BaseApi.get(apiRoutes.product.getCurrencyTable, { params });
+    },
+    GetProductFileByProductId(userId) {
+        return BaseApi.get(apiRoutes.photos.getProductFileByProductId, {...userId});
+    },
+    deleteProductPhoto(userId) {
+        return BaseApi.delete(apiRoutes.photos.deleteByProductFileId, { ...{ id: userId } });
+    },
+    GetVehicleBrandProductId(params) {
+        return BaseApi.get(apiRoutes.adminProduct.getVehicleBrandListByProductId, { ...params });
     },
     GetManufacturersWithProductCount(data) {
         return BaseApi.post(apiRoutes.product.getManufacturersWithProductCount, data);
@@ -126,10 +144,16 @@ export const AdminApi = {
         return BaseApi.get(apiRoutes.product.getProductGroupsById, { id: userId  });
     },
     GetProductPropertyValueTable(params) {
-        return BaseApi.get(apiRoutes.product.getProductPropertyValueTable, { params });
+        return BaseApi.get(apiRoutes.product.getProductPropertyValueTable, { ...params });
     },
     GetSearchTable(params) {
         return BaseApi.post(apiRoutes.product.getSearchTable, {...params});
+    },
+    GetSearchEquivalentProducts(data) {
+        return BaseApi.post(apiRoutes.adminProduct.equivalentProducts, data);
+    },
+    GetOemsByTypes(params) {
+        return BaseApi.get(apiRoutes.adminProduct.getOemsByType, { ...params });
     },
     GetShelfTable(params) {
         return BaseApi.get(apiRoutes.product.getShelfTable, { params });
