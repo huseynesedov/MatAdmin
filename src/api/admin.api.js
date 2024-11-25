@@ -128,8 +128,8 @@ export const AdminApi = {
     GetProductPropertyValueTable(params) {
         return BaseApi.get(apiRoutes.product.getProductPropertyValueTable, { params });
     },
-    GetSearchTable(data) {
-        return BaseApi.post(apiRoutes.product.getSearchTable, data);
+    GetSearchTable(params) {
+        return BaseApi.post(apiRoutes.product.getSearchTable, {...params});
     },
     GetShelfTable(params) {
         return BaseApi.get(apiRoutes.product.getShelfTable, { params });

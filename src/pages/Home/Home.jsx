@@ -1,21 +1,7 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import {
-    Typography,
-    Form,
-    Input,
-    Button,
-    Row,
-    Col,
-    Divider,
-    Tabs,
-    Card,
-    Checkbox,
-    Radio,
-    notification,
-    Spin,
-} from 'antd';
-import {Dropdown} from 'react-bootstrap';
-import {CSSTransition} from 'react-transition-group';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {Typography,Form,Input,Button,Row,Col,Divider,Tabs,Card,Radio,notification,Spin,} from 'antd';
+import { Dropdown } from 'react-bootstrap';
+import { CSSTransition } from 'react-transition-group';
 
 
 import SearchModal from './components/Modal/modal';
@@ -24,21 +10,23 @@ import Equivalent from './components/Equivalent/products';
 import Related from './components/Related/products';
 import TableView from './components/TableView';
 import SaveAlert from './components/Save Alert/index';
+import Barcode from './TabPage/barcode';
+import Qem from './components/Qem';
+import PhotoUpload from './components/Foto/upload';
+import Foto from './components/Foto';
+import Cars_info from './components/Cars Info';
+
 
 import './../../assets/styles/Home.scss';
 import Images from '../../assets/images/js/Images';
-import Barcode from './TabPage/barcode';
-import {SearchContext} from '../../searchprovider';
-import Qem from './components/Qem';
-import Cars_info from './components/Cars Info';
-import Foto from './components/Foto';
-import PhotoUpload from './components/Foto/upload';
-import {AdminApi} from "../../api/admin.api";
-import {ProductApi} from "../../api/product.api";
+
+import { SearchContext } from '../../searchprovider';
+import { AdminApi } from "../../api/admin.api";
+
 import General from "./components/General";
 
-const {Title} = Typography;
-const {TabPane} = Tabs;
+const { Title } = Typography;
+const { TabPane } = Tabs;
 
 const Home = () => {
     const [show, setShow] = useState(false);
@@ -59,8 +47,8 @@ const Home = () => {
     const handleClose2 = () => setShow2(false);
 
     const handleInputChangee = (e) => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleClear = () => {
@@ -156,7 +144,9 @@ const Home = () => {
     const [isDisabled, setIsDisabled] = useState(false);
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
-    const {selectedItem} = useContext(SearchContext);
+
+    
+    const { selectedItem } = useContext(SearchContext);
 
     useEffect(() => {
         if (selectedItem) {
@@ -183,7 +173,7 @@ const Home = () => {
 
     const handleInputChange = (e) => {
         console.log(e, 'Ek Bilg');
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setInputs({
             ...inputs,
             [name]: value,
@@ -243,14 +233,14 @@ const Home = () => {
                 handleShowModal2()
             }
         }).catch((error) => {
-           // openNotification('Xəta baş verdi', error.response.data.message, true)
+            // openNotification('Xəta baş verdi', error.response.data.message, true)
         });
     }
 
     const onInitialSearch = (values) => {
         console.log('Success:', values);
 
-        if(!values) return
+        if (!values) return
 
         const result = Object.keys(values).filter(key => values[key] !== undefined && values[key] !== null && values[key] !== "").map((key) => ({
             value: values[key],
@@ -277,12 +267,12 @@ const Home = () => {
     const pathname = window.location.pathname;
 
     useEffect(() => {
-        if(pathname !== '/') onProductData(pathname.split('/')[1]);
+        if (pathname !== '/') onProductData(pathname.split('/')[1]);
     }, [pathname]);
 
     const [isShowProduct, setShowProduct] = useState([]);
     const onProductData = (values) => {
-        AdminApi.GetById({id: values}).then(res => {
+        AdminApi.GetById({ id: values }).then(res => {
             console.log(res)
             setShowProduct(res);
             setShow2(false);
@@ -297,32 +287,32 @@ const Home = () => {
                 <Card className="search-card">
                     <Title level={4}>Ürün Bilgileri</Title>
                     <Form name="filter_form" layout="vertical" onFinish={onInitialSearch}
-                          autoComplete="off">
+                        autoComplete="off">
                         <div className="d-flex w-100 justify-content-between">
 
                             <Row className="w-100">
                                 <Col span={12} md={6} className="p-2">
                                     <Form.Item label="Kodu"
-                                               name="code"
-                                               rules={[
-                                                   {
-                                                       required: false,
-                                                   },
-                                               ]} className="w-100">
+                                        name="code"
+                                        rules={[
+                                            {
+                                                required: false,
+                                            },
+                                        ]} className="w-100">
                                         {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
                                  src={Images.Search_blue} alt="search"/>*/}
-                                        <Input className='position-relative' placeholder="123544"/>
+                                        <Input className='position-relative' placeholder="123544" />
                                     </Form.Item>
                                 </Col>
                                 <Col span={12} md={6} className="p-2">
                                     <Form.Item label="Adı"
-                                               name="name"
-                                               rules={[
-                                                   {
-                                                       required: false,
-                                                   },
-                                               ]} className="w-100">
-                                        <Input className='position-relative' placeholder="123544"/>
+                                        name="name"
+                                        rules={[
+                                            {
+                                                required: false,
+                                            },
+                                        ]} className="w-100">
+                                        <Input className='position-relative' placeholder="123544" />
                                         {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
                                  src={Images.Search_blue} alt="search"/>*/}
                                     </Form.Item>
@@ -342,16 +332,16 @@ const Home = () => {
 
                         <Form.Item>
                             <Button type="default" className="Delete_red"
-                                    icon={<img src={Images.delete_red} alt="delete"/>}>Temizle</Button>
-                            <Button type="default" htmlType="submit" style={{marginLeft: '8px'}} className="Bin_Blue"
-                                    icon={<img src={Images.Search_blue} alt="search"/>}>Ara</Button>
+                                icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
+                            <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue"
+                                icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
                         </Form.Item>
                     </Form>
                 </Card>
                 <Tabs defaultActiveKey="1" className="product-tabs">
                     <TabPane tab="Genel" key="1">
 
-                       {/* <Row gutter={16}>
+                        {/* <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button ">
                                     <img src={Images.add_circle_blue} alt="add"/>
@@ -374,47 +364,50 @@ const Home = () => {
                             </Col>
                         </Row>*/}
 
-                        <SearchModal
+                        {/* <SearchModal
                             show={show}
                             handleClose={handleClose}
                             handleClear={handleClear}
                             formData={formData}
                             handleInputChange={handleInputChange}
                             handleShowModal2={handleShowModal2}
-                        />
+                        /> */}
+
                         <SearchModal2
                             shows={show2}
+
                             searchData={isSearchTables}
                             searchChange={onSearchData}
                             searchPageSize={onPageSize}
                             productData={onProductData}
+                            
                             handleClose={handleClose2}
                             handleClear={handleClear}
                         />
-                        <Divider/>
+                        <Divider />
 
-                        <General checkData={isShowProduct}/>
+                        <General checkData={isShowProduct} />
 
                     </TabPane>
                     <TabPane tab="Ek Bilgiler" key="2">
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add"/>
+                                    <img src={Images.add_circle_blue} alt="add" />
                                     Yeni
                                 </Button>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 
@@ -426,32 +419,32 @@ const Home = () => {
                                     <Form layout="Horizontal">
                                         <Form.Item label="Ek Bilgileri 1">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="Məhsul Kodu: 12345"/>
+                                                <Input style={{ width: "371px", height: "40px" }}
+                                                    placeholder="Məhsul Kodu: 12345" />
                                             </div>
                                         </Form.Item>
                                         <Form.Item label="Ek Bilgileri 2">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="İstehsalçı: XYZ Şirkəti"/>
+                                                <Input style={{ width: "371px", height: "40px" }}
+                                                    placeholder="İstehsalçı: XYZ Şirkəti" />
                                             </div>
                                         </Form.Item>
                                         <Form.Item label="Ek Bilgileri 3">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="İstehsal Yeri: Almaniya"/>
+                                                <Input style={{ width: "371px", height: "40px" }}
+                                                    placeholder="İstehsal Yeri: Almaniya" />
                                             </div>
                                         </Form.Item>
                                         <Form.Item label="Ek Bilgileri 4">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="Qablaşdırma: 20 ədəd/sandroq"/>
+                                                <Input style={{ width: "371px", height: "40px" }}
+                                                    placeholder="Qablaşdırma: 20 ədəd/sandroq" />
                                             </div>
                                         </Form.Item>
                                         <Form.Item label="Ek Bilgileri 5">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "371px", height: "40px"}}
-                                                       placeholder="Zəmanət: 2 il"/>
+                                                <Input style={{ width: "371px", height: "40px" }}
+                                                    placeholder="Zəmanət: 2 il" />
                                             </div>
                                         </Form.Item>
                                     </Form>
@@ -461,7 +454,7 @@ const Home = () => {
                                     <Form layout="Horizontal">
                                         <Form.Item label="Iskonto %">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "40px"}} placeholder="0.00"/>
+                                                <Input style={{ width: "240px", height: "40px" }} placeholder="0.00" />
                                             </div>
                                         </Form.Item>
                                         <h4 className='t_44 fs_16 fw_600'>
@@ -472,7 +465,7 @@ const Home = () => {
                                         <Form layout="horizontal" className="mt-4">
                                             <Form.Item label="Karlılık">
                                                 <div className='d-flex justify-content-end'>
-                                                    <Input style={{width: "240px", height: "40px"}} placeholder="0.00"/>
+                                                    <Input style={{ width: "240px", height: "40px" }} placeholder="0.00" />
                                                 </div>
                                             </Form.Item>
                                         </Form>
@@ -481,29 +474,29 @@ const Home = () => {
                                             Bakıye pozısıyonları
                                         </h4>
                                         <div className="Line_E2"></div>
-                                        <div style={{width: "600px"}}
-                                             className='mt-4 d-flex flex-wrap justify-content-between'>
+                                        <div style={{ width: "600px" }}
+                                            className='mt-4 d-flex flex-wrap justify-content-between'>
                                             <Radio>
-                                            <span className='t_8F fs_16'>
-                                                Bakıye durumlarıne Gore
-                                            </span>
+                                                <span className='t_8F fs_16'>
+                                                    Bakıye durumlarıne Gore
+                                                </span>
                                             </Radio>
                                             <Radio>
-                                            <span className='t_8F fs_16'>
-                                                Sureklı Mevcut Goster
-                                            </span>
+                                                <span className='t_8F fs_16'>
+                                                    Sureklı Mevcut Goster
+                                                </span>
                                             </Radio>
                                             <Radio>
-                                            <span className='t_8F fs_16'>
-                                                Yolda
-                                            </span>
+                                                <span className='t_8F fs_16'>
+                                                    Yolda
+                                                </span>
                                             </Radio>
                                             <div className='mt-3'>
 
                                                 <Radio>
-                                                <span className='t_8F fs_16'>
-                                                    Sıparış uzerıne
-                                                </span>
+                                                    <span className='t_8F fs_16'>
+                                                        Sıparış uzerıne
+                                                    </span>
                                                 </Radio>
                                             </div>
                                         </div>
@@ -517,28 +510,28 @@ const Home = () => {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add"/>
+                                    <img src={Images.add_circle_blue} alt="add" />
                                     Yeni
                                 </Button>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 
 
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
-                                <Equivalent/>
+                                <Equivalent />
                             </Col>
                         </Row>
 
@@ -548,28 +541,28 @@ const Home = () => {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add"/>
+                                    <img src={Images.add_circle_blue} alt="add" />
                                     Yeni
                                 </Button>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 
 
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
-                                <Related/>
+                                <Related />
                             </Col>
                         </Row>
                     </TabPane>
@@ -580,7 +573,7 @@ const Home = () => {
                             <div>
                                 <Row gutter={16} className="mt-4">
                                     <Col span={24}>
-                                        <Barcode/>
+                                        <Barcode />
                                     </Col>
                                 </Row>
                             </div> :
@@ -588,32 +581,32 @@ const Home = () => {
                                 <Row gutter={16}>
                                     <Col span={12}>
                                         <Button type="default" className="button-margin bg_none add_button">
-                                            <img src={Images.add_circle_blue} alt="add"/>
+                                            <img src={Images.add_circle_blue} alt="add" />
                                             Yeni
                                         </Button>
                                         <Button type="default" className="button-margin bg_none edit_button">
-                                            <img src={Images.edit_green} alt="edit"/>
+                                            <img src={Images.edit_green} alt="edit" />
                                             Degistir
                                         </Button>
                                         <Button type="default" className="button-margin bg_none print_button"
-                                                onClick={handlePrintClick}>
-                                            <img src={Images.Printer_orange} alt="edit"/>
+                                            onClick={handlePrintClick}>
+                                            <img src={Images.Printer_orange} alt="edit" />
                                             Yazdir
                                         </Button>
                                         <Button type="default" className="button-margin add_button bg_none eye_button">
 
-                                            <img src={Images.Eye_gray} alt="edit"/>
+                                            <img src={Images.Eye_gray} alt="edit" />
                                             Gosder
                                         </Button>
                                     </Col>
                                     <Col span={12} className="text-right">
-                                        <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                                className="button-margin Search_blue" onClick={handleShow}></Button>
-                                        <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                                className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                        <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                                className="button-margin delete_red"
-                                                disabled={isDeleteDisabled}></Button>
+                                        <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                            className="button-margin Search_blue" onClick={handleShow}></Button>
+                                        <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                            className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                        <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                            className="button-margin delete_red"
+                                            disabled={isDeleteDisabled}></Button>
                                     </Col>
                                 </Row>
 
@@ -624,7 +617,7 @@ const Home = () => {
                                         classNames="save-alert"
                                         unmountOnExit
                                     >
-                                        <SaveAlert onClose={handleCloseAlert}/>
+                                        <SaveAlert onClose={handleCloseAlert} />
                                     </CSSTransition>
                                 </div>
                                 <Row gutter={16} className="mt-4">
@@ -633,27 +626,27 @@ const Home = () => {
                                             <Form layout="horizontal">
                                                 <Form.Item label="Kodu">
                                                     <div className='d-flex justify-content-end'>
-                                                        <Input style={{width: "371px", height: "40px"}}
-                                                               placeholder="60H12"/>
+                                                        <Input style={{ width: "371px", height: "40px" }}
+                                                            placeholder="60H12" />
                                                     </div>
                                                 </Form.Item>
                                                 <Form.Item label="Adi">
                                                     <div className='d-flex justify-content-end'>
-                                                        <Input style={{width: "371px", height: "40px"}}
-                                                               placeholder="asgdgfvshcfvb"/>
+                                                        <Input style={{ width: "371px", height: "40px" }}
+                                                            placeholder="asgdgfvshcfvb" />
                                                     </div>
                                                 </Form.Item>
                                                 <Form.Item label="Barkod">
                                                     <div className='d-flex justify-content-end'>
-                                                        <Input style={{width: "137px"}} placeholder="43234"/>
+                                                        <Input style={{ width: "137px" }} placeholder="43234" />
                                                         <Button type="default"
-                                                                className="button-margin ms-2 copy_button">
-                                                            <img src={Images.Copy_blue} alt="edit"/>
+                                                            className="button-margin ms-2 copy_button">
+                                                            <img src={Images.Copy_blue} alt="edit" />
                                                         </Button>
-                                                        <Input style={{width: "106px"}} placeholder="Koli Adadi"/>
+                                                        <Input style={{ width: "106px" }} placeholder="Koli Adadi" />
                                                         <Button type="default"
-                                                                icon={<img src={Images.Save_green} alt="save"/>}
-                                                                className="button-margin ms-2 Save_green"></Button>
+                                                            icon={<img src={Images.Save_green} alt="save" />}
+                                                            className="button-margin ms-2 Save_green"></Button>
                                                     </div>
                                                 </Form.Item>
                                                 <Form.Item label="Raf Adresi">
@@ -661,7 +654,7 @@ const Home = () => {
                                                         {!isUpVisible && (
                                                             <img
                                                                 src={Images.Tableview_blue}
-                                                                style={{left: "0px", top: "7px", cursor: "pointer"}}
+                                                                style={{ left: "0px", top: "7px", cursor: "pointer" }}
                                                                 className='position-absolute'
                                                                 alt=""
                                                                 onClick={handleToggleClick}
@@ -671,36 +664,36 @@ const Home = () => {
                                                         {isUpVisible && (
                                                             <img
                                                                 src={Images.Up_gray}
-                                                                style={{left: "5px", top: "13px", cursor: "pointer"}}
+                                                                style={{ left: "5px", top: "13px", cursor: "pointer" }}
                                                                 className='position-absolute'
                                                                 alt=""
                                                                 onClick={handleToggleClick}
                                                             />
                                                         )}
-                                                        <Input style={{width: "307px"}}
-                                                               placeholder="Qablaşdırma: 20 ədəd/sandroq"/>
+                                                        <Input style={{ width: "307px" }}
+                                                            placeholder="Qablaşdırma: 20 ədəd/sandroq" />
                                                         <Button type="default" onClick={handleSaveClick}
-                                                                icon={<img src={Images.Save_green} alt="save"/>}
-                                                                className="button-margin ms-2 Save_green"></Button>
+                                                            icon={<img src={Images.Save_green} alt="save" />}
+                                                            className="button-margin ms-2 Save_green"></Button>
                                                     </div>
                                                 </Form.Item>
                                                 {isTableViewVisible && (
                                                     <div className="Tableview">
-                                                        <TableView/>
+                                                        <TableView />
                                                     </div>
                                                 )}
 
                                                 <Form.Item label="Miktar">
                                                     <div className='d-flex justify-content-end'>
-                                                        <Input style={{width: "371px", height: "40px"}}
-                                                               placeholder="Zəmanət: 2 il"/>
+                                                        <Input style={{ width: "371px", height: "40px" }}
+                                                            placeholder="Zəmanət: 2 il" />
                                                     </div>
                                                 </Form.Item>
                                                 <Form.Item label="Barkod Tipi">
                                                     <div className='d-flex justify-content-end'>
                                                         <Button
                                                             className="position-relative"
-                                                            style={{width: "371px", height: "40px"}}
+                                                            style={{ width: "371px", height: "40px" }}
                                                             onClick={toggleDropdown}
                                                             onBlur={handleBlur}
                                                         >
@@ -708,7 +701,7 @@ const Home = () => {
                                                                 className='position-absolute'
                                                                 src={Images.Down_gray}
                                                                 alt=""
-                                                                style={{right: "10px", top: "10px"}}
+                                                                style={{ right: "10px", top: "10px" }}
                                                             />
                                                         </Button>
                                                         {isDropdownOpen && (
@@ -760,17 +753,17 @@ const Home = () => {
 
                                                                 <div
                                                                     className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="A"/>
+                                                                    <Radio value="A" />
                                                                     <span className='ms-2 t_8F'>105 * 70</span>
                                                                 </div>
                                                                 <div
                                                                     className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="B"/>
+                                                                    <Radio value="B" />
                                                                     <span className='ms-2 t_8F'>25 * 45</span>
                                                                 </div>
                                                                 <div
                                                                     className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="C"/>
+                                                                    <Radio value="C" />
                                                                     <span className='ms-2 t_8F'>30 * 60</span>
                                                                 </div>
                                                             </div>
@@ -785,17 +778,17 @@ const Home = () => {
 
                                                                 <div
                                                                     className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="A"/>
+                                                                    <Radio value="A" />
                                                                     <span className='ms-2 t_8F'>105 * 70</span>
                                                                 </div>
                                                                 <div
                                                                     className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="B"/>
+                                                                    <Radio value="B" />
                                                                     <span className='ms-2 t_8F'>40 * 58</span>
                                                                 </div>
                                                                 <div
                                                                     className='d-flex ms-4 me-4 align-items-center justify-content-center'>
-                                                                    <Radio value="C"/>
+                                                                    <Radio value="C" />
                                                                     <span className='ms-2 t_8F'>100 * 60</span>
                                                                 </div>
                                                             </div>
@@ -816,62 +809,62 @@ const Home = () => {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                                 <Button type="default" className="button-margin bg_none print_button"
-                                        onClick={handlePrintClick}>
-                                    <img src={Images.Printer_orange} alt="edit"/>
+                                    onClick={handlePrintClick}>
+                                    <img src={Images.Printer_orange} alt="edit" />
                                     Yazdir
                                 </Button>
                                 <Button type="default" className="button-margin add_button bg_none eye_button">
 
-                                    <img src={Images.Eye_gray} alt="edit"/>
+                                    <img src={Images.Eye_gray} alt="edit" />
                                     Gosder
                                 </Button>
 
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Export_dark} alt="search"/>}
-                                        className="button-margin bg_none export_dark"></Button>
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin bg_none delete_red"
-                                        disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Export_dark} alt="search" />}
+                                    className="button-margin bg_none export_dark"></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin bg_none delete_red"
+                                    disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
                                 <Card className="info-card mt-3" title="Qem No">
-                                    <Qem/>
+                                    <Qem />
                                     <div className='d-flex align-items-center justify-content-between'
-                                         style={{width: "967px"}}>
-                                        <div className='d-flex justify-content-between mt-5' style={{width: "788px"}}>
+                                        style={{ width: "967px" }}>
+                                        <div className='d-flex justify-content-between mt-5' style={{ width: "788px" }}>
                                             <Form layout="Inline">
                                                 <Form.Item label="Arac Marka">
-                                                    <Input style={{width: "240px"}} placeholder="123544"/>
+                                                    <Input style={{ width: "240px" }} placeholder="123544" />
                                                 </Form.Item>
                                             </Form>
                                             <Form layout="Inline">
 
                                                 <Form.Item label="Qem No">
-                                                    <Input style={{width: "240px"}} placeholder="123544"/>
+                                                    <Input style={{ width: "240px" }} placeholder="123544" />
                                                 </Form.Item>
                                             </Form>
                                         </div>
                                         <img
                                             src={Images.delete_red}
                                             alt="Delete"
-                                            style={{cursor: 'pointer'}}
+                                            style={{ cursor: 'pointer' }}
                                         />
                                     </div>
                                     <div className="d-flex justify-content-center">
                                         <Button type="default" className="button-margin bg_none add_button ">
-                                            <img src={Images.add_circle_blue} alt="add"/>
+                                            <img src={Images.add_circle_blue} alt="add" />
                                             Yeni Setir elave edin
                                         </Button>
                                     </div>
@@ -883,62 +876,62 @@ const Home = () => {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                                 <Button type="default" className="button-margin bg_none print_button"
-                                        onClick={handlePrintClick}>
-                                    <img src={Images.Printer_orange} alt="edit"/>
+                                    onClick={handlePrintClick}>
+                                    <img src={Images.Printer_orange} alt="edit" />
                                     Yazdir
                                 </Button>
                                 <Button type="default" className="button-margin add_button bg_none eye_button">
 
-                                    <img src={Images.Eye_gray} alt="edit"/>
+                                    <img src={Images.Eye_gray} alt="edit" />
                                     Gosder
                                 </Button>
 
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Export_dark} alt="search"/>}
-                                        className="button-margin bg_none export_dark"></Button>
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin bg_none delete_red"
-                                        disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Export_dark} alt="search" />}
+                                    className="button-margin bg_none export_dark"></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin bg_none delete_red"
+                                    disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
                                 <Card className="info-card mt-3" title="Qem No">
-                                    <Qem/>
+                                    <Qem />
                                     <div className='d-flex align-items-center justify-content-between'
-                                         style={{width: "967px"}}>
-                                        <div className='d-flex justify-content-between mt-5' style={{width: "788px"}}>
+                                        style={{ width: "967px" }}>
+                                        <div className='d-flex justify-content-between mt-5' style={{ width: "788px" }}>
                                             <Form layout="Inline">
                                                 <Form.Item label="Arac Marka">
-                                                    <Input style={{width: "240px"}} placeholder="123544"/>
+                                                    <Input style={{ width: "240px" }} placeholder="123544" />
                                                 </Form.Item>
                                             </Form>
                                             <Form layout="Inline">
 
                                                 <Form.Item label="Qem No">
-                                                    <Input style={{width: "240px"}} placeholder="123544"/>
+                                                    <Input style={{ width: "240px" }} placeholder="123544" />
                                                 </Form.Item>
                                             </Form>
                                         </div>
                                         <img
                                             src={Images.delete_red}
                                             alt="Delete"
-                                            style={{cursor: 'pointer'}}
+                                            style={{ cursor: 'pointer' }}
                                         />
                                     </div>
                                     <div className="d-flex justify-content-center">
                                         <Button type="default" className="button-margin bg_none add_button ">
-                                            <img src={Images.add_circle_blue} alt="add"/>
+                                            <img src={Images.add_circle_blue} alt="add" />
                                             Yeni Setir elave edin
                                         </Button>
                                     </div>
@@ -950,28 +943,28 @@ const Home = () => {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add"/>
+                                    <img src={Images.add_circle_blue} alt="add" />
                                     Yeni
                                 </Button>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 
 
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
-                                <Cars_info/>
+                                <Cars_info />
                             </Col>
                         </Row>
 
@@ -986,7 +979,7 @@ const Home = () => {
                                 <Row gutter={16} className="mt-4">
                                     <Col span={24}>
                                         <PhotoUpload handleShow={handleShow} isSaveDisabled={isSaveDisabled}
-                                                     isDeleteDisabled={isDeleteDisabled}/>
+                                            isDeleteDisabled={isDeleteDisabled} />
 
                                     </Col>
                                 </Row>
@@ -996,29 +989,29 @@ const Home = () => {
                                 <Row gutter={16}>
                                     <Col span={12}>
                                         <Button type="default" className="button-margin bg_none add_button"
-                                                onClick={handleNewFotoClick}>
-                                            <img src={Images.add_circle_blue} alt="add"/>
+                                            onClick={handleNewFotoClick}>
+                                            <img src={Images.add_circle_blue} alt="add" />
                                             Yeni
                                         </Button>
                                         <Button type="default" className="button-margin bg_none edit_button">
-                                            <img src={Images.edit_green} alt="edit"/>
+                                            <img src={Images.edit_green} alt="edit" />
                                             Degistir
                                         </Button>
                                     </Col>
                                     <Col span={12} className="text-right">
-                                        <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                                className="button-margin Search_blue" onClick={handleShow}></Button>
-                                        <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                                className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                        <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                                className="button-margin delete_red"
-                                                disabled={isDeleteDisabled}></Button>
+                                        <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                            className="button-margin Search_blue" onClick={handleShow}></Button>
+                                        <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                            className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                        <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                            className="button-margin delete_red"
+                                            disabled={isDeleteDisabled}></Button>
                                     </Col>
                                 </Row>
 
                                 <div className='mt-3'>
 
-                                    <Foto/>
+                                    <Foto />
                                 </div>
                             </div>
                         }

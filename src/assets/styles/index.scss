@@ -1,4 +1,6 @@
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
 }
@@ -23,18 +25,35 @@ html, body, #root {
   }
 }
 
-.bg_none:hover{
+.bg_none:hover {
   background-color: transparent !important;
 }
 
 
 button:disabled {
-  opacity: 3; 
-  cursor: not-allowed; 
+  opacity: 3;
+  cursor: not-allowed;
 }
 
 button:disabled img {
-  filter: grayscale(80%); 
+  filter: grayscale(80%);
   opacity: 0.9;
+}
+
+
+
+:where(.css-dev-only-do-not-override-1uq9j6g).ant-radio-group {
+  width: 564px !important;
+
+  label {
+    margin-left: 124px;
+    margin-top: 20px;
+  }
+  label:nth-of-type(4) {
+    margin-left: 98px !important;
+  }
+  label:nth-of-type(6) {
+    margin-left: 50px !important;
+  }
 }
 

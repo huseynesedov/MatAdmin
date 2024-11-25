@@ -1,16 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Checkbox, Col, Form, Input, InputNumber, Row, Select, Space} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Checkbox, Col, Form, Input, InputNumber, Row, Select, Space } from 'antd';
 
 import Images from '../../../../assets/images/js/Images';
-import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import {CatalogApi} from "../../../../api/catalog.api";
-import {AdminApi} from "../../../../api/admin.api";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { CatalogApi } from "../../../../api/catalog.api";
+import { AdminApi } from "../../../../api/admin.api";
 import Title from "antd/es/skeleton/Title";
-import { useNavigate } from 'react-router-dom';
+
 const General = (checkData) => {
-    const [data, setData] = useState([]);
     const [isDisabled, setIsDisabled] = useState(false);
-    const navigate = useNavigate();
 
     const { Option } = Select;
 
@@ -36,7 +34,7 @@ const General = (checkData) => {
     const getBrand = () => {
         CatalogApi.GetVehicleBrand().then(res => {
             const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+                return { label: res.displayText, value: res.valueHash }
             })
             setVehicleBrand(data);
         })
@@ -49,7 +47,7 @@ const General = (checkData) => {
     const onChangeBrand = (value) => {
         CatalogApi.getVehicleModel(value).then(res => {
             const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+                return { label: res.displayText, value: res.valueHash }
             })
             setVehicleModel(data);
         })
@@ -65,30 +63,30 @@ const General = (checkData) => {
     }, [checkData]);
 
     const aak = async (checkData) => {
-/*
-
-        const brands = []
-        const models = []
-
-        if (checkData.checkData.productVehicleBrand?.productVehicleBrands && checkData.checkData.productVehicleBrand?.productVehicleBrands.length > 0) {
-            for (let i = 0; i < checkData.checkData.productVehicleBrand.productVehicleBrands.length; i++) {
-                brands.push({
-                    label: checkData.checkData.productVehicleBrands?.productVehicleBrands[i].name,
-                    value: checkData.checkData.productVehicleBrands?.productVehicleBrands[i].vehicleBrandIdHash
-                })
-            }
-        }
-        if (checkData.checkData.productVehicleModel?.productVehicleModels && checkData.checkData.productVehicleModel?.productVehicleModels.length > 0) {
-            for (let i = 0; i < checkData.checkData.productVehicleModel?.productVehicleModels.length; i++) {
-                models.push({
-                    label: checkData.checkData.productVehicleModel?.productVehicleModels[i].name,
-                    value: checkData.checkData.productVehicleModel?.productVehicleModels[i].vehicleBrandIdHash
-                })
-            }
-        }
-        setVehicleBrand(brands)
-        setVehicleModel(models)
-*/
+        /*
+        
+                const brands = []
+                const models = []
+        
+                if (checkData.checkData.productVehicleBrand?.productVehicleBrands && checkData.checkData.productVehicleBrand?.productVehicleBrands.length > 0) {
+                    for (let i = 0; i < checkData.checkData.productVehicleBrand.productVehicleBrands.length; i++) {
+                        brands.push({
+                            label: checkData.checkData.productVehicleBrands?.productVehicleBrands[i].name,
+                            value: checkData.checkData.productVehicleBrands?.productVehicleBrands[i].vehicleBrandIdHash
+                        })
+                    }
+                }
+                if (checkData.checkData.productVehicleModel?.productVehicleModels && checkData.checkData.productVehicleModel?.productVehicleModels.length > 0) {
+                    for (let i = 0; i < checkData.checkData.productVehicleModel?.productVehicleModels.length; i++) {
+                        models.push({
+                            label: checkData.checkData.productVehicleModel?.productVehicleModels[i].name,
+                            value: checkData.checkData.productVehicleModel?.productVehicleModels[i].vehicleBrandIdHash
+                        })
+                    }
+                }
+                setVehicleBrand(brands)
+                setVehicleModel(models)
+        */
 
 
 
@@ -132,7 +130,7 @@ const General = (checkData) => {
             isNew: checkData.checkData.isNew,
             productGroupName: checkData.checkData.productGroupName,
         }
-        console.log(data,checkData, 'data');
+        console.log(data, checkData, 'data');
         form.setFieldsValue(data)
     }
     const productTypeLists = () => {
@@ -200,7 +198,7 @@ const General = (checkData) => {
                 vehicleBrandIdHash: data,
             }
         })
-        let data = {...value, ...{productVehicleBrands: brand}, ...{productVehicleModles: model}}
+        let data = { ...value, ...{ productVehicleBrands: brand }, ...{ productVehicleModles: model } }
         console.log('data', vehicleModel, value, data)
 
     };
@@ -208,7 +206,7 @@ const General = (checkData) => {
     const facturersProductCount = () => {
         AdminApi.GetPaymentTermList().then((res) => {
             const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+                return { label: res.displayText, value: res.valueHash }
             })
             setPaymentTermList(data);
         }).catch((error) => {
@@ -218,28 +216,28 @@ const General = (checkData) => {
 
     return (
         <>
-            <Form form={form} onFinish={onSearch} initialValues={{isActive: false, isNew: false}}>
+            <Form form={form} onFinish={onSearch} initialValues={{ isActive: false, isNew: false }}>
 
                 <Row gutter={16}>
                     <Col span={12}>
                         <Button type="default" className="button-margin bg_none add_button ">
-                            <img src={Images.add_circle_blue} alt="add"/>
+                            <img src={Images.add_circle_blue} alt="add" />
                             Yeni
                         </Button>
                         <Button type="default" className="button-margin bg_none edit_button"
                         >
-                            <img src={Images.edit_green} alt="edit"/>
+                            <img src={Images.edit_green} alt="edit" />
                             Degistir
                         </Button>
                     </Col>
                     <Col span={12} className="text-right">
-                        <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                className="button-margin Search_blue"></Button>
-                        <Button type="default" htmlType="submit" icon={<img src={Images.Save_green} alt="save"/>}
-                                className="button-margin Save_green"
+                        <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                            className="button-margin Search_blue"></Button>
+                        <Button type="default" htmlType="submit" icon={<img src={Images.Save_green} alt="save" />}
+                            className="button-margin Save_green"
                         ></Button>
-                        <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                        <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                            className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                     </Col>
                 </Row>
                 <Row gutter={16}>
@@ -247,9 +245,9 @@ const General = (checkData) => {
                         <Card className="info-card" title="Üretici Bilgileri">
                             <Form.Item name="manufacturerName" label="Üretici">
                                 <Input className='position-relative'
-                                       disabled={isDisabled}
-                                       style={{width: "240px", float: 'right'}}
-                                       placeholder="123544"/>
+                                    disabled={isDisabled}
+                                    style={{ width: "240px", float: 'right' }}
+                                    placeholder="123544" />
                             </Form.Item>
                             {/*
                                         <img src={Images.Search_blue} className='position-absolute'
@@ -257,13 +255,13 @@ const General = (checkData) => {
                             <Form.Item name="manufacturerCode" label="Üretici Kodu">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                    style={{ width: "240px", float: 'right' }} placeholder="123544" />
                             </Form.Item>
                             <Form.Item name="unit" label="Birim">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}}
-                                    placeholder="123544"/>
+                                    style={{ width: "240px", float: 'right' }}
+                                    placeholder="123544" />
                             </Form.Item>
                         </Card>
 
@@ -273,7 +271,7 @@ const General = (checkData) => {
                                 <Select
                                     optionFilterProp="label"
                                     onChange={onChangeGroupName}
-                                    options={productTypeList}/>
+                                    options={productTypeList} />
                             </Form.Item>
                             {/*<Form.Item label="Grup 1">
                                     <div className='d-flex justify-content-end'>
@@ -314,11 +312,11 @@ const General = (checkData) => {
                                     </Form.Item>
 */}
                                 <Form.List name="productShelves">
-                                    {(fields, {add, remove}) => (
+                                    {(fields, { add, remove }) => (
                                         <>
-                                            {fields.map(({key, name, fieldKey, ...restField}) => (
-                                                <Space key={key} style={{display: 'flex', marginBottom: 8}}
-                                                       align="baseline">
+                                            {fields.map(({ key, name, fieldKey, ...restField }) => (
+                                                <Space key={key} style={{ display: 'flex', marginBottom: 8 }}
+                                                    align="baseline">
                                                     <Form.Item
                                                         {...restField}
                                                         name={[name, 'shelfIdHash']}
@@ -346,17 +344,17 @@ const General = (checkData) => {
                                                         name={[name, 'quantity']}
                                                         fieldKey={[fieldKey, 'quantity']}
                                                         label="Sayı"
-                                                        rules={[{required: true, message: 'Lütfen Quantity giriniz'}]}
+                                                        rules={[{ required: true, message: 'Lütfen Quantity giriniz' }]}
                                                     >
-                                                        <InputNumber className="w-100" min={0} placeholder="Quantity"/>
+                                                        <InputNumber className="w-100" min={0} placeholder="Quantity" />
                                                     </Form.Item>
 
-                                                    <MinusCircleOutlined onClick={() => remove(name)}/>
+                                                    <MinusCircleOutlined onClick={() => remove(name)} />
                                                 </Space>
                                             ))}
 
                                             <Form.Item>
-                                                <Button type="dashed" onClick={() => add()} icon={<PlusOutlined/>}>
+                                                <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
                                                     Raf Ekle
                                                 </Button>
                                             </Form.Item>
@@ -391,7 +389,7 @@ const General = (checkData) => {
                                 </Form.Item>
                                 <Form.Item label="Model">
                                     <Select
-                                        style={{width: "240px", float: 'right'}}
+                                        style={{ width: "240px", float: 'right' }}
                                         showSearch
                                         mode="multiple"
                                         placeholder="Select a person"
@@ -420,7 +418,7 @@ const General = (checkData) => {
 
                             <Form.Item name="paymentTermIdHash" label="Koşul Kodu">
                                 <Select
-                                    style={{width: "240px", float: 'right'}}
+                                    style={{ width: "240px", float: 'right' }}
                                     optionFilterProp="label"
                                     onChange={onChangeTermIdHash}
                                     onSearch={onSearch}
@@ -432,15 +430,15 @@ const General = (checkData) => {
                             </Form.Item>
                             <Form.Item name="minOrderAmount" label="Min.Sip.Acl">
                                 <Input
-                                    style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                    style={{ width: "240px", float: 'right' }} placeholder="123544" />
                             </Form.Item>
                             <Form.Item name="vatRate" label="KDV">
                                 <Input
-                                    style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                    style={{ width: "240px", float: 'right' }} placeholder="123544" />
                             </Form.Item>
                             <Form.Item label="Kodu Grubu">
                                 <Input
-                                    style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                    style={{ width: "240px", float: 'right' }} placeholder="123544" />
                             </Form.Item>
                             <h4 className='t_44 mt-4 fs_16 fw_600'>
                                 Bakiye
@@ -450,33 +448,33 @@ const General = (checkData) => {
                             <div className="mt-3">
                                 <Form.Item name="balance" label="Mevcut">
                                     <Input
-                                        style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                        style={{ width: "240px", float: 'right' }} placeholder="123544" />
                                 </Form.Item>
                                 <Form.Item name="OemCode" label="Oem Code">
                                     <Input
-                                        style={{width: "240px", float: 'right'}} placeholder="123544"/>
+                                        style={{ width: "240px", float: 'right' }} placeholder="123544" />
                                 </Form.Item>
 
                                 <div className="d-flex align-items-center">
                                     <Form.Item name="isActive" valuePropName="checked" label="Mehsul Statusu"
-                                               className="mb-0">
-                                        <Checkbox/>
+                                        className="mb-0">
+                                        <Checkbox />
                                     </Form.Item>
                                     <span className='ms-2 t_8F'>Yeni Urun</span>
                                 </div>
 
                                 <div className="d-flex align-items-center">
                                     <Form.Item name="isNew" valuePropName="checked" label="Mehsul Statusu"
-                                               className="mb-0">
-                                        <Checkbox/>
+                                        className="mb-0">
+                                        <Checkbox />
                                     </Form.Item>
                                     <span className='ms-2 t_8F'>Aktiv</span>
                                 </div>
 
                                 <div className="d-flex align-items-center">
                                     <Form.Item label="Mehsul Statusu"
-                                               className="mb-0">
-                                        <Checkbox/>
+                                        className="mb-0">
+                                        <Checkbox />
                                     </Form.Item>
                                     <span className='ms-2 t_8F'>Katlanarak gitsin</span>
                                 </div>
@@ -534,9 +532,9 @@ const General = (checkData) => {
                                 </Form.Item>
                             </Form>*/}
                             <Form.List name={['price', 'salesPrices']}>
-                                {(fields, {add, remove}) => (
+                                {(fields, { add, remove }) => (
                                     <>
-                                        {fields.map(({key, name, fieldKey, ...restField}) => (
+                                        {fields.map(({ key, name, fieldKey, ...restField }) => (
                                             <Space key={key} style={{
                                                 display: 'flex',
                                                 marginBottom: 0,
@@ -547,24 +545,24 @@ const General = (checkData) => {
                                                     Satış fiyatı:
                                                 </div>
                                                 <div className="d-flex align-items-center"
-                                                     style={{display: 'flex', marginBottom: 12,}}>
+                                                    style={{ display: 'flex', marginBottom: 12, }}>
                                                     <Form.Item
                                                         {...restField}
                                                         name={[name, 'value']}
-                                                        style={{width: '100%', marginLeft: 'auto', marginBottom: 0,}}
+                                                        style={{ width: '100%', marginLeft: 'auto', marginBottom: 0, }}
                                                         fieldKey={[fieldKey, 'value']}
-                                                        rules={[{required: true, message: 'Lütfen bir değer giriniz'}]}
+                                                        rules={[{ required: true, message: 'Lütfen bir değer giriniz' }]}
                                                     >
                                                         <div className='d-flex justify-content-end'>
                                                             <InputNumber min={0} placeholder="Value"
-                                                                         style={{width: '100%'}}/>
+                                                                style={{ width: '100%' }} />
                                                         </div>
                                                     </Form.Item>
 
                                                     <Form.Item
                                                         {...restField}
                                                         name={[name, 'currencyIdHash']}
-                                                        style={{marginBottom: 0, marginLeft: 8}}
+                                                        style={{ marginBottom: 0, marginLeft: 8 }}
                                                         fieldKey={[fieldKey, 'currencyIdHash']}
                                                         rules={[{
                                                             required: true,
@@ -572,7 +570,7 @@ const General = (checkData) => {
                                                         }]}
                                                     >
                                                         <Select
-                                                            style={{minWidth: 80}}
+                                                            style={{ minWidth: 80 }}
                                                             showSearch
                                                             optionFilterProp="label"
                                                             filterOption={(input, option) =>
@@ -588,13 +586,13 @@ const General = (checkData) => {
                                                     </Form.Item>
 
                                                     <MinusCircleOutlined onClick={() => remove(name)}
-                                                                         style={{marginLeft: 8}}/>
+                                                        style={{ marginLeft: 8 }} />
                                                 </div>
                                             </Space>
                                         ))}
                                         <Form.Item>
                                             <Button type="dashed" onClick={() => add()}
-                                                    icon={<PlusOutlined/>}>
+                                                icon={<PlusOutlined />}>
                                                 Satış fiyatı Ekle
                                             </Button>
                                         </Form.Item>
@@ -605,38 +603,38 @@ const General = (checkData) => {
                             {/* Purchase Prices */}
                             <Title level={4}>Purchase Prices</Title>
                             <Form.List name={['price', 'purchasePrices']}>
-                                {(fields, {add, remove}) => (
+                                {(fields, { add, remove }) => (
                                     <>
-                                        {fields.map(({key, name, fieldKey, ...restField}) => (
+                                        {fields.map(({ key, name, fieldKey, ...restField }) => (
                                             <Space key={key} style={{
                                                 display: 'flex',
                                                 marginBottom: 0,
                                                 justifyContent: 'space-between',
                                                 width: '100%'
                                             }}
-                                                   align="baseline">
+                                                align="baseline">
                                                 <div>
                                                     Aliş fıyatı:
                                                 </div>
                                                 <div className="d-flex align-items-center"
-                                                     style={{display: 'flex', marginBottom: 12,}}>
+                                                    style={{ display: 'flex', marginBottom: 12, }}>
                                                     <Form.Item
                                                         {...restField}
                                                         name={[name, 'value']}
-                                                        style={{width: '100%', marginLeft: 'auto', marginBottom: 0,}}
+                                                        style={{ width: '100%', marginLeft: 'auto', marginBottom: 0, }}
                                                         fieldKey={[fieldKey, 'value']}
-                                                        rules={[{required: true, message: 'Lütfen bir değer giriniz'}]}
+                                                        rules={[{ required: true, message: 'Lütfen bir değer giriniz' }]}
                                                     >
                                                         <div className='d-flex justify-content-end'>
                                                             <InputNumber min={0} placeholder="Value"
-                                                                         style={{width: '100%'}}/>
+                                                                style={{ width: '100%' }} />
                                                         </div>
                                                     </Form.Item>
 
                                                     <Form.Item
                                                         {...restField}
                                                         name={[name, 'currencyIdHash']}
-                                                        style={{marginBottom: 0, marginLeft: 8, minWidth: 80}}
+                                                        style={{ marginBottom: 0, marginLeft: 8, minWidth: 80 }}
                                                         fieldKey={[fieldKey, 'currencyIdHash']}
                                                         rules={[{
                                                             required: true,
@@ -654,13 +652,13 @@ const General = (checkData) => {
                                                     </Form.Item>
 
                                                     <MinusCircleOutlined onClick={() => remove(name)}
-                                                                         style={{marginLeft: 8}}/>
+                                                        style={{ marginLeft: 8 }} />
                                                 </div>
                                             </Space>
                                         ))}
                                         <Form.Item>
                                             <Button type="dashed" onClick={() => add()}
-                                                    icon={<PlusOutlined/>}>
+                                                icon={<PlusOutlined />}>
                                                 Aliş fıyatı Ekle
                                             </Button>
                                         </Form.Item>
@@ -671,9 +669,9 @@ const General = (checkData) => {
                             {/* Cost Prices */}
                             <Title level={4}>Cost Prices</Title>
                             <Form.List name={['price', 'costPrices']}>
-                                {(fields, {add, remove}) => (
+                                {(fields, { add, remove }) => (
                                     <>
-                                        {fields.map(({key, name, fieldKey, ...restField}) => (
+                                        {fields.map(({ key, name, fieldKey, ...restField }) => (
                                             <Space key={key} style={{
                                                 display: 'flex',
                                                 marginBottom: 0,
@@ -684,17 +682,17 @@ const General = (checkData) => {
                                                     Maaliyat:
                                                 </div>
                                                 <div className="d-flex align-items-center"
-                                                     style={{display: 'flex', marginBottom: 12,}}>
+                                                    style={{ display: 'flex', marginBottom: 12, }}>
                                                     <Form.Item
                                                         {...restField}
                                                         name={[name, 'value']}
                                                         fieldKey={[fieldKey, 'value']}
-                                                        style={{width: '100%', marginLeft: 'auto', marginBottom: 0,}}
-                                                        rules={[{required: true, message: 'Lütfen bir değer giriniz'}]}
+                                                        style={{ width: '100%', marginLeft: 'auto', marginBottom: 0, }}
+                                                        rules={[{ required: true, message: 'Lütfen bir değer giriniz' }]}
                                                     >
                                                         <div className='d-flex justify-content-end'>
                                                             <InputNumber min={0} placeholder="Value"
-                                                                         style={{width: '100%'}}/>
+                                                                style={{ width: '100%' }} />
                                                         </div>
                                                     </Form.Item>
 
@@ -702,7 +700,7 @@ const General = (checkData) => {
                                                         {...restField}
                                                         name={[name, 'currencyIdHash']}
                                                         fieldKey={[fieldKey, 'currencyIdHash']}
-                                                        style={{marginBottom: 0, marginLeft: 8, minWidth: 80}}
+                                                        style={{ marginBottom: 0, marginLeft: 8, minWidth: 80 }}
                                                         rules={[{
                                                             required: true,
                                                             message: 'Lütfen bir para birimi seçiniz'
@@ -719,12 +717,12 @@ const General = (checkData) => {
                                                     </Form.Item>
 
                                                     <MinusCircleOutlined onClick={() => remove(name)}
-                                                                         style={{marginLeft: 8}}/>
+                                                        style={{ marginLeft: 8 }} />
                                                 </div>
                                             </Space>
                                         ))}
                                         <Form.Item>
-                                            <Button type="dashed" onClick={() => add()} icon={<PlusOutlined/>}>
+                                            <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
                                                 Maaliyat ekle
                                             </Button>
                                         </Form.Item>
