@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, Checkbox, Radio, } from 'antd';
+import {Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, Checkbox, Radio, notification,} from 'antd';
 
 
 
@@ -27,12 +27,24 @@ import Producer from './Component/Additional discount/producer';
 import Users from './Component/Users';
 import Oil from './Component/Oil Sales';
 import Integrated from './Component/Integrated';
+import {AdminApi} from "../../api/admin.api";
+import {useNavigate, useParams} from "react-router-dom";
+import General from "./Component/General";
+import ModalDiscount from "./Component/Modal/modalDiscount";
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const Clients = () => {
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
+    const [showDiscount, setShowDiscount] = useState(false);
+    const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState(null);
+    const [tabDisable, setTabDisable] = useState(false);
+    const [isShowProduct, setShowProduct] = useState();
+    const [manufacturerList, setManufacturerLists] = useState();
+    const [changeData, setChangeData] = useState();
+    let { id } = useParams();
     const [formData, setFormData] = useState({
         kodu: '',
         uretici: '',
@@ -43,9 +55,32 @@ const Clients = () => {
         qemNo: '',
     });
 
+    const switchTab = (tab) => {
+        switch (tab) {
+            case 1:
+                return 'GetSearchTable'
+            case 2:
+                return ''
+            case 3:
+                return 'GetSearchEquivalentProducts'
+        }
+    }
+    useEffect(() => {
+        setActiveTab(1)
+        console.log(id, 'id')
+        if (id) {
+            onProductDatas(id);
+            onProductData();
+            setTabDisable(false)
+        } else {
+            setTabDisable( true)
+
+        }
+    }, [id]);
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
     const handleClose2 = () => setShow2(false);
+    const handleCloseDiscount = () => setShowDiscount(false);
 
     const handleInputChangee = (e) => {
         const { name, value } = e.target;
@@ -66,10 +101,17 @@ const Clients = () => {
     };
 
     const handleShowModal2 = () => {
-        setShow(false);
         setShow2(true);
     };
 
+    const handleShowModalDiscount = () => {
+        setShowDiscount(true);
+    };
+
+    const setManufacturerList = (data) => {
+        setManufacturerLists(data)
+        console.log(data, 'setManufacturerList')
+    }
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -115,6 +157,22 @@ const Clients = () => {
 
 
 
+    const openNotification = (message, description, error) => {
+        if (error) {
+            notification.error({
+                message,
+                description,
+                placement: 'topRight'
+            });
+        } else {
+            notification.info({
+                message,
+                description,
+                placement: 'topRight'
+            });
+        }
+    };
+
 
     const [isBarCode, setIsBarCode] = useState(false);
 
@@ -144,6 +202,37 @@ const Clients = () => {
         buy_rate: '',
     });
 
+
+    const [isSearchTables, setSearchTable] = useState([]);
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setdefaultPageSize] = useState(10);
+    const [forms, setdefaultforms] = useState();
+
+    const onSearchData = (values) => {
+        onInitialSearch(values);
+    };
+
+    const onPageSize = (values) => {
+        setCurrent(values.current);
+        setdefaultPageSize(values.pageSize);
+        setdefaultforms(values.forms)
+    };
+
+
+    const onProductDatas = (values) => {
+        let data
+        AdminApi.customerGetById({id: values}).then((res) => {
+            data = res
+        }).catch((err) => {
+            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+        }).finally(r => {
+            setShowProduct(data);
+            console.log(data, '')
+        })
+    };
+    const onProductData = () => {
+        setShow2(false);
+    };
     const [isDisabled, setIsDisabled] = useState(false);
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
@@ -181,7 +270,7 @@ const Clients = () => {
     };
 
     const handleEditClick = () => {
-        setIsDisabled(false); // Inputları yeniden düzenlenebilir hale getir
+        setIsDisabled(false);
     };
 
     const handleSaveClickk = () => {
@@ -189,38 +278,114 @@ const Clients = () => {
         setTimeout(() => {
             setIsSaveDisabled(false);
             setIsDisabled(true);
-        }, 1000); // Örnek olarak 1 saniye sonra butonu tekrar aktif yapıyoruz
+        }, 1000);
+    };
+    const getSearch = (values) => {
+        const data = {
+            page: current - 1,
+            pageSize: pageSize,
+            filters: values
+        }
+
+        const searchUrl = switchTab(activeTab)
+        // AdminApi[searchUrl](data).then((res) => {
+        AdminApi.GetCustomerListBySearch(data).then((res) => {
+            if (res) {
+                setSearchTable(res);
+                handleShowModal2()
+            }
+        }).catch((error) => {
+            // openNotification('Xəta baş verdi', error.response.data.message, true)
+        });
+    }
+
+
+    const onInitialSearch = (values) => {
+        console.log('Success:', values);
+        if (!values) return
+        navigate(`/Clients`);
+        const result = Object.keys(values).filter(key => values[key] !== undefined && values[key] !== null && values[key] !== "").map((key) => ({
+            value: values[key],
+            fieldName: key,
+            equalityType: key === 'paymentTermIdHash' ? 'Equal' : 'Contains'
+        }));
+        getSearch(result);
     };
 
+
+    const additionalDiscount = (data) => {
+        console.log(data, 'additionlar data');
+
+        const dataMadel = {
+            customerIdHash: id,
+            termDay: Number(data.termDay),
+            manufacturerIds: manufacturerList,
+            discounts: data.discounts
+        }
+
+        AdminApi.AddManufacturerAdditionalDiscount(dataMadel).then(res => {
+            console.log(res)
+            setChangeData(res)
+            handleCloseDiscount()
+        })
+
+        console.log(dataMadel, 'dataMadel dataMadel dataMadel')
+    }
 
 
     return (
         <div className="home">
             <Card className="search-card">
                 <Title level={4}>Ürün Bilgileri</Title>
-                <Form layout="vertical" className="product-search-form">
-                    <div className='d-flex'>
+                <Form name="filter_form" layout="vertical" onFinish={onInitialSearch}
+                      autoComplete="off">
+                    <div className="d-flex w-100 justify-content-between">
 
-                        <Form.Item label="Kodu">
-                            <Input className='position-relative' />
-                            <img className='position-absolute' style={{ left: "152px", top: "6px" }} src={Images.Search_blue} alt="search" placeholder="123544" />
-                        </Form.Item>
-                        <Form.Item label="Unvani" className='ms-3'>
-                            <Input className='position-relative' />
-                            <img className='position-absolute' style={{ left: "152px", top: "6px" }} src={Images.Search_blue} alt="search" placeholder="123544" />
-                        </Form.Item>
+                        <Row className="w-100">
+                            <Col span={12} md={6} className="p-2">
+                                <Form.Item label="Kodu"
+                                           name="code"
+                                           rules={[
+                                               {
+                                                   required: false,
+                                               },
+                                           ]} className="w-100">
+                                    {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
+                                 src={Images.Search_blue} alt="search"/>*/}
+                                    <Input className='position-relative' placeholder="123544"/>
+                                </Form.Item>
+                            </Col>
+                            <Col span={12} md={6} className="p-2">
+                                <Form.Item label="Ünvan"
+                                           name="customerName"
+                                           rules={[
+                                               {
+                                                   required: false,
+                                               },
+                                           ]} className="w-100">
+                                    <Input className='position-relative' placeholder="123544"/>
+                                    {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
+                                 src={Images.Search_blue} alt="search"/>*/}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+
+                        {/* <Form.Item label="Adı">
+                            <Input placeholder="123544"/>
+                        </Form.Item>*/}
+                        {/*<div className="product-statss">
+                                <div>
+                                    <span className='fs_16 fw_700'>Ürün No: 234</span>
+                                    <span className='fs_16 mt-3 fw_700'>Entegre No: 12</span>
+                                </div>
+                            </div>*/}
                     </div>
-                    <div className="product-statss">
-                        <div>
-                            <span className='fs_16 fw_700'>Ürün No: 234</span>
-                            <span className='fs_16 mt-3 fw_700'>Entegre No: 12</span>
-                        </div>
-                    </div>
-                </Form>
-                <Form layout="inline" className="product-form">
+
                     <Form.Item>
-                        <Button type="default" className="Delete_red" icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
-                        <Button type="default" style={{ marginLeft: '8px' }} className="Bin_Blue" icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
+                        <Button type="default" className="Delete_red"
+                                icon={<img src={Images.delete_red} alt="delete"/>}>Temizle</Button>
+                        <Button type="default" htmlType="submit" style={{marginLeft: '8px'}} className="Bin_Blue"
+                                icon={<img src={Images.Search_blue} alt="search"/>}>Ara</Button>
                     </Form.Item>
                 </Form>
             </Card>
@@ -252,147 +417,19 @@ const Clients = () => {
                         handleShowModal2={handleShowModal2}
                     />
                     <SearchModal2
-                        show2={show2}
+                        shows={show2}
+                        searchData={isSearchTables}
+
+                        activeTab={activeTab}
+
+                        searchChange={onSearchData}
+                        searchPageSize={onPageSize}
+                        productData={onProductData}
                         handleClose={handleClose2}
                         handleClear={handleClear}
                     />
                     <Divider />
-                    <Row gutter={16}>
-
-                        <Col span={24}>
-                            <Card className="info-card" title="Adress Bilgileri">
-                                <Form layout="Horizontal">
-                                    <Form.Item label="Adres">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input
-                                                value={inputs.product_code}
-                                                disabled={isDisabled}
-                                                onChange={handleInputChangee}
-                                                style={{ width: "240px" }}
-                                            />
-
-
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Il">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input
-                                                value={inputs.seller_code}
-                                                disabled={isDisabled}
-                                                onChange={handleInputChangee}
-                                                style={{ width: "240px" }} />
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Ilce">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input
-                                                value={inputs.company}
-                                                disabled={isDisabled}
-                                                onChange={handleInputChangee}
-                                                style={{ width: "240px" }}
-                                            />
-                                        </div>
-                                    </Form.Item>
-                                </Form>
-                            </Card>
-
-                            <Card className="info-card " title="Ticari Bilgileri">
-
-                                <Form layout="Horizontal">
-                                    <Form.Item label="Vergi Idaresi">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px" }} />
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Vergi Numarasi">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px" }} />
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Branch">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px" }} className='position-relative' disabled />
-                                            <img className='position-absolute' style={{ top: "13px", right: "10px" }} src={Images.Down2_gray} alt="" />
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Transfer Store">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px" }} className='position-relative' disabled />
-                                            <img className='position-absolute' style={{ top: "13px", right: "10px" }} src={Images.Down2_gray} alt="" />
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="1C Doviz">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px" }} className='position-relative' disabled />
-                                            <img className='position-absolute' style={{ top: "13px", right: "10px" }} src={Images.Down2_gray} alt="" />
-                                        </div>
-                                    </Form.Item>
-                                    <h4 className='t_44 fs_16 fw_600 mt-5'>
-                                        Iletisim Bilgileri
-                                    </h4>
-                                    <div className="Line_E2"></div>
-
-                                    <Form layout="horizontal" className="mt-3">
-                                        <Form.Item label="Tel 1 - Tel 2">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "110px" }} />
-                                                <Input style={{ width: "110px" }} className='ms-3' />
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="GSM 1 - GSM 2">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "110px" }} />
-                                                <Input style={{ width: "110px" }} className='ms-3' />
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Faks">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px" }} />
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="E- Posta">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px" }} />
-                                            </div>
-                                        </Form.Item>
-                                    </Form>
-
-                                    <h4 className='t_44 fs_16 fw_600 mt-5'>
-                                        Entegrasyon Kodlari
-                                    </h4>
-                                    <div className="Line_E2"></div>
-
-                                    <Form layout="horizontal" className="mt-3">
-                                        <Form.Item label="B2B Kodu">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px" }} />
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Vadeli">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px" }} />
-                                            </div>
-                                        </Form.Item>
-
-                                        <h4 className='t_44 fs_16 fw_600 mt-5'>
-                                            Puan çarpani
-                                        </h4>
-                                        <div className="Line_E2"></div>
-
-                                        <Form layout="horizontal" className="mt-3">
-                                            <Form.Item label="Puan çarpani">
-                                                <div className='d-flex justify-content-end'>
-                                                    <Input style={{ width: "240px" }} />
-                                                </div>
-                                            </Form.Item>
-                                        </Form>
-                                    </Form>
-                                </Form>
-
-                            </Card>
-
-                        </Col>
-                    </Row>
+                    <General isSetData={isShowProduct} handleShowModal2={handleShowModal2}/>
                 </TabPane>
                 <TabPane tab="Diger Bilgileri" key="2">
                     <Row gutter={16}>
@@ -1045,26 +1082,26 @@ const Clients = () => {
                         </Col>
                     </Row>
                     <Row gutter={16} className="mt-4" justify="space-around">
-                        <Col span={9}>
+                        <Col span={12}>
                             <span className='fs_24 fw_600 t_18'>
                                 Aktiv Uretici
                             </span>
                             <div className="mt-4"></div>
-                            <Producer className="mt-4" />
-
+                            <Producer showModalDiscount={handleShowModalDiscount} coolBackList={setManufacturerList} changeDatas={changeData} className="mt-4"/>
                         </Col>
 
-                        <Col span={9}>
+                        <Col span={12}>
                             <span className='fs_24 fw_600 t_18'>
                                 Pasif Uretici
                             </span>
                             <div className="mt-4"></div>
-                            <Discount className="mt-4" />
+
+                            <Discount changeDatas={changeData} className="mt-4"/>
 
                         </Col>
 
                     </Row>
-
+                    <ModalDiscount handleClose={handleCloseDiscount} show={showDiscount} discountData={additionalDiscount}/>
                 </TabPane>
                 <TabPane tab="Kullanicilar" key="13">
                     <Row gutter={16}>

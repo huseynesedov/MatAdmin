@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {BrowserRouter, BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
 import {Layout, Spin} from "antd";
 
@@ -12,12 +12,12 @@ import Login from "./pages/Login/login";
 import {AuthProvider, useAuth} from "./AuthContext";
 
 function AppContent() {
-    const {logged, loading, loginLoading, logout} = useAuth();
-
+    const {logged, loading} = useAuth();
+    const load =  localStorage.getItem("loading");
+    const [loads, setLoadingValue] = useState(false);
     useEffect(() => {
-        console.log("Logged In:", logged);
-
-    }, [logged]);
+        setLoadingValue(load)
+    }, [load]);
 
     if (loading) {
         return <SkeletonScreen/>;
@@ -25,15 +25,15 @@ function AppContent() {
 
 
     return logged ? (
-        <div style={{minHeight: "100vh !important", width: '100%'}} className='d-flex w-100'>
-            <div style={{width: 250}} className="site-layout-background">
-                <Sidebar/>
+            <div style={{minHeight: "100vh !important", width: '100%'}} className='d-flex w-100'>
+                <div style={{width: 250}} className="site-layout-background">
+                    <Sidebar/>
+                </div>
+                <div className='main'>
+                    <Header/>
+                    <RouteList/>
+                </div>
             </div>
-            <div className='main'>
-                <Header/>
-                <RouteList/>
-            </div>
-        </div>
     ) : (
         <Routes>
             <Route path="/login" element={<Login/>}/>

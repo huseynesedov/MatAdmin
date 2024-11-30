@@ -11,7 +11,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({children}) => {
     const [logged, setLoggedIn] = useState(false);
-    const [loading, setLoading] = useState(true); // İlk yükleme durumunu kontrol etmek için
+    const [loading, setLoading] = useState(true);
     const [loginLoading, setLoginLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     const AdminLogin = (userCode, passwordHash) => {
-        setLoginLoading(true);
+        setLoading(true);
         AccountApi.AdminLogin({userCode, passwordHash})
             .then((res) => {
                 setLoggedIn(true);
@@ -65,7 +65,7 @@ export const AuthProvider = ({children}) => {
                 });
             })
             .finally(() => {
-                setLoginLoading(false);
+                setLoading(false);
             });
     };
 

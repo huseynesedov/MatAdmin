@@ -8,7 +8,8 @@ import {AdminApi} from "../../../../api/admin.api";
 import Title from "antd/es/skeleton/Title";
 import {useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from "../../../../AuthContext";
-const { confirm } = Modal;
+
+const {confirm} = Modal;
 
 const General = ({isSetData, handleShowModal2}) => {
     const [data, setData] = useState([]);
@@ -196,10 +197,10 @@ const General = ({isSetData, handleShowModal2}) => {
                 });
 
                 console.log(fetchedModelsCheck, 'fetchedModelsCheck fetchedModelsCheck fetchedModelsCheck v ')
-               setTimeout(() => {
-                   setCheckVehicleModel(fetchedModelsCheck);
-                   setCheckVehicleModelHistory(fetchedModels);
-               }, 1000)
+                setTimeout(() => {
+                    setCheckVehicleModel(fetchedModelsCheck);
+                    setCheckVehicleModelHistory(fetchedModels);
+                }, 1000)
             }
         } else {
 
@@ -349,6 +350,8 @@ const General = ({isSetData, handleShowModal2}) => {
             salesPrices
         }
 
+        console.log(prices, 'prices prices ')
+
 
         if (id) {
             let getBrands = [];
@@ -471,10 +474,18 @@ const General = ({isSetData, handleShowModal2}) => {
          })*/
 
 
-        let data = {...value, ...{productVehicleBrands: brand}, ...{productVehicleModels: model}, ...{price: prices},}
-
+        console.log(id, 'url id')
         if (id) {
-            AdminApi.UpdateProduct({...data, ...{idHash: id, code: isShowProduct?.code}}).then(res => {
+            let data = {
+                ...value,
+                productVehicleBrands: brand,
+                productVehicleModels: model,
+                productPrice: prices,
+                idHash: id,
+                code: isShowProduct?.code
+            }
+
+            AdminApi.UpdateProduct(data).then(res => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yeniləndi`, false)
             }).catch((err) => {
                 openNotification('Xəta baş verdi', '-', true)
@@ -484,8 +495,16 @@ const General = ({isSetData, handleShowModal2}) => {
             })
 
         } else {
-            AdminApi.AddProduct({...data, ...{productProperties: [{propertyValueIdHash: productPropertyVal}]}}).then(res => {
+            let data = {
+                ...value,
+                productVehicleBrands: brand,
+                productVehicleModels: model,
+                price: prices,
+                productProperties: [{propertyValueIdHash: productPropertyVal}]
+            }
+            AdminApi.AddProduct(data).then(res => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yaradıldı`, false)
+                if (res) navigate(`/home/${res.idHash}`)
             }).catch((err) => {
                 openNotification('Xəta baş verdi', '-', true)
             }).finally((r) => {
@@ -539,7 +558,7 @@ const General = ({isSetData, handleShowModal2}) => {
         const newPrice = {
             value: 0,
             currencyIdHash: '',
-            ...(id && {priceIdHash: '',}) // Eğer id varsa yeni özellikleri ekle
+            ...(id && {priceIdIdHash: '',})
         };
         setPriceFn(Array.isArray(prices) && prices.length > 0 ? [...prices, newPrice] : [newPrice]);
     };
@@ -681,7 +700,7 @@ const General = ({isSetData, handleShowModal2}) => {
         console.log(id, ';;;')
         confirm({
             title: 'Silməyə əminsinizmi?',
-            icon: <ExclamationCircleFilled />,
+            icon: <ExclamationCircleFilled/>,
             content: '',
             okText: 'Sil',
             okType: 'danger',
@@ -697,6 +716,13 @@ const General = ({isSetData, handleShowModal2}) => {
 
 
     const onFinishFailed = (errorInfo) => {
+        let prices = {
+            costPrices,
+            purchasePrices,
+            salesPrices
+        }
+
+        console.log(prices, 'prices prices ')
         console.log('Failed:', errorInfo);
     };
     return (
@@ -1085,7 +1111,7 @@ const General = ({isSetData, handleShowModal2}) => {
                                 {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
                                 {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
                             </Form>
-                            {/* <Form.Item name="discount" label="Endirim">
+                             {/*<Form.Item name="discount" label="Endirim" className="mt-5">
                                 <InputNumber min={0} placeholder="Value"
                                              style={{width: '100%'}}/>
                             </Form.Item>*/}

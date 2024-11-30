@@ -37,13 +37,14 @@ import {AdminApi} from "../../api/admin.api";
 import {ProductApi} from "../../api/product.api";
 import General from "./components/General";
 import {useNavigate, useParams} from "react-router-dom";
+import {useAuth} from "../../AuthContext";
 
 const {Title} = Typography;
 const {TabPane} = Tabs;
 
 const Home = () => {
+
     const [show, setShow] = useState(false);
-    const [spinShow, setspinShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [tabDisable, setTabDisable] = useState(false);
     const [activeTab, setActiveTab] = useState(null);
@@ -67,9 +68,9 @@ const Home = () => {
             onProductDatas(id);
             onProductData();
             setTabDisable(false)
+
         } else {
             setTabDisable( true)
-
         }
     }, [id]);
 
@@ -216,9 +217,9 @@ const Home = () => {
                 selling_rate: selectedItem.selling_rate || '',
                 buy_rate: selectedItem.buy_rate || ''
             });
-            setIsDisabled(true); // Eğer veri varsa inputları disable yap
-            setIsSaveDisabled(false);  // Save butonunu etkinleştir
-            setIsDeleteDisabled(false); // Delete butonunu etkinleştir
+            setIsDisabled(true);
+            setIsSaveDisabled(false);
+            setIsDeleteDisabled(false);
         }
     }, [selectedItem]);
 
@@ -232,7 +233,7 @@ const Home = () => {
     };
 
     const handleEditClick = () => {
-        setIsDisabled(false); // Inputları yeniden düzenlenebilir hale getir
+        setIsDisabled(false);
     };
 
     const handleSaveClickk = () => {
@@ -240,7 +241,7 @@ const Home = () => {
         setTimeout(() => {
             setIsSaveDisabled(false);
             setIsDisabled(true);
-        }, 1000); // Örnek olarak 1 saniye sonra butonu tekrar aktif yapıyoruz
+        }, 1000);
     };
     const openNotification = (message, description, error) => {
         if (error) {
@@ -266,10 +267,6 @@ const Home = () => {
 
 
     useEffect(() => {
-
-    }, [isShowProduct]);
-
-    useEffect(() => {
         onInitialSearch(forms);
     }, [current, pageSize]);
 
@@ -284,6 +281,7 @@ const Home = () => {
         }
     }
     const getSearch = (values) => {
+
         const data = {
             page: current - 1,
             pageSize: pageSize,
@@ -299,7 +297,7 @@ const Home = () => {
             }
         }).catch((error) => {
             // openNotification('Xəta baş verdi', error.response.data.message, true)
-        });
+        })
     }
 
 
@@ -340,8 +338,6 @@ const Home = () => {
     };
 
     return (
-
-        <Spin spinning={spinShow}>
             <div className="home">
                 <Card className="search-card">
                     <Title level={4}>Ürün Bilgileri</Title>
@@ -620,7 +616,6 @@ const Home = () => {
                     </TabPane>*/}
                 </Tabs>
             </div>
-        </Spin>
     );
 };
 

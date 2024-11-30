@@ -13,7 +13,7 @@ export const AdminApi = {
         return BaseApi.delete(apiRoutes.customer.addcustomerproducts, { ...params });
     },
     AddManufacturerAdditionalDiscount(data) {
-        return BaseApi.post(apiRoutes.customer.addmanufactureradditionaldiscount, data, data);
+        return BaseApi.post(apiRoutes.customer.addmanufactureradditionaldiscount, data);
     },
     AddProductAdditionalDiscount(data) {
         return BaseApi.post(apiRoutes.customer.addproductadditionaldiscount, data, data);
@@ -24,15 +24,20 @@ export const AdminApi = {
     DeleteCustomerProductByIds(params) {
         return BaseApi.delete(apiRoutes.customer.deletecustomerproductByIds, { ...params });
     },
-    DeleteManufacturerAdditionalDiscount(userId) {
-        return BaseApi.delete(apiRoutes.customer.deletemanufactureradditionaldiscount, { data: { id: userId } });
+    DeleteManufacturerAdditionalDiscount(params) {
+        return BaseApi.deleteNew(apiRoutes.customer.deletemanufactureradditionaldiscount, params);
     },
     DeleteProductAdditionalDiscount(userId) {
         return BaseApi.delete(apiRoutes.customer.deleteproductadditionaldiscount, { data: { id: userId } });
     },
     GetById(userId) {
-        console.log(apiRoutes.adminProduct, 'adminProduct')
         return BaseApi.get(apiRoutes.adminProduct.getById, userId);
+    },
+    GetById(userId) {
+        return BaseApi.get(apiRoutes.adminProduct.getById, userId);
+    },
+    customerGetById(userId) {
+        return BaseApi.get(apiRoutes.customer.getById, userId);
     },
     GetCustomerListBySearch(data) {
         return BaseApi.post(apiRoutes.customer.getcustomerlistbysearch, data);
@@ -45,6 +50,9 @@ export const AdminApi = {
     },
     GetManufacturerAdditionalDiscountsByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.getmanufactureradditionaldiscountsbycustomerId, data);
+    },
+    getAdminManufacturerList(data) {
+        return BaseApi.post(apiRoutes.customer.getAdminManufacturerLists, data);
     },
     GetProductAdditionalDiscountsByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.getproductadditionaldiscountsbycustomerId, data);
@@ -74,6 +82,10 @@ export const AdminApi = {
 
     GetPaymentTermList() {
         return BaseApi.get(apiRoutes.catalog.getPaymentTermList, '');
+    },
+
+    GetDiscountList() {
+        return BaseApi.get(apiRoutes.catalog.discountList, '');
     },
 
     // !!!!!!!!! Order !!!!!!!!!

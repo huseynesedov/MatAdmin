@@ -515,3 +515,8 @@ a{
 .ant-form-item-explain-error {
     float: right !important;
 }
+
+.ant-spin {
+    position: fixed !important;
+    max-height: 100vh !important;
+}

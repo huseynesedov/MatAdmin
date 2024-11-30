@@ -97,6 +97,7 @@ export const apiRoutes = {
         getcustomermanufacturersbycustomerId: '/admin/v1/Customer/GetCustomerManufacturersByCustomerId',
         getcustomerproductsbycustomerId: '/admin/v1/Customer/GetCustomerProductsByCustomerId',
         getmanufactureradditionaldiscountsbycustomerId: '/admin/v1/Customer/GetManufacturerAdditionalDiscountsByCustomerId',
+        getAdminManufacturerLists: '/admin/v1/Customer/GetAdminManufacturerList',
         getproductadditionaldiscountsbycustomerId: '/admin/v1/Customer/GetProductAdditionalDiscountsByCustomerId',
         updateCustomer: '/admin/v1/Customer/UpdateCustomer',
         updatecustomermanufacturerByIds: '/admin/v1/Customer/UpdateCustomerManufacturerByIds',
@@ -107,7 +108,8 @@ export const apiRoutes = {
     },
 
 
-    // Admnin-Order
+
+// Admnin-Order
     order: {
         getOrderList: '/admin/v1/Order/GetOrderList',
         undoOrderForOrderDetail: '/admin/v1/Order/UndoOrderForOrderDetail',
@@ -211,6 +213,7 @@ export const apiRoutes = {
     // Catalog
     catalog: {
         oemTypeList: '/catalog/v1/Product/GetOemTypeList',
+        discountList: '/catalog/v1/Discount/GetDiscountList',
         baseTest: '/catalog/v1/Base/Test',
         getVehicleModels: '/catalog/v1/VehicleModel/GetList',
         getProductGroupList: '/catalog/v1/Product/GetProductGroupList',

@@ -1,44 +1,61 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import { Button, Typography, Checkbox, Card, Form, Input, Table } from 'antd';
+import React, {useContext, useEffect, useState} from 'react';
+import {Modal} from 'react-bootstrap';
+import {Button, Typography, Checkbox, Card, Form, Input, Table, Col, Row, Select, Pagination} from 'antd';
 import Images from '../../../../assets/images/js/Images';
-import { SearchContext } from '../../../../searchprovider';
+import {SearchContext} from '../../../../searchprovider';
+import {AdminApi} from "../../../../api/admin.api";
+import {CatalogApi} from "../../../../api/catalog.api";
+import {useNavigate} from "react-router-dom";
 
-const { Title } = Typography;
 
-const SearchModal2 = ({ show2, handleClose, handleClear }) => {
+const {Title} = Typography;
+
+const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, productData, searchPageSize}) => {
     const [data, setData] = useState([]);
-    const { setSelectedItem } = useContext(SearchContext); // Context'ten setSelectedItem'i alın
+    const {setSelectedItem} = useContext(SearchContext);
+    const {Option} = Select;
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setdefaultPageSize] = useState(10);
+    const navigate = useNavigate();
 
     useEffect(() => {
         createData();
-    }, []);
+        //facturersProductCount();
+    }, [searchData]);
+
+
+    useEffect(() => {
+        let forms = form.getFieldsValue()
+        searchPageSize({current, pageSize, forms})
+    }, [current, pageSize]);
+
 
     const createData = () => {
         let arr = [];
-        for (let i = 0; i < 5; i++) {
-            arr.push({
-                id: i + 1,
-                code: `test${i + 1}`,
-                location: `test`,
-                terms: `test`,
-                status: 'test',
-                spare_parts: 'test',
-                oil: 'test',
-                aku: 'test',
-            });
-        }
+        arr = searchData?.data?.map(res => {
+            return {
+                id: res.idHash,
+                customerCode: res.customerCode,
+                customerName: res.customerName,
+                paymentTermName: res.paymentTermName,
+            }
+        })
+
         setData(arr);
     };
+
 
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
-    // Satıra tıklanma olayını yönetme fonksiyonu
+
     const handleRowClick = (record) => {
-        setSelectedItem(record); // Tıklanan satırın verisini context'e kaydedin
-        handleClose(); // Modalı kapatın
+        console.log(record, 'record')
+        // onProduct(record);
+
+        navigate(`/clients/${record.id}`);
+        handleClose();
     };
     const columns = [
         {
@@ -46,89 +63,71 @@ const SearchModal2 = ({ show2, handleClose, handleClear }) => {
             width: 20,
             dataIndex: 'id',
             key: 'id',
-            render: () => <Checkbox />,
+            render: () => <Checkbox/>,
         },
         {
             title: 'Kodu',
             width: 77,
-            dataIndex: 'code',
-            key: 'code',
+            dataIndex: 'customerCode',
+            key: 'customerCode',
             sorter: true,
             render: (text, record) => (
-                <div className="age-column" onClick={() => handleRowClick(record)}>{text}</div>
+                <div className="age-column">{text}</div>
             ),
-
         },
         {
-            title: 'Unvani',
+            title: 'Müştəri adı',
             width: 77,
-            dataIndex: 'location',
-            key: 'location',
+            dataIndex: 'customerName',
+            key: 'customerName',
             sorter: true,
             render: (text, record) => (
-                <div className="age-column" onClick={() => handleRowClick(record)}>{text}</div>
+                <div className="age-column">{text}</div>
             ),
         },
         {
-            title: 'Kosul Kodu',
+            title: 'Koşul Kodu',
             width: 100,
-            dataIndex: 'terms',
-            key: 'terms',
+            dataIndex: 'paymentTermName',
+            key: 'paymentTermName',
             sorter: true,
             render: (text, record) => (
-                <div className="age-column" onClick={() => handleRowClick(record)}>{text}</div>
+                <div className="age-column">{text}</div>
             ),
         },
-        {
-            title: 'Durum',
-            width: 100,
-            dataIndex: 'status',
-            key: 'status',
-            sorter: true,
-            render: (text, record) => (
-                <div className="age-column" onClick={() => handleRowClick(record)}>{text}</div>
-            ),
-        }, {
-            title: 'Yedek Parca',
-            width: 100,
-            dataIndex: 'spare_parts',
-            key: 'spare_parts',
-            sorter: true,
-            render: (record) => (
-                <div className="age-column" onClick={() => handleRowClick(record)}>
-                    <Checkbox />
-                </div>
-            ),
-        }, {
-            title: 'Yağ',
-            width: 100,
-            dataIndex: 'oil',
-            key: 'oil',
-            sorter: true,
-            render: (record) => (
-                <div className="age-column" onClick={() => handleRowClick(record)}>
-                    <Checkbox />
-                </div>
-            ),
-        }, {
-            title: 'Aku',
-            width: 100,
-            dataIndex: 'aku',
-            key: 'aku',
-            sorter: true,
-            render: (record) => (
-                <div className="age-column" onClick={() => handleRowClick(record)}>
-                    <Checkbox />
-                </div>
-            ),
-        }
     ];
+
+
+
+
+
+
+
+    const [form] = Form.useForm();
+
+    const onSearch = (values) => {
+        setCurrent(1)
+        searchChange(values);
+    };
+    /*const onProduct = (values) => {
+        productData(values);
+    };*/
+    const handleClears = () => {
+        form.resetFields();
+    };
+
+
+    const onChange = (page, pageSize) => {
+        setCurrent(page);
+        setdefaultPageSize(pageSize);
+    };
+
 
     return (
         <Modal
             aria-labelledby="contained-modal-title-vcenter"
             centered
-            show={show2}
+            show={shows}
             onHide={handleClose}
             backdrop="static"
             keyboard={false}
@@ -141,47 +140,98 @@ const SearchModal2 = ({ show2, handleClose, handleClear }) => {
             </Modal.Header>
             <Modal.Body className='d-flex flex-column justify-content-center'>
                 <div className='Search_gray ms-2'>
-                    <Card className="search-card" style={{ border: "none", background: "none" }}>
-                        <div className='d-flex justify-content-between'>
-                            <Title level={4}>Arama Kriteri Oluştur</Title>
-                            <div>
-                                <Button
-                                    type="default"
-                                    className="Delete_red3 fw_500"
-                                    onClick={handleClear}
-                                >
-                                    <img src={Images.delete_red} alt="delete" />
-                                    Temizle
-                                </Button>
-                                <Button
-                                    type="default"
-                                    style={{ marginLeft: '8px' }}
-                                    className="Bin_Blue3"
-                                >
-                                    <img src={Images.Search_blue} alt="search" />
-                                    Ara
-                                </Button>
-                            </div>
-                        </div>
-                        <div className='mt-3' style={{ width: "685px" }}>
-                            <div className='d-flex justify-content-between'>
-                                <Form layout="vertical" className="product-search-form">
-                                    <Form.Item style={{ marginBottom: "15px" }}>
-                                        <Input className='position-relative' placeholder="Kodu" />
-                                        <img className='position-absolute' style={{ left: "152px", top: "6px" }} src={Images.search_gray} alt="search" />
-                                    </Form.Item>
-                                </Form>
-                                <Form layout="vertical" className="product-search-form">
-                                    <Form.Item style={{ marginBottom: "15px" }}>
-                                        <Input placeholder="Kosul Kodu" />
-                                    </Form.Item>
-                                </Form>
-                                <Form layout="vertical" className="product-search-form">
-                                    <Form.Item style={{ marginBottom: "15px" }}>
-                                        <Input placeholder="Unvani" />
-                                    </Form.Item>
-                                </Form>
-                            </div>
+                    <Card className="search-card" style={{border: "none", background: "none"}}>
+
+                        <div className='mt-3'>
+                            <Form form={form} layout="vertical" onFinish={onSearch}>
+                                {/* Başlık ve Butonlar */}
+                                <div className='d-flex justify-content-between mb-3'>
+                                    <Title level={4}>Arama Kriteri Oluştur</Title>
+                                    <div>
+                                        <Button
+                                            type="default"
+                                            className="Delete_red3 fw_500"
+                                            onClick={handleClears}
+                                        >
+                                            <img src={Images.delete_red} alt="delete"/>
+                                            Temizle
+                                        </Button>
+                                        <Button
+                                            type="default"
+                                            htmlType="submit"
+                                            style={{marginLeft: '8px'}}
+                                            className="Bin_Blue3"
+                                        >
+                                            <img src={Images.Search_blue} alt="search"/>
+                                            Ara
+                                        </Button>
+                                    </div>
+                                </div>
+
+
+                                <Row gutter={16}>
+                                    <Col span={8} className="mb-0">
+                                        <Form.Item name="code">
+                                            <Input className='position-relative' placeholder="Kod"/>
+                                        </Form.Item>
+                                    </Col>
+                                    {/* <Col span={8} className="mb-0">
+                                        <Form.Item name="code">
+                                            <Input className='position-relative' placeholder="Ürün Kodu"/>
+                                        </Form.Item>
+                                    </Col>*/}
+                                    {/*<Col span={8}>
+                                        <Form.Item name="ShelfCode">
+                                            <Input placeholder="Raf Adresi" />
+                                        </Form.Item>
+                                    </Col>*/}
+                                    <Col span={8} className="mb-0">
+                                        <Form.Item name="ManufacturerCode">
+                                            <Input placeholder="Üretici Kodu"/>
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={8}>
+                                        <Form.Item name="PaymentTermName">
+                                            <Input placeholder="Koşul Kodu"/>
+                                        </Form.Item>
+                                        {/* <Select
+                                            placeholder="Bir seçenek seçin"
+                                            showSearch
+                                            optionFilterProp="label"
+                                            style={{
+                                                width: 200,
+                                            }}
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            onChange={handleChange}>
+                                            {paymentTermList.map((item, index) => (
+                                                <option key={index} value={item.value}>
+                                                    {item.label}
+                                                </option>
+                                            ))}
+                                        </Select>*/}
+
+
+                                    </Col>
+                                </Row>
+
+                            </Form>
+                            {/*
+                            <Select
+                                labelRender={'sss'}
+                                style={{
+                                    width: '100%',
+                                }}
+
+                            >
+                                    {paymentTermList.map((option) => (
+                                                <Option key={option.label} value={option.value}>
+                                                    {option.label}
+                                                </Option>
+                                            ))}
+                            </Select>*/}
+
                         </div>
                     </Card>
                 </div>
@@ -190,30 +240,31 @@ const SearchModal2 = ({ show2, handleClose, handleClear }) => {
                         rowClassName={rowClassName}
                         columns={columns}
                         dataSource={data}
-                        scroll={{ x: 1500 }}
+                        scroll={{x: 1500}}
                         pagination={false}
                         onRow={(record) => ({
                             onClick: () => handleRowClick(record),
                         })}
-
                     />
                 </div>
-                <hr />
-                <div className="d-flex justify-content-end align-items-center">
+
+                <hr/>
+
+                <Pagination current={current} pageSize={pageSize} onChange={onChange} total={searchData.count} />
+                {/* <div className="d-flex justify-content-end align-items-center">
 
                     <span className='pagination_number fw_500'>
                         1-20 of 406
                     </span>
                     <div className="ms-2">
-                        <img src={Images.Arrow_left_blue} alt="" />
+                        <img src={Images.Arrow_left_blue} alt=""/>
                         <button className='pagination_number ms-2 fw_500'>1</button>
                         <button className='pagination_number ms-2 fw_500'>2</button>
                         <button className='pagination_number ms-2 fw_500'>3</button>
-                        <img src={Images.Arrow_right_blue} alt="" className='ms-2' />
+                        <img src={Images.Arrow_right_blue} alt="" className='ms-2'/>
 
                     </div>
-                </div>
-
+                </div>*/}
 
             </Modal.Body>
             <Modal.Footer>

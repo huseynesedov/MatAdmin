@@ -1,56 +1,118 @@
-import { useEffect, useState } from 'react';
-import { Checkbox, Table } from 'antd';
+import React, { useEffect, useState } from 'react';
+import {Button, Checkbox, Pagination, Table} from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
+import {useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
+import Images from "../../../../assets/images/js/Images";
 
-const Producer = () => {
+const Producer = ({showModalDiscount, coolBackList, changeDatas}) => {
     const [data, setData] = useState([]);
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setdefaultPageSize] = useState(10);
+    let { id } = useParams();
+    const { openNotification } = useAuth()
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
 
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
     const createData = () => {
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                seller: `test${i + 1}`,
-            });
+        if (id) {
+            let data = {
+                customerIdHash: id,
+                pagingRequest: {
+                    page: current - 1,
+                    pageSize: pageSize,
+                    filters: []
+                }
+            }
+
+            AdminApi.getAdminManufacturerList(data).then(res => {
+                console.log(res)
+                setData(res);
+            }).catch((err) => {
+                openNotification('Xəta baş verdi' , '-'  , true )
+            })
         }
-        setData(arr);
     };
+
+
 
     useEffect(() => {
         createData();
-    }, []);
+    }, [id, changeDatas]);
+
+
+    useEffect(() => {
+        createData();
+    }, [current, pageSize]);
+    useEffect(() => {
+        const data = selectedRowKeys.map(r => {
+            return {
+                manufacturerIdHash: r
+            }
+        })
+
+        coolBackList(data)
+    }, [selectedRowKeys]);
+
+
+    const handleCheckboxChange = (recordId, isChecked) => {
+        setSelectedRowKeys((prev) => {
+            if (isChecked) {
+                return [...prev, recordId];
+            }
+            return prev.filter((id) => id !== recordId);
+        });
+    };
+
+    const additionalDiscount = () => {
+        showModalDiscount()
+    }
 
     const columns = [
         {
             title: '',
             width: 10,
-            dataIndex: 'id',
-            key: 'id',
-            render: () => <div className="age-column">
-                <Checkbox />
-            </div>,
+            dataIndex: 'manufacturerIdHash',
+            key: 'manufacturerIdHash',
+            render: (_, record) => (
+                <Checkbox
+                    checked={selectedRowKeys.includes(record.manufacturerIdHash)} // Checkbox durumu
+                    onChange={(e) => handleCheckboxChange(record.manufacturerIdHash, e.target.checked)} // Durum değişikliği
+                />
+            ),
         },
         {
             title: 'Uretici',
             width: 10,
-            dataIndex: 'seller',
-            key: 'seller',
+            dataIndex: 'name',
+            key: 'name',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
     ];
 
+    const onChange = (page, pageSize) => {
+        setCurrent(page);
+        setdefaultPageSize(pageSize);
+    };
+
     return (
         <>
+            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green mb-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>
             <Table
                 rowClassName={rowClassName}
                 columns={columns}
-                dataSource={data}
+                dataSource={data.data}
                 pagination={false}
+                className="mb-3"
             />
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data.count}/>
+
+
         </>
     );
 };

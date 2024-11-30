@@ -49,6 +49,14 @@ const RouteList = () => {
                        }
                    />
                    <Route
+                       path="/clients/:id"
+                       element={
+                           <PrivateRoute>
+                               <Clients />
+                           </PrivateRoute>
+                       }
+                   />
+                   <Route
                        path="/orders"
                        element={
                            <PrivateRoute>
