@@ -18,7 +18,7 @@ export const CatalogApi = {
         return BaseApi.get(apiRoutes.order.getOrderDetailStatusList, { ...params });
     },
     GetOrderStatusList(params) {
-        return BaseApi.get(apiRoutes.order.getOrderStatusList, { ...params });
+        return BaseApi.get("/catalog/v1/Order/GetOrderStatusList", { ...params });
     },
     GetOrderTypeList(params) {
         return BaseApi.get(apiRoutes.order.getOrderTypeList, { ...params });

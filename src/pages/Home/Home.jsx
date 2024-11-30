@@ -1,21 +1,7 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import {
-    Typography,
-    Form,
-    Input,
-    Button,
-    Row,
-    Col,
-    Divider,
-    Tabs,
-    Card,
-    Checkbox,
-    Radio,
-    notification,
-    Spin,
-} from 'antd';
-import {Dropdown} from 'react-bootstrap';
-import {CSSTransition} from 'react-transition-group';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {Typography,Form,Input,Button,Row,Col,Divider,Tabs,Card,Radio,notification,Spin,} from 'antd';
+import { Dropdown } from 'react-bootstrap';
+import { CSSTransition } from 'react-transition-group';
 
 
 import SearchModal from './components/Modal/modal';
@@ -24,23 +10,25 @@ import Equivalent from './components/Equivalent/products';
 import Related from './components/Related/products';
 import TableView from './components/TableView';
 import SaveAlert from './components/Save Alert/index';
+import Barcode from './TabPage/barcode';
+import Qem from './components/Qem';
+import PhotoUpload from './components/Foto/upload';
+import Foto from './components/Foto';
+import Cars_info from './components/Cars Info';
+
 
 import './../../assets/styles/Home.scss';
 import Images from '../../assets/images/js/Images';
-import Barcode from './TabPage/barcode';
-import {SearchContext} from '../../searchprovider';
-import Qem from './components/Qem';
-import Cars_info from './components/Cars Info';
-import Foto from './components/Foto';
-import PhotoUpload from './components/Foto/upload';
-import {AdminApi} from "../../api/admin.api";
-import {ProductApi} from "../../api/product.api";
+
+import { SearchContext } from '../../searchprovider';
+import { AdminApi } from "../../api/admin.api";
+
 import General from "./components/General";
 import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../../AuthContext";
 
-const {Title} = Typography;
-const {TabPane} = Tabs;
+const { Title } = Typography;
+const { TabPane } = Tabs;
 
 const Home = () => {
 
@@ -91,8 +79,8 @@ const Home = () => {
     const handleClose2 = () => setShow2(false);
 
     const handleInputChangee = (e) => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleClear = () => {
@@ -194,7 +182,9 @@ const Home = () => {
     const [isDisabled, setIsDisabled] = useState(false);
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
-    const {selectedItem} = useContext(SearchContext);
+
+    
+    const { selectedItem } = useContext(SearchContext);
 
     useEffect(() => {
         console.log(isNewFoto,
@@ -225,7 +215,7 @@ const Home = () => {
 
     const handleInputChange = (e) => {
         console.log(e, 'Ek Bilg');
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setInputs({
             ...inputs,
             [name]: value,
@@ -342,32 +332,32 @@ const Home = () => {
                 <Card className="search-card">
                     <Title level={4}>Ürün Bilgileri</Title>
                     <Form name="filter_form" layout="vertical" onFinish={onInitialSearch}
-                          autoComplete="off">
+                        autoComplete="off">
                         <div className="d-flex w-100 justify-content-between">
 
                             <Row className="w-100">
                                 <Col span={12} md={6} className="p-2">
                                     <Form.Item label="Kodu"
-                                               name="code"
-                                               rules={[
-                                                   {
-                                                       required: false,
-                                                   },
-                                               ]} className="w-100">
+                                        name="code"
+                                        rules={[
+                                            {
+                                                required: false,
+                                            },
+                                        ]} className="w-100">
                                         {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
                                  src={Images.Search_blue} alt="search"/>*/}
-                                        <Input className='position-relative' placeholder="123544"/>
+                                        <Input className='position-relative' placeholder="123544" />
                                     </Form.Item>
                                 </Col>
                                 <Col span={12} md={6} className="p-2">
                                     <Form.Item label="Adı"
-                                               name="name"
-                                               rules={[
-                                                   {
-                                                       required: false,
-                                                   },
-                                               ]} className="w-100">
-                                        <Input className='position-relative' placeholder="123544"/>
+                                        name="name"
+                                        rules={[
+                                            {
+                                                required: false,
+                                            },
+                                        ]} className="w-100">
+                                        <Input className='position-relative' placeholder="123544" />
                                         {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
                                  src={Images.Search_blue} alt="search"/>*/}
                                     </Form.Item>
@@ -387,9 +377,9 @@ const Home = () => {
 
                         <Form.Item>
                             <Button type="default" className="Delete_red"
-                                    icon={<img src={Images.delete_red} alt="delete"/>}>Temizle</Button>
-                            <Button type="default" htmlType="submit" style={{marginLeft: '8px'}} className="Bin_Blue"
-                                    icon={<img src={Images.Search_blue} alt="search"/>}>Ara</Button>
+                                icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
+                            <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue"
+                                icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
                         </Form.Item>
                     </Form>
                 </Card>
@@ -419,16 +409,18 @@ const Home = () => {
                             </Col>
                         </Row>*/}
 
-                        <SearchModal
+                        {/* <SearchModal
                             show={show}
                             handleClose={handleClose}
                             handleClear={handleClear}
                             formData={formData}
                             handleInputChange={handleInputChange}
                             handleShowModal2={handleShowModal2}
-                        />
+                        /> */}
+
                         <SearchModal2
                             shows={show2}
+
                             searchData={isSearchTables}
 
                             activeTab={activeTab}
@@ -436,10 +428,11 @@ const Home = () => {
                             searchChange={onSearchData}
                             searchPageSize={onPageSize}
                             productData={onProductData}
+                            
                             handleClose={handleClose2}
                             handleClear={handleClear}
                         />
-                        <Divider/>
+                        <Divider />
 
                         <General isSetData={isShowProduct} handleShowModal2={handleShowModal2}/>
 
@@ -448,21 +441,21 @@ const Home = () => {
                         {/*<Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add"/>
+                                    <img src={Images.add_circle_blue} alt="add" />
                                     Yeni
                                 </Button>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>*/}
 
@@ -478,31 +471,31 @@ const Home = () => {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                                 <Button type="default" className="button-margin bg_none print_button"
-                                        onClick={handlePrintClick}>
-                                    <img src={Images.Printer_orange} alt="edit"/>
+                                    onClick={handlePrintClick}>
+                                    <img src={Images.Printer_orange} alt="edit" />
                                     Yazdir
                                 </Button>
                                 <Button type="default" className="button-margin add_button bg_none eye_button">
 
-                                    <img src={Images.Eye_gray} alt="edit"/>
+                                    <img src={Images.Eye_gray} alt="edit" />
                                     Gosder
                                 </Button>
 
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Export_dark} alt="search"/>}
-                                        className="button-margin bg_none export_dark"></Button>
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin bg_none delete_red"
-                                        disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Export_dark} alt="search" />}
+                                    className="button-margin bg_none export_dark"></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin bg_none delete_red"
+                                    disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 
@@ -518,31 +511,31 @@ const Home = () => {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit"/>
+                                    <img src={Images.edit_green} alt="edit" />
                                     Degistir
                                 </Button>
                                 <Button type="default" className="button-margin bg_none print_button"
-                                        onClick={handlePrintClick}>
-                                    <img src={Images.Printer_orange} alt="edit"/>
+                                    onClick={handlePrintClick}>
+                                    <img src={Images.Printer_orange} alt="edit" />
                                     Yazdir
                                 </Button>
                                 <Button type="default" className="button-margin add_button bg_none eye_button">
 
-                                    <img src={Images.Eye_gray} alt="edit"/>
+                                    <img src={Images.Eye_gray} alt="edit" />
                                     Gosder
                                 </Button>
 
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Export_dark} alt="search"/>}
-                                        className="button-margin bg_none export_dark"></Button>
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin bg_none delete_red"
-                                        disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Export_dark} alt="search" />}
+                                    className="button-margin bg_none export_dark"></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                    className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                    className="button-margin bg_none delete_red"
+                                    disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 

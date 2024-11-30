@@ -212,9 +212,6 @@ const Qem = ({activeKey}) => {
             .catch((error) => {
                 console.error('Hata:', error);
             })
-            .finally(() => {
-                setLoading(false);
-            });
     };
 
     const onFinishFailed = (errorInfo) => {

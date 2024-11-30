@@ -518,7 +518,7 @@ const General = ({isSetData, handleShowModal2}) => {
     const facturersProductCount = () => {
         AdminApi.GetPaymentTermList().then((res) => {
             const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+                return { label: res.displayText, value: res.valueHash }
             })
             setPaymentTermList(data);
         }).catch((err) => {
@@ -913,7 +913,7 @@ const General = ({isSetData, handleShowModal2}) => {
                                                         name={[name, 'quantity']}
                                                         fieldKey={[fieldKey, 'quantity']}
                                                         label="Sayı"
-                                                        rules={[{required: true, message: 'Lütfen Quantity giriniz'}]}
+                                                        rules={[{ required: true, message: 'Lütfen Quantity giriniz' }]}
                                                     >
                                                         <InputNumber
                                                             disabled={isDisabled}
