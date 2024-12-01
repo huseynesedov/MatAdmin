@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import { Spin, Table } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../../../AuthContext";
 
-const Cars_info = ({activeKey}) => {
+const Cars_info = ({ activeKey }) => {
+    const [loading, setLoading] = useState(false); // Loading durumu
     const [data, setData] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
@@ -15,31 +16,14 @@ const Cars_info = ({activeKey}) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
-    const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                car_brend: `test${i + 1}`,
-                product_name: `test`,
-                vehicle_model: `test`,
-                vehicle_type: 'test',
-                engine_code: 'test',
-                date: 'test',
-                Hp: 'test',
-                Kw: 'test',
-            });
-        }
-    };
 
     useEffect(() => {
-        createData();
         getData()
     }, [activeKey]);
 
     const getData = () => {
-        AdminApi.GetVehicleBrandProductId({productId: id}).then((res) => {
+        setLoading(true);
+        AdminApi.GetVehicleBrandProductId({ productId: id }).then((res) => {
             console.log(res);
 
             const data = res.data.map(re => {
@@ -55,8 +39,10 @@ const Cars_info = ({activeKey}) => {
             })
             setData(data);
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
-        })
+            openNotification('Xəta baş verdi', err.response.data.message, true)
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
     const columns = [
@@ -138,17 +124,19 @@ const Cars_info = ({activeKey}) => {
         setData(newData);
     };
 
- 
+
 
     return (
         <>
-            <Table
-                rowClassName={rowClassName}
-                columns={columns}
-                dataSource={data}
-                rowSelection={rowSelection}
-                pagination={false} // Pagination'ı devre dışı bırak
-            />
+            <Spin spinning={loading}>
+                <Table
+                    rowClassName={rowClassName}
+                    columns={columns}
+                    dataSource={data}
+                    rowSelection={rowSelection}
+                    pagination={false}
+                />
+            </Spin>
         </>
     );
 };

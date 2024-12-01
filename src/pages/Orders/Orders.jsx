@@ -125,7 +125,7 @@ const Orders = () => {
 
     return (
         <div className="home">
-            <Spin spinning={loading}> {/* Spin bileşeni burada */}
+            <Spin spinning={loading}>
                 <Card className="search-card">
                     <Title level={4}>Arama Detaylari</Title>
                     <Form layout="vertical" className="product-search-form">

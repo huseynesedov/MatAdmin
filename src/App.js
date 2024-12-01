@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {BrowserRouter, BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
-import {Layout, Spin} from "antd";
+
 
 import "antd/dist/reset.css";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
-// import SkeletonScreen from "./Loader/index";
 import {SearchProvider} from "./searchprovider";
 import RouteList from "./Routes";
 import Login from "./pages/Login/login";
@@ -19,9 +18,6 @@ function AppContent() {
         setLoadingValue(load)
     }, [load]);
 
-    // if (loading) {
-    //     return <SkeletonScreen/>;
-    // }
 
 
     return logged ? (
@@ -37,7 +33,7 @@ function AppContent() {
     ) : (
         <Routes>
             <Route path="/login" element={<Login/>}/>
-            <Route path="*" element={<Navigate to="/login" replace/>}/>
+            {/* <Route path="*" element={<Navigate to="/login" replace/>}/> */}
         </Routes>
     );
 

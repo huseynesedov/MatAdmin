@@ -15,6 +15,7 @@ const Topbar = () => {
             <Menu.Item key="1">Profile</Menu.Item>
             <Menu.Item key="2">Settings</Menu.Item>
             <Menu.Item key="3" onClick={logout}>Logout</Menu.Item>
+
         </Menu>
     );
     return (

@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import {Table, Modal, notification, Button, Form, Input, Select} from 'antd';
+import { Table, Modal, notification, Button, Form, Input, Select, Spin } from 'antd';
 import Images from '../../../../assets/images/js/Images';
-import {AdminApi} from "../../../../api/admin.api";
-import {CatalogApi} from "../../../../api/catalog.api";
-import {forEach} from "react-bootstrap/ElementChildren";
-import {ExclamationCircleFilled} from "@ant-design/icons";
-import qem from "../../../Delegates/components/Qem";
-import {useAuth} from "../../../../AuthContext";
-import {useParams} from "react-router-dom";
+import { AdminApi } from "../../../../api/admin.api";
+import { CatalogApi } from "../../../../api/catalog.api";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+import { useAuth } from "../../../../AuthContext";
+import { useParams } from "react-router-dom";
 
 const { confirm } = Modal;
 
-const Qem = ({activeKey}) => {
+const Qem = ({ activeKey }) => {
+    const [loading, setLoading] = useState(false); // Loading durumu
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
     const [oemType, setOemType] = useState();
@@ -65,54 +64,51 @@ const Qem = ({activeKey}) => {
     }, [activeKey]);
 
     const getProductGroupList = () => {
-        CatalogApi.getProductGroupList({productId: id}).then(res => {
-            console.log(res, 'getProductGroupList')
-
+        setLoading(true);
+        CatalogApi.getProductGroupList({ productId: id }).then(res => {
             const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+                return { label: res.displayText, value: res.valueHash }
             })
             setGroupList(data)
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
-        })
+            openNotification('Xəta baş verdi', err.response.data.message, true)
+        }).finally(() => {
+            setLoading(false);
+        });
     }
     const getBrand = () => {
         CatalogApi.GetVehicleBrand().then(res => {
             const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+                return { label: res.displayText, value: res.valueHash }
             })
             setVehicleBrand(data);
         })
     }
 
     const getOemType = () => {
+        setLoading(true);
         CatalogApi.GetOemTypeList().then(res => {
-           let type
-
-           if (activeKey === '6') {
-               type = res.filter(r => r.displayText === 'OemCode');
-           } else {
-               type = res.filter(r => r.displayText === 'RivalCode');
-           }
-
+            let type
+            if (activeKey === '6') {
+                type = res.filter(r => r.displayText === 'OemCode');
+            } else {
+                type = res.filter(r => r.displayText === 'RivalCode');
+            }
             getOemsByTypeLists(type[0].valueHash)
-
             setOemType(type)
-
             console.log(res, type, 'oemTypes aaa')
-        })
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
 
     const getOemsByTypeLists = (typeId) => {
-
-        console.log(typeId, 'typeId')
-
+        setLoading(true);
         let data = {
             productId: id,
             oemType: typeId
         }
-
         AdminApi.GetOemsByTypes(data).then(res => {
             console.log(res, 'data type')
             const mapData = res.data.map(r => {
@@ -124,10 +120,10 @@ const Qem = ({activeKey}) => {
             })
             setData(mapData)
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
-        })
-
-
+            openNotification('Xəta baş verdi', err.response.data.message, true)
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
 
@@ -144,23 +140,26 @@ const Qem = ({activeKey}) => {
     };
 
     const handleDelete = (id) => {
+        setLoading(true);
         AdminApi.DeleteOem(id).then(res => {
             console.log(res.status, 'res')
             getOemsByTypeLists(oemType[0].valueHash)
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
-        })
+            openNotification('Xəta baş verdi', err.response.data.message, true)
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     const columns = [
-       /* {
-            title: '',
-            width: 0,
-            dataIndex: 'checkbox',
-            key: 'checkbox',
-            
-        },*/
+        /* {
+             title: '',
+             width: 0,
+             dataIndex: 'checkbox',
+             key: 'checkbox',
+             
+         },*/
         {
             title: 'Arac Marka',
             width: 77,
@@ -192,7 +191,6 @@ const Qem = ({activeKey}) => {
             ),
         },
     ];
-    const [loading, setLoading] = useState(false);
 
     const onFinish = (values) => {
         setLoading(true);
@@ -211,7 +209,9 @@ const Qem = ({activeKey}) => {
             })
             .catch((error) => {
                 console.error('Hata:', error);
-            })
+            }).finally(() => {
+                setLoading(false);
+            });
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -219,71 +219,72 @@ const Qem = ({activeKey}) => {
     };
     return (
         <>
-            <Table
-                rowClassName={rowClassName}
-                columns={columns}
-                dataSource={data}
-                rowSelection={rowSelection}
-                pagination={false}
+            <Spin spinning={loading}>
+                <Table
+                    rowClassName={rowClassName}
+                    columns={columns}
+                    dataSource={data}
+                    rowSelection={rowSelection}
+                    pagination={false}
 
-            />
+                />
 
-            <div className="d-flex align-items-center justify-content-center mt-4 w-100" style={{width: "967px"}}>
-                <Form form={form} layout="inline" onFinish={onFinish}
-                      onFinishFailed={onFinishFailed}>
-                    <Form.Item
-                        name="vehicleBrandIdHash" label="Marka" rules={[{
-                        required: true,
-                        message: 'Zəhmət olmasa məlumat doldurun.'
-                    }]}>
-                        <Select
-                            style={{width: "240px", float: 'right'}}
-                            placeholder="Bir marka seçin"
-                            optionFilterProp="label"
-                            showSearch
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                            options={vehicleBrand}
+                <div className="d-flex align-items-center justify-content-center mt-4 w-100" style={{ width: "967px" }}>
+                    <Form form={form} layout="inline" onFinish={onFinish}
+                        onFinishFailed={onFinishFailed}>
+                        <Form.Item
+                            name="vehicleBrandIdHash" label="Marka" rules={[{
+                                required: true,
+                                message: 'Zəhmət olmasa məlumat doldurun.'
+                            }]}>
+                            <Select
+                                style={{ width: "240px", float: 'right' }}
+                                placeholder="Bir marka seçin"
+                                optionFilterProp="label"
+                                showSearch
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={vehicleBrand}
+                            >
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="productGroupIdHash" label="Group" rules={[{
+                                required: true,
+                                message: 'Zəhmət olmasa məlumat doldurun.'
+                            }]}>
+                            <Select
+                                style={{ width: "240px", float: 'right' }}
+                                placeholder="Bir group seçin"
+                                optionFilterProp="label"
+                                showSearch
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={groupList}
+                            >
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="oemCode"
+                            label="OEM No"
+                            rules={[{
+                                required: true,
+                                message: 'Zəhmət olmasa məlumat doldurun.'
+                            }]}
                         >
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="productGroupIdHash" label="Group" rules={[{
-                        required: true,
-                        message: 'Zəhmət olmasa məlumat doldurun.'
-                    }]}>
-                        <Select
-                            style={{width: "240px", float: 'right'}}
-                            placeholder="Bir group seçin"
-                            optionFilterProp="label"
-                            showSearch
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                            options={groupList}
-                        >
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="oemCode"
-                        label="OEM No"
-                        rules={[{
-                            required: true,
-                            message: 'Zəhmət olmasa məlumat doldurun.'
-                        }]}
-                    >
-                        <Input style={{width: "240px"}} placeholder="OEM No"/>
-                    </Form.Item>
-                    <Form.Item className="d-flex justify-content-center mt-4 w-100">
-                        <Button type="primary" htmlType="submit" loading={loading}>
-                            <img src={Images.add_circle_blue} alt="Ekle"/>
-                            Yeni Satır Ekle
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </div>
-
+                            <Input style={{ width: "240px" }} placeholder="OEM No" />
+                        </Form.Item>
+                        <Form.Item className="d-flex justify-content-center mt-4 w-100">
+                            <Button type="primary" htmlType="submit" loading={loading}>
+                                <img src={Images.add_circle_blue} alt="Ekle" />
+                                Yeni Satır Ekle
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </div>
+            </Spin>
         </>
     );
 }
