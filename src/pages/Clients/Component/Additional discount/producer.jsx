@@ -69,7 +69,7 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas}) => {
     };
 
     const additionalDiscount = () => {
-        showModalDiscount()
+        showModalDiscount(0)
     }
 
     const columns = [

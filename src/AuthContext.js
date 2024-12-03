@@ -10,11 +10,10 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({children}) => {
-    const [logged, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
     const [loginLoading, setLoginLoading] = useState(false);
     const navigate = useNavigate();
-
+    const storedLogged = JSON.parse(localStorage.getItem("loggedIns"))
     const openNotification = (message, description, error) => {
         if (error) {
             notification.error({
@@ -31,21 +30,10 @@ export const AuthProvider = ({children}) => {
         }
     };
 
-    useEffect(() => {
-        const storedLoggedIn = localStorage.getItem('loggedIn');
-        if (storedLoggedIn) {
-            setLoggedIn(JSON.parse(storedLoggedIn));
-        } else {
-            setLoggedIn(false);
-        }
-        setLoading(false);
-    }, []);
-
     const AdminLogin = (userCode, passwordHash) => {
-        setLoading(true);
+        setLoginLoading(true);
         AccountApi.AdminLogin({userCode, passwordHash})
             .then((res) => {
-                setLoggedIn(true);
                 localStorage.setItem("loggedIn", true);
                 localStorage.setItem("loggedIns", true);
                 localStorage.setItem("token", res.accessToken);
@@ -54,10 +42,9 @@ export const AuthProvider = ({children}) => {
                     message: "Giriş Başarılı!",
                     description: "Hoş Geldiniz!",
                 });
-                navigate("/");
             })
             .catch((error) => {
-                setLoggedIn(false);
+                localStorage.setItem("loggedIns", false);
                 console.log('acatch false')
                 notification.error({
                     message: "Hata Oluştu",
@@ -65,24 +52,18 @@ export const AuthProvider = ({children}) => {
                 });
             })
             .finally(() => {
-                setLoading(false);
+                setLoginLoading(false);
             });
     };
 
-
     useEffect(() => {
-        const storedLoggedIn = localStorage.getItem("loggedIns");
-        if (storedLoggedIn) {
-            setLoggedIn(JSON.parse(storedLoggedIn));
-        } else {
-            setLoggedIn(false);
-        }
+        if (!storedLogged) localStorage.setItem("loggedIns", false);
         setLoading(false);
-    }, []);
+    }, [storedLogged]);
 
 
     const logout = () => {
-        setLoggedIn(false);
+        localStorage.setItem("loggedIns", false);
         localStorage.removeItem("loggedIns");
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
@@ -92,7 +73,6 @@ export const AuthProvider = ({children}) => {
     return (
         <AuthContext.Provider
             value={{
-                logged,
                 loading,
                 loginLoading,
                 AdminLogin,

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {BrowserRouter, BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
+import {BrowserRouter, BrowserRouter as Router, Navigate, Route, Routes, useNavigate} from "react-router-dom";
 import {Layout, Spin} from "antd";
 
 import "antd/dist/reset.css";
@@ -12,9 +12,12 @@ import Login from "./pages/Login/login";
 import {AuthProvider, useAuth} from "./AuthContext";
 
 function AppContent() {
-    const {logged, loading} = useAuth();
+    const {loading} = useAuth();
     const load =  localStorage.getItem("loading");
     const [loads, setLoadingValue] = useState(false);
+    const [logged, setLogged] = useState(true);
+    const storedLogged = JSON.parse(localStorage.getItem("loggedIns"))
+    const navigate = useNavigate();
     useEffect(() => {
         setLoadingValue(load)
     }, [load]);
@@ -23,7 +26,16 @@ function AppContent() {
     //     return <SkeletonScreen/>;
     // }
 
+    useEffect(() => {
+        setLogged(storedLogged);
 
+        if (storedLogged) navigate('/');
+
+    }, [storedLogged]);
+
+    useEffect(() => {
+        console.log(logged, 'logged logged logged'); // logged değişkeni her güncellendiğinde çalışır
+    }, [logged]);
     return logged ? (
             <div style={{minHeight: "100vh !important", width: '100%'}} className='d-flex w-100'>
                 <div style={{width: 250}} className="site-layout-background">

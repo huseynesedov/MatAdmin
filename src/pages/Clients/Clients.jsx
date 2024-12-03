@@ -44,6 +44,8 @@ const Clients = () => {
     const [isShowProduct, setShowProduct] = useState();
     const [manufacturerList, setManufacturerLists] = useState();
     const [changeData, setChangeData] = useState();
+    const [modalDiscountType, setModalDiscountType] = useState();
+    const [editDataDiscount, setEditDataDiscount] = useState();
     let { id } = useParams();
     const [formData, setFormData] = useState({
         kodu: '',
@@ -104,8 +106,15 @@ const Clients = () => {
         setShow2(true);
     };
 
-    const handleShowModalDiscount = () => {
+    const handleShowModalDiscount = (type) => {
+        setModalDiscountType(type)
         setShowDiscount(true);
+    };
+
+    const editDataDiscounts = (data) => {
+        setModalDiscountType(1)
+        setShowDiscount(true);
+        setEditDataDiscount(data)
     };
 
     const setManufacturerList = (data) => {
@@ -1096,12 +1105,12 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
 
-                            <Discount changeDatas={changeData} className="mt-4"/>
+                            <Discount showModalDiscount={handleShowModalDiscount} changeDatas={changeData} editData={editDataDiscounts} className="mt-4"/>
 
                         </Col>
 
                     </Row>
-                    <ModalDiscount handleClose={handleCloseDiscount} show={showDiscount} discountData={additionalDiscount}/>
+                    <ModalDiscount handleClose={handleCloseDiscount} show={showDiscount} discountData={additionalDiscount} changeDatas={changeData} type={modalDiscountType} editData={editDataDiscount}/>
                 </TabPane>
                 <TabPane tab="Kullanicilar" key="13">
                     <Row gutter={16}>

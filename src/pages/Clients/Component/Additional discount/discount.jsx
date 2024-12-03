@@ -7,7 +7,7 @@ import Images from "../../../../assets/images/js/Images";
 import {ExclamationCircleFilled} from "@ant-design/icons";
 
 const { confirm } = Modal;
-const Discount = ({changeDatas}) => {
+const Discount = ({showModalDiscount, changeDatas, editData}) => {
     const [data, setData] = useState([]);
     const [count, setCount] = useState([]);
     const [current, setCurrent] = useState(1);
@@ -113,13 +113,14 @@ const Discount = ({changeDatas}) => {
         const ids = selectedRowKeys.map(res => {
             return {
                 customerIdHash: id,
-                productIdHash: res
+                manufacturerIdHash: res
             }
         })
         /*AdminApi.DeleteOem*/
         AdminApi.DeleteManufacturerAdditionalDiscount(ids).then(res => {
             console.log(res.status, 'res')
-            openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
+            openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false);
+            createData();
         }).catch((err) => {
             openNotification('Xəta baş verdi' , err.response.data.message  , true )
         })
@@ -142,12 +143,17 @@ const Discount = ({changeDatas}) => {
             },
         });
     };
-
+    const handleRowClick = (record) => {
+       editData(record);
+    };
+    const additionalDiscount = () => {
+        showModalDiscount(1)
+    }
 
     return (
         <>
             <div className="d-flex w-100 justify-content-between">
-                <Button type="default" icon={<img src={Images.edit_green} alt="edit"/>} className="button-margin bg_none edit_button p-3" disabled={!selectedRowKeys.length > 0}></Button>
+                <Button type="default" icon={<img src={Images.edit_green} alt="edit"/>} className="button-margin bg_none edit_button p-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>
                 <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red mb-3" disabled={!selectedRowKeys.length > 0}
                         onClick={showDeleteConfirm}></Button>
             </div>
@@ -159,6 +165,9 @@ const Discount = ({changeDatas}) => {
                 pagination={false}
                 rowKey="manufacturerIdHash"
                 className="mb-3"
+                onRow={(record) => ({
+                    onClick: () => handleRowClick(record),
+                })}
             />
             <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count}/>
         </>

@@ -12,7 +12,7 @@ const Delegates = lazy(() => import("../pages/Delegates"));
 const Login = lazy(() => import("../pages/Login/login"));
 
 const PrivateRoute = ({ children }) => {
-    const { logged } = useAuth();
+    const logged = JSON.parse(localStorage.getItem("loggedIns"))
     return logged ? children : <Navigate to="/login" replace />;
 };
 

@@ -1,49 +1,78 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import {Form, Input, Button, Row, Col, InputNumber} from 'antd';
-
-import Images from '../../../../assets/images/js/Images';
+import { Button, Col, Form, Input, InputNumber, Row } from 'antd';
 import { AdminApi } from "../../../../api/admin.api";
 
-const ModalDiscount = ({ show, handleClose, handleClear, discountData}) => {
-    const [discounts, setDiscount] = useState([]);
-    const [formValues, setFormValues] = useState({});
+const ModalDiscount = ({ show, handleClose, handleClear, discountData, type, editData }) => {
+    const [discounts, setDiscounts] = useState([]);
     const [form] = Form.useForm();
 
     useEffect(() => {
-        getDiscount();
-    }, []);
+        if (show) {
+            if (type === 0) {
+                getDiscount();
+            } else {
+                getDiscountEdit();
+            }
+        }
+    }, [show]);
 
     const getDiscount = () => {
         AdminApi.GetDiscountList().then(res => {
-            setDiscount(res.map((item) => ({ ...item, value: "" })));
+            const formattedDiscounts = res.map((item) => ({
+                displayText: item.displayText,
+                valueHash: item.valueHash,
+                additionalIdHash: item.additionalIdHash,
+                value: ""
+            }));
+            setDiscounts(formattedDiscounts);
+            form.resetFields(); // Formu sıfırla
         });
     };
 
+    const getDiscountEdit = () => {
+        const formattedDiscounts = editData?.discounts?.map((item) => ({
+            displayText: item.discountName,
+            additionalIdHash: item.additionalDiscountIdHash,
+            valueHash: item.discountIdHash,
+            value: item.value,
+        })) || [];
+
+        setDiscounts(formattedDiscounts);
+
+        // Form değerlerini doldur
+        const initialValues = {};
+        formattedDiscounts.forEach((item) => {
+            initialValues[item.valueHash] = item.value;
+        });
+        initialValues["termDay"] = editData.termDay; // termDay için değer ekle
+        form.setFieldsValue(initialValues);
+    };
+
     const handleInputChange = (valueHash, value) => {
-        setFormValues((prevValues) => ({
-            ...prevValues,
+        form.setFieldsValue({
             [valueHash]: value,
-        }));
+        });
     };
 
     const handleSubmit = () => {
-        // Gönderilecek format
-        const payload = discounts.map((item) => ({
-            discountIdHash: item.valueHash,
-            value: Number(formValues[item.valueHash]) || 0,
+        const formData = form.getFieldsValue();
+
+        // Discounts verisini oluştur
+        const payloadDiscounts = discounts.map((item) => ({
+            discountIdHash: type === 0 ? item.valueHash : undefined,
+            additionalIdHash: type === 1 ? item.additionalIdHash : undefined,
+            value: Number(formData[item.valueHash]) || 0,
         }));
 
-        console.log("Gönderilen veri:", payload, form.getFieldsValue().termDay);
-
         const data = {
-            discounts: payload,
-            termDay: form.getFieldsValue().termDay
-        }
+            discounts: payloadDiscounts.filter((item) => item.value !== undefined),
+            termDay: formData.termDay || 0,
+        };
 
         discountData(data);
         form.resetFields();
-        setDiscount([]);
+        setDiscounts([]);
         getDiscount();
     };
 
@@ -55,7 +84,7 @@ const ModalDiscount = ({ show, handleClose, handleClear, discountData}) => {
             onHide={handleClose}
             backdrop="static"
             keyboard={false}
-            size="hh"
+            size="lg"
         >
             <Modal.Header closeButton>
                 <Modal.Title>
@@ -68,33 +97,29 @@ const ModalDiscount = ({ show, handleClose, handleClear, discountData}) => {
                         <Form form={form} layout="vertical">
                             <Row>
                                 {discounts.map((item) => (
-                                    <Col span={24} md={12}>
+                                    <Col span={24} md={12} key={item.valueHash}>
                                         <Form.Item
-                                            key={item.valueHash}
                                             label={item.displayText}
+                                            name={item.valueHash}
                                         >
-                                            <div className="d-flex">
-                                                <Input
-                                                    style={{ width: "240px", height: "40px" }}
-                                                    placeholder={`Enter value for ${item.displayText}`}
-                                                    value={formValues[item.valueHash] || ""}
-                                                    onChange={(e) =>
-                                                        handleInputChange(item.valueHash, e.target.value)
-                                                    }
-                                                />
-                                            </div>
+                                            <Input
+                                                style={{ width: "240px", height: "40px" }}
+                                                placeholder={`Enter value for ${item.displayText}`}
+                                                onChange={(e) =>
+                                                    handleInputChange(item.valueHash, e.target.value)
+                                                }
+                                            />
                                         </Form.Item>
                                     </Col>
                                 ))}
 
                                 <Col span={24} md={12}>
                                     <Form.Item label="Vaxt" name="termDay">
-                                        <div className='d-flex'>
-                                            <InputNumber min={0}
-                                                style={{ width: "240px", height: "40px" }}
-                                                className='position-relative'
-                                            />
-                                        </div>
+                                        <InputNumber
+                                            min={0}
+                                            style={{ width: "240px", height: "40px" }}
+                                            className='position-relative'
+                                        />
                                     </Form.Item>
                                 </Col>
                             </Row>
