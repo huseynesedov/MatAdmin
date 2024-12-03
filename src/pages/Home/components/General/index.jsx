@@ -1,48 +1,40 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Checkbox, Col, Form, Input, InputNumber, Modal, Row, Select, Space} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Checkbox, Col, Form, Input, InputNumber, Modal, Row, Select, Space,Spin } from 'antd';
 
 import Images from '../../../../assets/images/js/Images';
-import {ExclamationCircleFilled, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import {CatalogApi} from "../../../../api/catalog.api";
-import {AdminApi} from "../../../../api/admin.api";
+import { ExclamationCircleFilled, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { CatalogApi } from "../../../../api/catalog.api";
+import { AdminApi } from "../../../../api/admin.api";
 import Title from "antd/es/skeleton/Title";
-import {useNavigate, useParams} from 'react-router-dom';
-import {useAuth} from "../../../../AuthContext";
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from "../../../../AuthContext";
 
-const {confirm} = Modal;
+const { confirm } = Modal;
 
-const General = ({isSetData, handleShowModal2}) => {
-    const [data, setData] = useState([]);
-    const [isDisabled, setIsDisabled] = useState(true);
+const General = ({ isSetData, handleShowModal2 }) => {
+    const [loading, setLoading] = useState(false); // Loading durumu
+    let { id } = useParams();
     const navigate = useNavigate();
-
-    const {openNotification} = useAuth()
-    const {Option} = Select;
-
+    const { openNotification } = useAuth()
+    const [form] = Form.useForm();
+    const [isDisabled, setIsDisabled] = useState(true);
     const [productPropertys, setProductProperty] = useState([]);
     const [productPropertyVal, setproductPropertyValue] = useState([]);
     const [productTypeList, setProductTypeList] = useState([]);
     const [paymentTermList, setPaymentTermList] = useState([]);
     const [shelfLists, setShelfList] = useState([]);
     const [currencyLists, setCurrencyList] = useState([]);
-    const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
     const [vehicleBrand, setVehicleBrand] = useState([]);
     const [vehicleModel, setVehicleModel] = useState([]);
     const [checkVehicleBrand, setCheckVehicleBrand] = useState([]);
     const [checkVehicleModel, setCheckVehicleModel] = useState([]);
     const [checkVehicleModelHistory, setCheckVehicleModelHistory] = useState([]);
-    let {id} = useParams();
-
-
     const [shelfData, setShelfData] = useState([]);
     const [salesPrices, setSalesPrices] = useState([]);
     const [purchasePrices, setPurchasePrices] = useState([]);
     const [costPrices, setCostPrices] = useState([]);
-    const [raf, setRaf] = useState([]);
-
     const [isShowProduct, setShowProduct] = useState();
 
-    const [form] = Form.useForm();
     useEffect(() => {
         facturersProductCount();
         shelfList();
@@ -53,7 +45,6 @@ const General = ({isSetData, handleShowModal2}) => {
         manufacturerLists();
 
     }, []);
-    /*form.resetFields();*/
 
 
     useEffect(() => {
@@ -76,17 +67,22 @@ const General = ({isSetData, handleShowModal2}) => {
 
 
     const getBrand = () => {
-        CatalogApi.GetVehicleBrand().then(res => {
-            const data = res.map(res => {
-                if (id) {
-                    return {label: res.displayText, value: res.valueHash, productVehicleBrandIdHash: ''}
-                } else {
-                    return {label: res.displayText, value: res.valueHash}
-                }
+        setLoading(true); // İşlem başlamadan önce loading true
+        CatalogApi.GetVehicleBrand()
+            .then(res => {
+                const data = res.map(item => {
+                    if (id) {
+                        return { label: item.displayText, value: item.valueHash, productVehicleBrandIdHash: '' };
+                    } else {
+                        return { label: item.displayText, value: item.valueHash };
+                    }
+                });
+                setVehicleBrand(data);
             })
-            setVehicleBrand(data);
-        })
-    }
+            .finally(() => {
+                setLoading(false); // İşlem tamamlandığında loading false
+            });
+    };
 
     useEffect(() => {
         if (checkVehicleBrand.length > 0) onChangeBrand(checkVehicleBrand)
@@ -95,6 +91,7 @@ const General = ({isSetData, handleShowModal2}) => {
 
 
     const onChangeBrand = (value) => {
+        setLoading(true); // İşlem başlamadan önce loading true
         CatalogApi.getVehicleModel(value)
             .then((res) => {
                 const data = res.map((item) => ({
@@ -105,7 +102,14 @@ const General = ({isSetData, handleShowModal2}) => {
                 setVehicleModel(data);
             })
             .catch((err) => {
-                openNotification("Xəta baş verdi", err.response?.data?.message || "Bilinmeyen hata", true);
+                openNotification(
+                    "Xəta baş verdi",
+                    err.response?.data?.message || "Bilinmeyen hata",
+                    true
+                );
+            })
+            .finally(() => {
+                setLoading(false); // İşlem tamamlandığında loading false
             });
     };
 
@@ -126,19 +130,19 @@ const General = ({isSetData, handleShowModal2}) => {
         let costPrices = isShowProduct?.price?.costPrices?.map(data => ({
             value: data.value,
             currencyIdHash: data.currencyIdHash,
-            ...(id && {priceIdIdHash: data.priceIdHash})
+            ...(id && { priceIdIdHash: data.priceIdHash })
         }));
 
         let purchasePrices = isShowProduct?.price?.purchasePrices?.map(data => ({
             value: data.value,
             currencyIdHash: data.currencyIdHash,
-            ...(id && {priceIdIdHash: data.priceIdHash})
+            ...(id && { priceIdIdHash: data.priceIdHash })
         }));
 
         let salesPrices = isShowProduct?.price?.salesPrices?.map(data => ({
             value: data.value,
             currencyIdHash: data.currencyIdHash,
-            ...(id && {priceIdIdHash: data.priceIdHash})
+            ...(id && { priceIdIdHash: data.priceIdHash })
         }));
 
         setSalesPrices(salesPrices);
@@ -147,7 +151,6 @@ const General = ({isSetData, handleShowModal2}) => {
 
 
         if (id) {
-            // Vehicle Brand
             if (isShowProduct?.productVehicleBrand?.productVehicleBrands?.length > 0) {
                 const fetchedBrands = isShowProduct.productVehicleBrand.productVehicleBrands.map((data) => ({
                     value: data.vehicleBrandIdHash,
@@ -281,55 +284,93 @@ const General = ({isSetData, handleShowModal2}) => {
     }
 
     const productTypeLists = () => {
-        CatalogApi.GetProductTypeList().then(res => {
-            let data = res.map(res => {
-                return {
-                    label: res.displayText,
-                    value: res.valueHash
-                }
+        setLoading(true); // İşlem başlamadan önce loading true
+        CatalogApi.GetProductTypeList()
+            .then((res) => {
+                const data = res.map((item) => ({
+                    label: item.displayText,
+                    value: item.valueHash,
+                }));
+                setProductTypeList(data);
             })
-            setProductTypeList(data);
-        })
-    }
+            .catch((err) => {
+                openNotification(
+                    "Xəta baş verdi",
+                    err.response?.data?.message || "Bilinmeyen hata",
+                    true
+                );
+            })
+            .finally(() => {
+                setLoading(false); // İşlem tamamlandığında loading false
+            });
+    };
 
     const productProperty = () => {
-        AdminApi.GetProductPropertyValueTable().then(res => {
-            let data = res.map(res => {
-                return {
-                    label: res.name,
-                    value: res.idHash
-                }
+        setLoading(true); // İşlem başlamadan önce loading true
+        AdminApi.GetProductPropertyValueTable()
+            .then((res) => {
+                const data = res.map((item) => ({
+                    label: item.name,
+                    value: item.idHash,
+                }));
+                setProductProperty(data);
             })
-            setProductProperty(data);
-        })
+            .catch((err) => {
+                openNotification(
+                    "Xəta baş verdi",
+                    err.response?.data?.message || "Bilinmeyen hata",
+                    true
+                );
+            })
+            .finally(() => {
+                setLoading(false); // İşlem tamamlandığında loading false
+            });
     }
 
 
     const currencyList = () => {
-        CatalogApi.getCurrencyLists().then(res => {
-            let data = res.map(res => {
-                return {
-                    label: res.displayText,
-                    value: res.valueHash
-                }
+        setLoading(true); // İşlem başlamadan önce loading true
+        CatalogApi.getCurrencyLists()
+            .then((res) => {
+                const data = res.map((item) => ({
+                    label: item.displayText,
+                    value: item.valueHash,
+                }));
+                setCurrencyList(data);
             })
-            setCurrencyList(data);
-        })
+            .catch((err) => {
+                openNotification(
+                    "Xəta baş verdi",
+                    err.response?.data?.message || "Bilinmeyen hata",
+                    true
+                );
+            })
+            .finally(() => {
+                setLoading(false); // İşlem tamamlandığında loading false
+            });
     }
 
 
     const shelfList = () => {
-        CatalogApi.getShelfList().then(res => {
-
-            let data = res.map(res => {
-                return {
-                    label: res.displayText,
-                    value: res.valueHash
-                }
+        setLoading(true); // İşlem başlamadan önce loading true
+        CatalogApi.getShelfList()
+            .then((res) => {
+                const data = res.map((item) => ({
+                    label: item.displayText,
+                    value: item.valueHash,
+                }));
+                setShelfList(data);
             })
-
-            setShelfList(data);
-        })
+            .catch((err) => {
+                openNotification(
+                    "Xəta baş verdi",
+                    err.response?.data?.message || "Bilinmeyen hata",
+                    true
+                );
+            })
+            .finally(() => {
+                setLoading(false); // İşlem tamamlandığında loading false
+            });
     }
 
     const onProductTypeIdHash = (value) => {
@@ -467,15 +508,8 @@ const General = ({isSetData, handleShowModal2}) => {
             })
         }
 
-        /* let productProperti = productPropertyVal.map(data => {
-             return {
-                 propertyValueIdHash: productPropertyVal,
-             }
-         })*/
-
-
-        console.log(id, 'url id')
         if (id) {
+            setLoading(true);
             let data = {
                 ...value,
                 productVehicleBrands: brand,
@@ -484,30 +518,32 @@ const General = ({isSetData, handleShowModal2}) => {
                 idHash: id,
                 code: isShowProduct?.code
             }
-
             AdminApi.UpdateProduct(data).then(res => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yeniləndi`, false)
             }).catch((err) => {
                 openNotification('Xəta baş verdi', '-', true)
-            }).finally((r) => {
+            }).finally(() => {
+                setLoading(false);
                 /* resetData()
                  isEdit()*/
             })
 
         } else {
+            setLoading(true);
             let data = {
                 ...value,
                 productVehicleBrands: brand,
                 productVehicleModels: model,
                 price: prices,
-                productProperties: [{propertyValueIdHash: productPropertyVal}]
+                productProperties: [{ propertyValueIdHash: productPropertyVal }]
             }
             AdminApi.AddProduct(data).then(res => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yaradıldı`, false)
                 if (res) navigate(`/home/${res.idHash}`)
             }).catch((err) => {
                 openNotification('Xəta baş verdi', '-', true)
-            }).finally((r) => {
+            }).finally(() => {
+                setLoading(false);
                 /* resetData()
                  isEdit()*/
             })
@@ -516,6 +552,7 @@ const General = ({isSetData, handleShowModal2}) => {
     };
 
     const facturersProductCount = () => {
+        setLoading(true);
         AdminApi.GetPaymentTermList().then((res) => {
             const data = res.map(res => {
                 return { label: res.displayText, value: res.valueHash }
@@ -523,6 +560,8 @@ const General = ({isSetData, handleShowModal2}) => {
             setPaymentTermList(data);
         }).catch((err) => {
             openNotification('Xəta baş verdi', err.response.data.message, true)
+        }).finally(() => {
+            setLoading(false);
         })
     };
 
@@ -549,7 +588,7 @@ const General = ({isSetData, handleShowModal2}) => {
 
     const handleValueChange = (setPriceFn, prices, index, key, value) => {
         const updatedPrices = prices.map((price, i) => (
-            i === index ? {...price, [key]: value} : price
+            i === index ? { ...price, [key]: value } : price
         ));
         setPriceFn(updatedPrices);
     };
@@ -558,7 +597,7 @@ const General = ({isSetData, handleShowModal2}) => {
         const newPrice = {
             value: 0,
             currencyIdHash: '',
-            ...(id && {priceIdIdHash: '',})
+            ...(id && { priceIdIdHash: '', })
         };
         setPriceFn(Array.isArray(prices) && prices.length > 0 ? [...prices, newPrice] : [newPrice]);
     };
@@ -582,17 +621,17 @@ const General = ({isSetData, handleShowModal2}) => {
                     width: '100%'
                 }} align="baseline">
                     <div>{label}:</div>
-                    <div className="d-flex align-items-center" style={{display: 'flex', marginBottom: 12}}>
+                    <div className="d-flex align-items-center" style={{ display: 'flex', marginBottom: 12 }}>
                         <InputNumber
                             min={0}
                             disabled={isDisabled}
                             placeholder="Value"
-                            style={{width: '100%'}}
+                            style={{ width: '100%' }}
                             value={price.value}
                             onChange={(value) => handleValueChange(setPriceFn, prices, index, 'value', value)}
                         />
                         <Select
-                            style={{marginLeft: 8, minWidth: 80}}
+                            style={{ marginLeft: 8, minWidth: 80 }}
                             disabled={isDisabled}
                             showSearch
                             optionFilterProp="label"
@@ -609,12 +648,12 @@ const General = ({isSetData, handleShowModal2}) => {
                             ))}
                         </Select>
                         <MinusCircleOutlined onClick={() => handleRemovePrice(setPriceFn, prices, index)}
-                                             style={{marginLeft: 8}}/>
+                            style={{ marginLeft: 8 }} />
                     </div>
                 </Space>
             ))}
             <Button type="dashed"
-                    disabled={isDisabled} onClick={() => handleAddPrice(setPriceFn, prices)} icon={<PlusOutlined/>}>
+                disabled={isDisabled} onClick={() => handleAddPrice(setPriceFn, prices)} icon={<PlusOutlined />}>
                 {label} Ekle
             </Button>
         </>
@@ -626,7 +665,7 @@ const General = ({isSetData, handleShowModal2}) => {
         CatalogApi.GetManufacturerList().then((res) => {
 
             const data = res.map(res => {
-                return {label: res.displayText, value: res.valueHash}
+                return { label: res.displayText, value: res.valueHash }
             })
             setManufacturerList(data);
         })
@@ -658,7 +697,7 @@ const General = ({isSetData, handleShowModal2}) => {
     }
 
 
-// Select değişikliklerini işleme
+    // Select değişikliklerini işleme
     const handleBrandChange = (selectedValues) => {
         setCheckVehicleBrand(selectedValues);
     };
@@ -667,23 +706,23 @@ const General = ({isSetData, handleShowModal2}) => {
         setCheckVehicleModel(selectedValues);
     };
 
-// Select'ten seçim kaldırma (isDeleted işlevselliği)
+    // Select'ten seçim kaldırma (isDeleted işlevselliği)
     const handleRemoveBrand = (brandId) => {
         const updatedBrands = vehicleBrand.map((brand) =>
-            brand.value === brandId ? {...brand, isDeleted: true} : brand
+            brand.value === brandId ? { ...brand, isDeleted: true } : brand
         );
         /*setVehicleBrand(updatedBrands);*/
     };
 
     const handleRemoveModel = (modelId) => {
         const updatedModels = vehicleModel.map((model) =>
-            model.value === modelId ? {...model, isDeleted: true} : model
+            model.value === modelId ? { ...model, isDeleted: true } : model
         );
         /* setVehicleModel(updatedModels);*/
     };
 
     const deleteProduct = () => {
-        /*AdminApi.DeleteOem*/
+        setLoading(true);
         AdminApi.deleteProduct(id).then(res => {
             console.log(res.status, 'res')
             form.resetFields()
@@ -692,7 +731,9 @@ const General = ({isSetData, handleShowModal2}) => {
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
             openNotification('Xəta baş verdi', err.response.data.message, true)
-        })
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
 
@@ -700,7 +741,7 @@ const General = ({isSetData, handleShowModal2}) => {
         console.log(id, ';;;')
         confirm({
             title: 'Silməyə əminsinizmi?',
-            icon: <ExclamationCircleFilled/>,
+            icon: <ExclamationCircleFilled />,
             content: '',
             okText: 'Sil',
             okType: 'danger',
@@ -727,135 +768,136 @@ const General = ({isSetData, handleShowModal2}) => {
     };
     return (
         <>
-            <Form form={form} onFinish={onSearch} initialValues={{isNew: false, status: false}}
-                  onFinishFailed={onFinishFailed}>
+            <Spin spinning={loading}>
+                <Form form={form} onFinish={onSearch} initialValues={{ isNew: false, status: false }}
+                    onFinishFailed={onFinishFailed}>
 
-                <Row gutter={16} className="mb-3">
-                    <Col span={12}>
-                        <Button onClick={() => {
-                            resetData();
-                            isEdit();
-                            navigate(`/`)
-                        }} type="default" className="button-margin bg_none add_button ">
-                            <img src={Images.add_circle_blue} alt="add"/>
-                            Yeni
-                        </Button>
-                        <Button onClick={isEdit} disabled={!id} type="default"
+                    <Row gutter={16} className="mb-3">
+                        <Col span={12}>
+                            <Button onClick={() => {
+                                resetData();
+                                isEdit();
+                                navigate(`/`)
+                            }} type="default" className="button-margin bg_none add_button ">
+                                <img src={Images.add_circle_blue} alt="add" />
+                                Yeni
+                            </Button>
+                            <Button onClick={isEdit} disabled={!id} type="default"
                                 className="button-margin bg_none edit_button">
-                            <img src={Images.edit_green} alt="edit"/>
-                            Degistir
-                        </Button>
-                    </Col>
-                    <Col span={12} className="text-right">
-                        <Button onClick={() => handleShowModal2()} type="default"
-                                icon={<img src={Images.Search_blue} alt="search"/>}
+                                <img src={Images.edit_green} alt="edit" />
+                                Degistir
+                            </Button>
+                        </Col>
+                        <Col span={12} className="text-right">
+                            <Button onClick={() => handleShowModal2()} type="default"
+                                icon={<img src={Images.Search_blue} alt="search" />}
                                 className="button-margin Search_blue"></Button>
-                        <Button disabled={isDisabled} type="default" htmlType="submit"
-                                icon={<img src={Images.Save_green} alt="save"/>}
+                            <Button disabled={isDisabled} type="default" htmlType="submit"
+                                icon={<img src={Images.Save_green} alt="save" />}
                                 className="button-margin Save_green"
-                        ></Button>
-                        <Button onClick={showDeleteConfirm} disabled={!id} type="default"
-                                icon={<img src={Images.delete_red} alt="delete"/>}
+                            ></Button>
+                            <Button onClick={showDeleteConfirm} disabled={!id} type="default"
+                                icon={<img src={Images.delete_red} alt="delete" />}
                                 className="button-margin delete_red"></Button>
-                    </Col>
-                </Row>
-                <Row gutter={16}>
-                    <Col span={12}>
-                        <Card className="info-card" title="Üretici Bilgileri">
-                            <Form.Item name="code" label="Code"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <Input className='position-relative'
-                                       disabled={isDisabled}
-                                       style={{width: "240px", float: 'right'}}
-                                       placeholder="12356789"/>
-                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Card className="info-card" title="Üretici Bilgileri">
+                                <Form.Item name="code" label="Code"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <Input className='position-relative'
+                                        disabled={isDisabled}
+                                        style={{ width: "240px", float: 'right' }}
+                                        placeholder="12356789" />
+                                </Form.Item>
 
-                            <Form.Item name="name" label="Name"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <Input className='position-relative'
-                                       disabled={isDisabled}
-                                       style={{width: "240px", float: 'right'}}
-                                       placeholder="name"/>
-                            </Form.Item>
+                                <Form.Item name="name" label="Name"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <Input className='position-relative'
+                                        disabled={isDisabled}
+                                        style={{ width: "240px", float: 'right' }}
+                                        placeholder="name" />
+                                </Form.Item>
 
 
-                            <Form.Item name="manufactureIdHash" label="Üretici Bilgileri"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <Select
-                                    optionFilterProp="label"
-                                    onChange={manufacturerIdHash}
-                                    disabled={isDisabled}
-                                    showSearch
-                                    style={{width: "240px", float: 'right'}}
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                    }
-                                    options={manufacturerList}/>
-                            </Form.Item>
+                                <Form.Item name="manufactureIdHash" label="Üretici Bilgileri"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <Select
+                                        optionFilterProp="label"
+                                        onChange={manufacturerIdHash}
+                                        disabled={isDisabled}
+                                        showSearch
+                                        style={{ width: "240px", float: 'right' }}
+                                        filterOption={(input, option) =>
+                                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        options={manufacturerList} />
+                                </Form.Item>
 
-                            <Form.Item name="manufacturerCode" label="Üretici Kodu"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <Input
-                                    disabled={isDisabled}
-                                    style={{width: "240px", float: 'right'}} placeholder="12356789"/>
-                            </Form.Item>
+                                <Form.Item name="manufacturerCode" label="Üretici Kodu"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <Input
+                                        disabled={isDisabled}
+                                        style={{ width: "240px", float: 'right' }} placeholder="12356789" />
+                                </Form.Item>
 
-                            <Form.Item label="Birim"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <Select
-                                    style={{width: "240px", float: 'right'}}
-                                    placeholder="Bir birim seçin"
-                                    optionFilterProp="label"
-                                    disabled={isDisabled}
-                                    showSearch
-                                    value={productPropertyVal}
-                                    onChange={setproductPropertyValue}
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                    }
-                                    options={productPropertys}
-                                >
-                                </Select>
-                            </Form.Item>
+                                <Form.Item label="Birim"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <Select
+                                        style={{ width: "240px", float: 'right' }}
+                                        placeholder="Bir birim seçin"
+                                        optionFilterProp="label"
+                                        disabled={isDisabled}
+                                        showSearch
+                                        value={productPropertyVal}
+                                        onChange={setproductPropertyValue}
+                                        filterOption={(input, option) =>
+                                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        options={productPropertys}
+                                    >
+                                    </Select>
+                                </Form.Item>
 
-                        </Card>
+                            </Card>
 
-                        <Card className="info-card " title="Grup Bilgileri"
-                              rules={[{
-                                  required: true,
-                                  message: 'Zəhmət olmasa məlumat doldurun.'
-                              }]}>
+                            <Card className="info-card " title="Grup Bilgileri"
+                                rules={[{
+                                    required: true,
+                                    message: 'Zəhmət olmasa məlumat doldurun.'
+                                }]}>
 
-                            <Form.Item name="productTypeIdHash" label="Tip"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <Select
-                                    optionFilterProp="label"
-                                    disabled={isDisabled}
-                                    onChange={onProductTypeIdHash}
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                    }
-                                    options={productTypeList}/>
-                            </Form.Item>
-                            {/*<Form.Item label="Grup 1">
+                                <Form.Item name="productTypeIdHash" label="Tip"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <Select
+                                        optionFilterProp="label"
+                                        disabled={isDisabled}
+                                        onChange={onProductTypeIdHash}
+                                        filterOption={(input, option) =>
+                                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        options={productTypeList} />
+                                </Form.Item>
+                                {/*<Form.Item label="Grup 1">
                                     <div className='d-flex justify-content-end'>
                                         <Input style={{width: "240px"}} placeholder="12356789"/>
                                     </div>
@@ -870,151 +912,151 @@ const General = ({isSetData, handleShowModal2}) => {
                                         <Input style={{width: "240px"}} placeholder="12356789"/>
                                     </div>
                                 </Form.Item>*/}
-                            <h4 className='t_44 fs_16 fw_600'>
-                                Raf
-                            </h4>
-                            <div className="Line_E2"></div>
+                                <h4 className='t_44 fs_16 fw_600'>
+                                    Raf
+                                </h4>
+                                <div className="Line_E2"></div>
 
-                            <div className="mt-3">
-                                <Form.List name="productShelves"
-                                           disabled={isDisabled}>
-                                    {(fields, {add, remove}) => (
-                                        <>
-                                            {fields.map(({key, name, fieldKey, ...restField}, index) => (
-                                                <Space key={key} style={{display: 'flex', marginBottom: 8}}
-                                                       align="baseline" disabled={isDisabled}>
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'shelfIdHash']}
-                                                        style={{width: "240px"}}
-                                                        fieldKey={[fieldKey, 'shelfIdHash']}
-                                                        label="Adres"
-                                                        rules={[{
-                                                            required: true,
-                                                            message: 'Lütfen bir Shelf ID seçiniz'
-                                                        }]}
-                                                    >
-                                                        <Select
+                                <div className="mt-3">
+                                    <Form.List name="productShelves"
+                                        disabled={isDisabled}>
+                                        {(fields, { add, remove }) => (
+                                            <>
+                                                {fields.map(({ key, name, fieldKey, ...restField }, index) => (
+                                                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }}
+                                                        align="baseline" disabled={isDisabled}>
+                                                        <Form.Item
+                                                            {...restField}
+                                                            name={[name, 'shelfIdHash']}
+                                                            style={{ width: "240px" }}
+                                                            fieldKey={[fieldKey, 'shelfIdHash']}
+                                                            label="Adres"
+                                                            rules={[{
+                                                                required: true,
+                                                                message: 'Lütfen bir Shelf ID seçiniz'
+                                                            }]}
+                                                        >
+                                                            <Select
+                                                                disabled={isDisabled}
+                                                                className="w-100"
+                                                                showSearch
+                                                                placeholder="Bir raf seçiniz"
+                                                                optionFilterProp="label"
+                                                                filterOption={(input, option) =>
+                                                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                                                }
+                                                                options={shelfLists}
+                                                                onChange={(value) => handleShelfChange(value, index, 'shelfIdHash')}
+                                                            />
+                                                        </Form.Item>
+
+                                                        <Form.Item
+                                                            {...restField}
+                                                            name={[name, 'quantity']}
+                                                            fieldKey={[fieldKey, 'quantity']}
+                                                            label="Sayı"
+                                                            rules={[{ required: true, message: 'Lütfen Quantity giriniz' }]}
+                                                        >
+                                                            <InputNumber
+                                                                disabled={isDisabled}
+                                                                className="w-100"
+                                                                min={0}
+                                                                placeholder="Quantity"
+                                                                onChange={(value) => handleShelfChange(value, index, 'quantity')}
+                                                            />
+                                                        </Form.Item>
+
+                                                        <MinusCircleOutlined
                                                             disabled={isDisabled}
-                                                            className="w-100"
-                                                            showSearch
-                                                            placeholder="Bir raf seçiniz"
-                                                            optionFilterProp="label"
-                                                            filterOption={(input, option) =>
-                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                            }
-                                                            options={shelfLists}
-                                                            onChange={(value) => handleShelfChange(value, index, 'shelfIdHash')}
+                                                            onClick={() => {
+                                                                const newData = [...shelfData];
+                                                                if (!newData[index].productShelfIdHash) {
+                                                                    // productShelfIdHash boşsa, item'ı tamamen kaldır
+                                                                    newData.splice(index, 1);
+                                                                    remove(name);
+                                                                } else {
+                                                                    // productShelfIdHash doluysa, isDeleted alanını true yap
+                                                                    newData[index].isDeleted = true;
+                                                                }
+                                                                setShelfData(newData);
+                                                            }}
                                                         />
-                                                    </Form.Item>
+                                                    </Space>
+                                                ))}
 
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'quantity']}
-                                                        fieldKey={[fieldKey, 'quantity']}
-                                                        label="Sayı"
-                                                        rules={[{ required: true, message: 'Lütfen Quantity giriniz' }]}
-                                                    >
-                                                        <InputNumber
-                                                            disabled={isDisabled}
-                                                            className="w-100"
-                                                            min={0}
-                                                            placeholder="Quantity"
-                                                            onChange={(value) => handleShelfChange(value, index, 'quantity')}
-                                                        />
-                                                    </Form.Item>
-
-                                                    <MinusCircleOutlined
+                                                <Form.Item>
+                                                    <Button
                                                         disabled={isDisabled}
+                                                        type="dashed"
                                                         onClick={() => {
-                                                            const newData = [...shelfData];
-                                                            if (!newData[index].productShelfIdHash) {
-                                                                // productShelfIdHash boşsa, item'ı tamamen kaldır
-                                                                newData.splice(index, 1);
-                                                                remove(name);
+                                                            add(); // Yeni form alanı ekle
+                                                            const newShelf = {
+                                                                shelfIdHash: '',
+                                                                quantity: 0,
+                                                                ...(id && { productShelfIdHash: '', isDeleted: false })
+                                                            };
+                                                            if (shelfData) {
+                                                                setShelfData([...shelfData, newShelf]);
                                                             } else {
-                                                                // productShelfIdHash doluysa, isDeleted alanını true yap
-                                                                newData[index].isDeleted = true;
+                                                                setShelfData([newShelf]);
                                                             }
-                                                            setShelfData(newData);
                                                         }}
-                                                    />
-                                                </Space>
-                                            ))}
+                                                        icon={<PlusOutlined />}
+                                                    >
+                                                        Raf Ekle
+                                                    </Button>
+                                                </Form.Item>
+                                            </>
+                                        )}
+                                    </Form.List>
 
-                                            <Form.Item>
-                                                <Button
-                                                    disabled={isDisabled}
-                                                    type="dashed"
-                                                    onClick={() => {
-                                                        add(); // Yeni form alanı ekle
-                                                        const newShelf = {
-                                                            shelfIdHash: '',
-                                                            quantity: 0,
-                                                            ...(id && {productShelfIdHash: '', isDeleted: false})
-                                                        };
-                                                        if (shelfData) {
-                                                            setShelfData([...shelfData, newShelf]);
-                                                        } else {
-                                                            setShelfData([newShelf]);
-                                                        }
-                                                    }}
-                                                    icon={<PlusOutlined/>}
-                                                >
-                                                    Raf Ekle
-                                                </Button>
-                                            </Form.Item>
-                                        </>
-                                    )}
-                                </Form.List>
+                                </div>
 
-                            </div>
+                                <h4 className='t_44 fs_16 fw_600'>
+                                    Araç Bilgileri
+                                </h4>
+                                <div className="Line_E2"></div>
 
-                            <h4 className='t_44 fs_16 fw_600'>
-                                Araç Bilgileri
-                            </h4>
-                            <div className="Line_E2"></div>
+                                <div className="mt-3">
+                                    <Form.Item label="Marka">
+                                        <Select
+                                            style={{ width: "240px", float: "right" }}
+                                            placeholder="Bir marka seçin"
+                                            optionFilterProp="label"
+                                            disabled={isDisabled}
+                                            showSearch
+                                            mode="multiple"
+                                            value={checkVehicleBrand}
+                                            onChange={handleBrandChange}
+                                            onDeselect={handleRemoveBrand}
+                                            filterOption={(input, option) =>
+                                                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                            }
+                                            options={vehicleBrand}
+                                        />
+                                    </Form.Item>
 
-                            <div className="mt-3">
-                                <Form.Item label="Marka">
-                                    <Select
-                                        style={{width: "240px", float: "right"}}
-                                        placeholder="Bir marka seçin"
-                                        optionFilterProp="label"
-                                        disabled={isDisabled}
-                                        showSearch
-                                        mode="multiple"
-                                        value={checkVehicleBrand}
-                                        onChange={handleBrandChange}
-                                        onDeselect={handleRemoveBrand}
-                                        filterOption={(input, option) =>
-                                            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                                        }
-                                        options={vehicleBrand}
-                                    />
-                                </Form.Item>
-
-                                <Form.Item label="Model">
-                                    <Select
-                                        style={{width: "240px", float: "right"}}
-                                        placeholder="Bir model seçin"
-                                        optionFilterProp="label"
-                                        disabled={isDisabled}
-                                        showSearch
-                                        mode="multiple"
-                                        value={checkVehicleModel}
-                                        onChange={handleModelChange}
-                                        onDeselect={handleRemoveModel}
-                                        filterOption={(input, option) =>
-                                            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                                        }
-                                        options={vehicleModel}
-                                    />
-                                </Form.Item>
-                            </div>
-                        </Card>
-                        <Card className="info-card" title="Diğer Bilgiler">
-                            {/*<Form.Item name="" label="Koşul Kodu">
+                                    <Form.Item label="Model">
+                                        <Select
+                                            style={{ width: "240px", float: "right" }}
+                                            placeholder="Bir model seçin"
+                                            optionFilterProp="label"
+                                            disabled={isDisabled}
+                                            showSearch
+                                            mode="multiple"
+                                            value={checkVehicleModel}
+                                            onChange={handleModelChange}
+                                            onDeselect={handleRemoveModel}
+                                            filterOption={(input, option) =>
+                                                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                            }
+                                            options={vehicleModel}
+                                        />
+                                    </Form.Item>
+                                </div>
+                            </Card>
+                            <Card className="info-card" title="Diğer Bilgiler">
+                                {/*<Form.Item name="" label="Koşul Kodu">
                                     <div className='d-flex justify-content-end'>
                                         <Input
                                             disabled={isDisabled}
@@ -1023,116 +1065,116 @@ const General = ({isSetData, handleShowModal2}) => {
                                     </div>
                                 </Form.Item>*/}
 
-                            <Form.Item name="paymentTermIdHash" label="Koşul Kodu"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <Select
-                                    style={{width: "240px", float: 'right'}}
-                                    disabled={isDisabled}
-                                    optionFilterProp="label"
-                                    onChange={onChangeTermIdHash}
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                    }
-                                    options={paymentTermList}>
-                                </Select>
-                            </Form.Item>
-                            <Form.Item name="minOrderAmount" label="Min.Sip.Acl"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <InputNumber min={0}
-                                             disabled={isDisabled}
-                                             style={{width: "240px", float: 'right'}} placeholder="12356789"/>
-                            </Form.Item>
-                            <Form.Item name="vatRate" label="KDV"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}>
-                                <InputNumber min={0}
-                                             disabled={isDisabled}
-                                             style={{width: "240px", float: 'right'}} placeholder="12356789"/>
-                            </Form.Item>
-
-                            <h4 className='t_44 mt-4 fs_16 fw_600'>
-                                Bakiye
-                            </h4>
-                            <div className="Line_E2"></div>
-
-                            <div className="mt-3">
-                                <Form.Item name="balance" label="Mevcut"
-                                           rules={[{
-                                               required: true,
-                                               message: 'Zəhmət olmasa məlumat doldurun.'
-                                           }]}>
-                                    <InputNumber min={0}
-                                                 disabled={isDisabled}
-                                                 style={{width: "240px", float: 'right'}} placeholder="12356789"/>
-                                </Form.Item>
-                                <Form.Item name="oemCode" label="Oem Code"
-                                           rules={[{
-                                               required: true,
-                                               message: 'Zəhmət olmasa məlumat doldurun.'
-                                           }]}>
-                                    <Input
+                                <Form.Item name="paymentTermIdHash" label="Koşul Kodu"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <Select
+                                        style={{ width: "240px", float: 'right' }}
                                         disabled={isDisabled}
-                                        style={{width: "240px", float: 'right'}} placeholder="12356789"/>
+                                        optionFilterProp="label"
+                                        onChange={onChangeTermIdHash}
+                                        filterOption={(input, option) =>
+                                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        options={paymentTermList}>
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item name="minOrderAmount" label="Min.Sip.Acl"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <InputNumber min={0}
+                                        disabled={isDisabled}
+                                        style={{ width: "240px", float: 'right' }} placeholder="12356789" />
+                                </Form.Item>
+                                <Form.Item name="vatRate" label="KDV"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}>
+                                    <InputNumber min={0}
+                                        disabled={isDisabled}
+                                        style={{ width: "240px", float: 'right' }} placeholder="12356789" />
                                 </Form.Item>
 
-                                <div className="d-flex align-items-center">
-                                    <Form.Item name="isNew"
-                                               disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
-                                               className="mb-0">
-                                        <Checkbox/>
+                                <h4 className='t_44 mt-4 fs_16 fw_600'>
+                                    Bakiye
+                                </h4>
+                                <div className="Line_E2"></div>
+
+                                <div className="mt-3">
+                                    <Form.Item name="balance" label="Mevcut"
+                                        rules={[{
+                                            required: true,
+                                            message: 'Zəhmət olmasa məlumat doldurun.'
+                                        }]}>
+                                        <InputNumber min={0}
+                                            disabled={isDisabled}
+                                            style={{ width: "240px", float: 'right' }} placeholder="12356789" />
                                     </Form.Item>
-                                    <span className='ms-2 t_8F'>Aktiv</span>
+                                    <Form.Item name="oemCode" label="Oem Code"
+                                        rules={[{
+                                            required: true,
+                                            message: 'Zəhmət olmasa məlumat doldurun.'
+                                        }]}>
+                                        <Input
+                                            disabled={isDisabled}
+                                            style={{ width: "240px", float: 'right' }} placeholder="12356789" />
+                                    </Form.Item>
+
+                                    <div className="d-flex align-items-center">
+                                        <Form.Item name="isNew"
+                                            disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
+                                            className="mb-0">
+                                            <Checkbox />
+                                        </Form.Item>
+                                        <span className='ms-2 t_8F'>Aktiv</span>
+                                    </div>
+
+                                    <div className="d-flex align-items-center">
+                                        <Form.Item name="status"
+                                            disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
+                                            className="mb-0">
+                                            <Checkbox />
+                                        </Form.Item>
+                                        <span className='ms-2 t_8F'>Katlanarak gitsin</span>
+                                    </div>
                                 </div>
 
-                                <div className="d-flex align-items-center">
-                                    <Form.Item name="status"
-                                               disabled={isDisabled} valuePropName="checked" label="Mehsul Statusu"
-                                               className="mb-0">
-                                        <Checkbox/>
-                                    </Form.Item>
-                                    <span className='ms-2 t_8F'>Katlanarak gitsin</span>
-                                </div>
-                            </div>
-
-                        </Card>
-                    </Col>
-                    <Col span={12}>
-                        <Card className="info-card" title="Fiyat Bilgileri">
-                            <Form layout="horizontal">
-                                {renderPriceList(salesPrices, setSalesPrices, 'Satış Fiyatı')}
-                                {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
-                                {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
-                            </Form>
-                             {/*<Form.Item name="discount" label="Endirim" className="mt-5">
+                            </Card>
+                        </Col>
+                        <Col span={12}>
+                            <Card className="info-card" title="Fiyat Bilgileri">
+                                <Form layout="horizontal">
+                                    {renderPriceList(salesPrices, setSalesPrices, 'Satış Fiyatı')}
+                                    {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
+                                    {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
+                                </Form>
+                                {/*<Form.Item name="discount" label="Endirim" className="mt-5">
                                 <InputNumber min={0} placeholder="Value"
                                              style={{width: '100%'}}/>
                             </Form.Item>*/}
-                        </Card>
+                            </Card>
 
-                        <Card className="info-card" title="Ek bilgiler">
-                            <Form.Item layout="horizontal" name="description" label="Mehsul Statusu"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Zəhmət olmasa məlumat doldurun.'
-                                       }]}
-                                       className="mb-0">
-                                <Input.TextArea placeholder="açıklama"
-                                                disabled={isDisabled} rows={3}/>
-                            </Form.Item>
-                        </Card>
-                    </Col>
+                            <Card className="info-card" title="Ek bilgiler">
+                                <Form.Item layout="horizontal" name="description" label="Mehsul Statusu"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}
+                                    className="mb-0">
+                                    <Input.TextArea placeholder="açıklama"
+                                        disabled={isDisabled} rows={3} />
+                                </Form.Item>
+                            </Card>
+                        </Col>
 
-                </Row>
-            </Form>
-
+                    </Row>
+                </Form>
+            </Spin>
         </>
     );
 }

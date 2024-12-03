@@ -1,45 +1,59 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import {Typography,Form,Input,Button,Row,Col,Divider,Tabs,Card,Radio,notification,Spin,} from 'antd';
-import { Dropdown } from 'react-bootstrap';
-import { CSSTransition } from 'react-transition-group';
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
+import { Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, notification, Spin, } from 'antd';
+import { useNavigate, useParams } from "react-router-dom";
+import { SearchContext } from '../../searchprovider';
+import { AdminApi } from "../../api/admin.api";
 
-import SearchModal from './components/Modal/modal';
 import SearchModal2 from './components/Modal/modal2';
 import Equivalent from './components/Equivalent/products';
-import Related from './components/Related/products';
-import TableView from './components/TableView';
-import SaveAlert from './components/Save Alert/index';
-import Barcode from './TabPage/barcode';
 import Qem from './components/Qem';
 import PhotoUpload from './components/Foto/upload';
 import Foto from './components/Foto';
 import Cars_info from './components/Cars Info';
-
+import General from "./components/General";
 
 import './../../assets/styles/Home.scss';
 import Images from '../../assets/images/js/Images';
-
-import { SearchContext } from '../../searchprovider';
-import { AdminApi } from "../../api/admin.api";
-
-import General from "./components/General";
-import {useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "../../AuthContext";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const Home = () => {
-
+    let { id } = useParams();
+    const [loading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [tabDisable, setTabDisable] = useState(false);
     const [activeTab, setActiveTab] = useState(null);
     const navigate = useNavigate();
     const [isShowProduct, setShowProduct] = useState();
-    const pathname = window.location.pathname;
-    let { id } = useParams();
+    const [isSearchTables, setSearchTable] = useState([]);
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setdefaultPageSize] = useState(10);
+    const [forms, setdefaultforms] = useState();
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+    const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
+    const { selectedItem } = useContext(SearchContext);
+    const [isUpVisible, setIsUpVisible] = useState(false);
+    const [isTableViewVisible, setIsTableViewVisible] = useState(false);
+
+    const openNotification = (message, description, error) => {
+        if (error) {
+            notification.error({
+                message,
+                description,
+                placement: 'topRight'
+            });
+        } else {
+            notification.info({
+                message,
+                description,
+                placement: 'topRight'
+            });
+        }
+    };
+
     const [formData, setFormData] = useState({
         kodu: '',
         uretici: '',
@@ -58,24 +72,25 @@ const Home = () => {
             setTabDisable(false)
 
         } else {
-            setTabDisable( true)
+            setTabDisable(true)
         }
     }, [id]);
 
     const onProductDatas = (values) => {
+        setLoading(true);
         let data
-        AdminApi.GetById({id: values}).then((res) => {
+        AdminApi.GetById({ id: values }).then((res) => {
             data = res
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         }).finally(r => {
             setShowProduct(data);
+            setLoading(false);
             console.log(data, '')
         })
     };
 
     const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
     const handleClose2 = () => setShow2(false);
 
     const handleInputChangee = (e) => {
@@ -119,32 +134,13 @@ const Home = () => {
     };
 
 
-    const handleItemClick = () => {
-        setIsDropdownOpen(false);
-    };
 
-
-    const [isUpVisible, setIsUpVisible] = useState(false);
-    const [isTableViewVisible, setIsTableViewVisible] = useState(false);
-
-    const handleToggleClick = () => {
-        setIsUpVisible(!isUpVisible);
-        setIsTableViewVisible(!isTableViewVisible);
-    };
 
 
     const [showAlert, setShowAlert] = useState(false);
 
-    const handleSaveClick = () => {
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 5000);
-    };
+   
 
-    const handleCloseAlert = () => {
-        setShowAlert(false);
-    };
 
 
     const [isBarCode, setIsBarCode] = useState(false);
@@ -179,16 +175,11 @@ const Home = () => {
         buy_rate: '',
     });
 
-    const [isDisabled, setIsDisabled] = useState(false);
-    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
-    const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
 
-    
-    const { selectedItem } = useContext(SearchContext);
 
     useEffect(() => {
         console.log(isNewFoto,
-        'isNewFoto')
+            'isNewFoto')
     }, [isNewFoto])
     useEffect(() => {
         if (selectedItem) {
@@ -207,7 +198,6 @@ const Home = () => {
                 selling_rate: selectedItem.selling_rate || '',
                 buy_rate: selectedItem.buy_rate || ''
             });
-            setIsDisabled(true);
             setIsSaveDisabled(false);
             setIsDeleteDisabled(false);
         }
@@ -221,39 +211,6 @@ const Home = () => {
             [name]: value,
         });
     };
-
-    const handleEditClick = () => {
-        setIsDisabled(false);
-    };
-
-    const handleSaveClickk = () => {
-        setIsSaveDisabled(true);
-        setTimeout(() => {
-            setIsSaveDisabled(false);
-            setIsDisabled(true);
-        }, 1000);
-    };
-    const openNotification = (message, description, error) => {
-        if (error) {
-            notification.error({
-                message,
-                description,
-                placement: 'topRight'
-            });
-        } else {
-            notification.info({
-                message,
-                description,
-                placement: 'topRight'
-            });
-        }
-    };
-
-
-    const [isSearchTables, setSearchTable] = useState([]);
-    const [current, setCurrent] = useState(1);
-    const [pageSize, setdefaultPageSize] = useState(10);
-    const [forms, setdefaultforms] = useState();
 
 
     useEffect(() => {
@@ -270,8 +227,9 @@ const Home = () => {
                 return 'GetSearchEquivalentProducts'
         }
     }
-    const getSearch = (values) => {
 
+    const getSearch = (values) => {
+        setLoading(true);
         const data = {
             page: current - 1,
             pageSize: pageSize,
@@ -279,15 +237,14 @@ const Home = () => {
         }
 
         const searchUrl = switchTab(activeTab)
-            // AdminApi[searchUrl](data).then((res) => {
         AdminApi.GetSearchTable(data).then((res) => {
             if (res) {
                 setSearchTable(res);
                 handleShowModal2()
             }
-        }).catch((error) => {
-            // openNotification('Xəta baş verdi', error.response.data.message, true)
-        })
+        }).finally(() => {
+            setLoading(false); // Loading durumunu kapat
+        });
     }
 
 
@@ -328,6 +285,7 @@ const Home = () => {
     };
 
     return (
+        <Spin spinning={loading} >
             <div className="home">
                 <Card className="search-card">
                     <Title level={4}>Ürün Bilgileri</Title>
@@ -344,9 +302,7 @@ const Home = () => {
                                                 required: false,
                                             },
                                         ]} className="w-100">
-                                        {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
-                                 src={Images.Search_blue} alt="search"/>*/}
-                                        <Input className='position-relative' placeholder="123544" />
+                                        <Input />
                                     </Form.Item>
                                 </Col>
                                 <Col span={12} md={6} className="p-2">
@@ -357,24 +313,12 @@ const Home = () => {
                                                 required: false,
                                             },
                                         ]} className="w-100">
-                                        <Input className='position-relative' placeholder="123544" />
-                                        {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
-                                 src={Images.Search_blue} alt="search"/>*/}
+                                        <Input />
+
                                     </Form.Item>
                                 </Col>
                             </Row>
-
-                            {/* <Form.Item label="Adı">
-                            <Input placeholder="123544"/>
-                        </Form.Item>*/}
-                            {/*<div className="product-statss">
-                                <div>
-                                    <span className='fs_16 fw_700'>Ürün No: 234</span>
-                                    <span className='fs_16 mt-3 fw_700'>Entegre No: 12</span>
-                                </div>
-                            </div>*/}
                         </div>
-
                         <Form.Item>
                             <Button type="default" className="Delete_red"
                                 icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
@@ -385,88 +329,30 @@ const Home = () => {
                 </Card>
                 <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
                     <TabPane disabled={tabDisable} tab="Genel" key="1">
-
-                        {/* <Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none add_button ">
-                                    <img src={Images.add_circle_blue} alt="add"/>
-                                    Yeni
-                                </Button>
-                                <Button type="default" className="button-margin bg_none edit_button"
-                                        onClick={handleEditClick}>
-                                    <img src={Images.edit_green} alt="edit"/>
-                                    Degistir
-                                </Button>
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                        className="button-margin Save_green" onClick={handleSaveClickk}
-                                        disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                            </Col>
-                        </Row>*/}
-
-                        {/* <SearchModal
-                            show={show}
-                            handleClose={handleClose}
-                            handleClear={handleClear}
-                            formData={formData}
-                            handleInputChange={handleInputChange}
-                            handleShowModal2={handleShowModal2}
-                        /> */}
-
                         <SearchModal2
                             shows={show2}
-
                             searchData={isSearchTables}
-
                             activeTab={activeTab}
-
                             searchChange={onSearchData}
                             searchPageSize={onPageSize}
                             productData={onProductData}
-                            
                             handleClose={handleClose2}
                             handleClear={handleClear}
                         />
                         <Divider />
 
-                        <General isSetData={isShowProduct} handleShowModal2={handleShowModal2}/>
+                        <General isSetData={isShowProduct} handleShowModal2={handleShowModal2} />
 
                     </TabPane>
+
                     <TabPane disabled={tabDisable} tab="Eşdeğer Ürünler" key="3">
-                        {/*<Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add" />
-                                    Yeni
-                                </Button>
-                                <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit" />
-                                    Degistir
-                                </Button>
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
-                                    className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
-                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
-                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                            </Col>
-                        </Row>*/}
-
-
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
-                                <Equivalent activeKey={activeTab === '3'} showData={isShowProduct}/>
+                                <Equivalent activeKey={activeTab === '3'} showData={isShowProduct} />
                             </Col>
                         </Row>
-
                     </TabPane>
+
                     <TabPane disabled={tabDisable} tab="Oem No" key="6">
                         <Row gutter={16}>
                             <Col span={12}>
@@ -542,21 +428,17 @@ const Home = () => {
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
                                 <Card className="info-card mt-3" title="Qem No">
-                                    <Qem activeKey={activeTab}/>
+                                    <Qem activeKey={activeTab} />
                                 </Card>
                             </Col>
                         </ Row>
                     </TabPane>
                     <TabPane disabled={tabDisable} tab="Araç Bilgileri" key="8">
-
-
-
                         <Row gutter={16} className="mt-4">
                             <Col span={24}>
-                                <Cars_info activeKey={activeTab === '8'}/>
+                                <Cars_info activeKey={activeTab === '8'} />
                             </Col>
                         </Row>
-
                     </TabPane>
                     <TabPane disabled={tabDisable}
                         onClick={() => {
@@ -567,12 +449,12 @@ const Home = () => {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Button type="default" className="button-margin bg_none add_button"
-                                        onClick={handleNewFotoClick}>
-                                    <img src={Images.add_circle_blue} alt="add"/>
+                                    onClick={handleNewFotoClick}>
+                                    <img src={Images.add_circle_blue} alt="add" />
                                     Yeni
                                 </Button>
                                 {isNewFoto && (
-                                    <Button  type="default" onClick={() => {
+                                    <Button type="default" onClick={() => {
                                         setIsNewFoto(false);
                                     }} className="button-margin bg_none edit_button">
                                         ←
@@ -581,8 +463,8 @@ const Home = () => {
 
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                        className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
                             </Col>
                         </Row>
 
@@ -590,25 +472,21 @@ const Home = () => {
                             <div>
                                 <Row gutter={16} className="mt-4">
                                     <Col span={24}>
-                                        <PhotoUpload handleShow={handleNewPhotoPropClick}  isSaveDisabled={isSaveDisabled}
-                                                     isDeleteDisabled={isDeleteDisabled}/>
+                                        <PhotoUpload handleShow={handleNewPhotoPropClick} isSaveDisabled={isSaveDisabled}
+                                            isDeleteDisabled={isDeleteDisabled} />
                                     </Col>
                                 </Row>
                             </div> :
                             <div>
                                 <div className='mt-3'>
-                                    <Foto activeKey={activeTab === '9'}/>
+                                    <Foto activeKey={activeTab === '9'} />
                                 </div>
                             </div>
                         }
                     </TabPane>
-
-                    {/*Tecdoc axırda*/}
-                   {/* <TabPane tab="Tecdoc" key="11">
-                        <p>Tecdoc içeriği burada olacak.</p>
-                    </TabPane>*/}
                 </Tabs>
             </div>
+        </Spin >
     );
 };
 

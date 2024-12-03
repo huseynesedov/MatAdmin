@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import { Table, Spin } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../../../AuthContext";
 
-const Equivalent = ({activeKey, showData}) => {
+const Equivalent = ({ activeKey, showData }) => {
     const [data, setData] = useState([]);
-
+    const [loading, setLoading] = useState(false);
     let { id } = useParams();
 
     const { openNotification } = useAuth()
@@ -18,7 +18,7 @@ const Equivalent = ({activeKey, showData}) => {
     };
 
     const createData = () => {
-
+        setLoading(true);
         const pathname = window.location.pathname;
 
         const data = {
@@ -46,8 +46,10 @@ const Equivalent = ({activeKey, showData}) => {
             })
             setData(data)
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
-        })
+            openNotification('Xəta baş verdi', err.response.data.message, true)
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     useEffect(() => {
@@ -147,12 +149,14 @@ const Equivalent = ({activeKey, showData}) => {
 
     return (
         <>
-            <Table
-                rowClassName={rowClassName}
-                columns={columns}
-                dataSource={data}
-                rowSelection={rowSelection}
-            />
+            <Spin spinning={loading}>
+                <Table
+                    rowClassName={rowClassName}
+                    columns={columns}
+                    dataSource={data}
+                    rowSelection={rowSelection}
+                />
+            </Spin>
         </>
     );
 };
