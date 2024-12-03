@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Pagination, Table } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const OrderList = ({ products, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
     const [data, setData] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (Array.isArray(products)) {
             const formattedData = products.map((item, index) => ({
                 key: index + 1,
+                idHash: item.idHash || '-', // idHash değeri eklendi
                 no: item.orderNumber || '-',
                 code: item.customerCode || '-',
                 address: item.customerName || '-',
@@ -30,6 +33,10 @@ const OrderList = ({ products, handlePageChange, currentDataPage, handlePageSize
 
     const rowClassName = (record, index) => (index % 2 === 0 ? 'custom_bg' : '');
 
+    const handleRowClick = (idHash) => {
+        navigate(`/OrderDetail/${idHash}`);
+    };
+
     const columns = [
         { title: 'No', width: 100, dataIndex: 'no', key: 'no', sorter: true },
         { title: 'Kod', width: 100, dataIndex: 'code', key: 'code', sorter: true },
@@ -37,8 +44,25 @@ const OrderList = ({ products, handlePageChange, currentDataPage, handlePageSize
         { title: 'Region', width: 150, dataIndex: 'region', key: 'region', sorter: true },
         { title: 'Gönderi şekli', width: 150, dataIndex: 'post_form', key: 'post_form', sorter: true },
         { title: 'Tipi', width: 150, dataIndex: 'type', key: 'type', sorter: true },
-        { title: 'Siparis T.', width: 150, dataIndex: 'order_t', key: 'order_t', sorter: true, render: (text) => new Date(text).toLocaleDateString() },
-        { title: 'Onay T.', width: 150, dataIndex: 'confirim_t', key: 'confirim_t', sorter: true, render: (text) => { const date = new Date(text); return isNaN(date.getTime()) ? '' : date.toLocaleDateString(); } },
+        {
+            title: 'Siparis T.',
+            width: 150,
+            dataIndex: 'order_t',
+            key: 'order_t',
+            sorter: true,
+            render: (text) => new Date(text).toLocaleDateString(),
+        },
+        {
+            title: 'Onay T.',
+            width: 150,
+            dataIndex: 'confirim_t',
+            key: 'confirim_t',
+            sorter: true,
+            render: (text) => {
+                const date = new Date(text);
+                return isNaN(date.getTime()) ? '' : date.toLocaleDateString();
+            },
+        },
         { title: 'Onay No', width: 150, dataIndex: 'confirim_no', key: 'confirim_no', sorter: true },
         { title: 'Yazdirildi', width: 150, dataIndex: 'printed', key: 'printed', sorter: true },
         { title: 'Toplam', width: 150, dataIndex: 'total', key: 'total', sorter: true },
@@ -56,6 +80,9 @@ const OrderList = ({ products, handlePageChange, currentDataPage, handlePageSize
                 dataSource={data}
                 pagination={false}
                 scroll={{ x: 1600 }}
+                onRow={(record) => ({
+                    onClick: () => handleRowClick(record.idHash), // Satır tıklaması ile yönlendirme
+                })}
             />
             <div className="d-flex w-100 justify-content-end align-items-center mt-4">
                 <Pagination
