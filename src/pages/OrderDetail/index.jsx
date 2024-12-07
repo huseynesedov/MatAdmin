@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, Dropdown, Spin } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Card, Dropdown, Input, notification, Spin, } from 'antd';
 import { AdminApi } from '../../api/admin.api';
 import { BaseApi } from '../../const/api';
 
 import OrderList from './Components';
 import Title from 'antd/es/typography/Title';
+import { FaSearch } from "react-icons/fa";
 
 import { FaChevronDown } from "react-icons/fa";
 
@@ -17,6 +18,9 @@ const OrderDetail = () => {
     const [loading, setLoading] = useState(false);
     const [orderData, setOrderData] = useState([]);
     const [products, setProducts] = useState([]);
+
+    const navigate = useNavigate();
+
 
 
     const fetchOrderDetail = (page, filter = false) => {
@@ -35,6 +39,13 @@ const OrderDetail = () => {
                 setOrderData(res.data);
                 setProducts(res.data.orderDetails || []);
                 setCount(res.count);
+                if (res.status === 204) {
+                    notification.info({
+                        description: 'Mehsul Yoxdur ...',
+                        placement: 'topRight'
+                    });
+                    navigate("/Orders")
+                }
             })
             .catch((error) => {
                 console.error('Error fetching orders:', error);
@@ -58,26 +69,28 @@ const OrderDetail = () => {
         fetchOrderDetail(currentPage - 1);
     }, [currentPage]);
 
-    const [isEditDisabled, setIsEditDisabled] = useState(false); // "Değiştir" butonu başlangıç durumu
-    const [isSaveDisabled, setIsSaveDisabled] = useState(true);  // "Kaydet" butonu başlangıç durumu
-    const [isDropdownDisabled, setIsDropdownDisabled] = useState(true); // Dropdown başlangıç durumu
-    const [noteDisabled, setIsnoteDisabled] = useState(true); // Dropdown başlangıç durumu
+    const [isEditDisabled, setIsEditDisabled] = useState(false);
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+    const [isDropdownDisabled, setIsDropdownDisabled] = useState(true);
+    const [noteDisabled, setIsnoteDisabled] = useState(true);
 
- 
-    
-    
+
+
+
     const [items, setItems] = useState([]);
-    const [selectedStorageCode, setSelectedStorageCode] = useState("Gonderici yoxdur !"); // Başlangıç değeri
+    const [selectedStorageCode, setSelectedStorageCode] = useState("Gonderici yoxdur !");
     const [selectedStorageKey, setSelectedStorageKey] = useState("id Yok");
 
     useEffect(() => {
         if (orderData?.order) {
-          setSelectedStorageCode(orderData.order.senderName || "Gonderici yoxdur !");
-          setSelectedStorageKey(orderData.order.shipmentTypeIdHash || "id Yok");
+            setSelectedStorageCode(orderData.order.senderName || "Gonderici yoxdur !");
+            setSelectedStorageKey(orderData.order.shipmentTypeIdHash || "id Yok");
         }
-      }, [orderData]);
+    }, [orderData]);
 
 
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchShipmentTypes = async () => {
@@ -97,19 +110,57 @@ const OrderDetail = () => {
             }
         };
         fetchShipmentTypes();
-
     }, []);
 
     const handleDropdownSelect = (key) => {
         const selectedItem = items.find((item) => item.key === key);
         if (selectedItem) {
-            setSelectedStorageKey(selectedItem.key);
             setSelectedStorageCode(selectedItem.label);
         }
     };
 
+    const filteredItems = items.filter((item) =>
+        item.label.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
+    const handleMenuClick = (e) => {
+        setIsOpen(!isOpen);
+    };
+    const suffix = (
+        <FaSearch
+            style={{
+                fontSize: 16,
+                color: '#1677ff',
+                top: '7px',
+                right: "7px"
+            }}
+        />
+    );
 
+    const menu = (
+        <div className='dropdown-musteri' style={{ maxHeight: "35ras0px", overflowY: "auto" }}>
+            <Input
+                placeholder="Ara..."
+                value={searchTerm}
+                className="search_input"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ marginBottom: "8px" }}
+                suffix={suffix}
+            />
+            {filteredItems.map((item) => (
+                <div
+                    key={item.key}
+                    onClick={() => {
+                        handleDropdownSelect(item.key);
+                        setIsOpen(false);
+                    }}
+                    style={{ padding: "8px", cursor: "pointer" }}
+                >
+                    {item.label}
+                </div>
+            ))}
+        </div>
+    );
 
 
 
@@ -124,16 +175,15 @@ const OrderDetail = () => {
 
 
 
-    // "Düzenle" butonuna klikledikde
+    // "Düzenle"
     const handleEditClick = () => {
-        setIsEditDisabled(true);           // "Düzenle" butonunu devre dışı bırak
-        setIsSaveDisabled(false);          // "Kaydet" butonunu etkinleştir
-        setIsDropdownDisabled(false);     // Dropdown'u etkinleştir
+        setIsEditDisabled(true);
+        setIsSaveDisabled(false);
+        setIsDropdownDisabled(false);
         setIsnoteDisabled(false);
-
     };
 
-    // "Kaydet" butonuna tıklandığında
+    // "Kaydet" 
     const handleSaveClick = () => {
         setIsEditDisabled(false);
         setIsSaveDisabled(true);
@@ -215,22 +265,18 @@ const OrderDetail = () => {
                                 <div className="border_bottom w-100">
                                     <span className="name fs_14">
                                         <Dropdown
-                                            overlay={null} // Bunu kaldırabilirsiniz, çünkü artık gerek yok.
-                                            menu={{
-                                                items: items.map((item) => ({
-                                                    key: item.key,
-                                                    label: (
-                                                        <span onClick={() => handleDropdownSelect(item.key)}>
-                                                            {item.label}
-                                                        </span>
-                                                    ),
-                                                })),
-                                            }}
+                                            overlay={menu}
+                                            trigger={["click"]}
+                                            open={isOpen}
+                                            onOpenChange={(open) => setIsOpen(open)}
                                             disabled={isDropdownDisabled}
                                         >
-                                            <a onClick={(e) => e.preventDefault()} className="ant-dropdown-link">
-                                                <span className='me-2'>{selectedStorageCode}</span>
-                                                <FaChevronDown className='mt-1' />
+                                            <a onClick={(e) => {
+                                                e.preventDefault();
+                                                handleMenuClick();
+                                            }} className="ant-dropdown-link">
+                                                <span className="me-2">{selectedStorageCode}</span>
+                                                <FaChevronDown className="mt-1" />
                                             </a>
                                         </Dropdown>
 
@@ -266,6 +312,7 @@ const OrderDetail = () => {
                         isDropdownDisabled={isDropdownDisabled}
                         noteDisabled={noteDisabled}
                         fetchOrderDetail={fetchOrderDetail}
+
                     />
                 </Card>
             </Spin>

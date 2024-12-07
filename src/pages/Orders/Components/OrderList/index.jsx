@@ -79,7 +79,7 @@ const OrderList = ({ products, handlePageChange, currentDataPage, handlePageSize
                 columns={columns}
                 dataSource={data}
                 pagination={false}
-                scroll={{ x: 1600 }}
+                scroll={{ x: 2600 }}
                 onRow={(record) => ({
                     onClick: () => handleRowClick(record.idHash), // Satır tıklaması ile yönlendirme
                 })}

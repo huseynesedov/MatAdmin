@@ -166,3 +166,19 @@
     max-width: calc(100vw - 32px);
     padding-bottom: 24px;
 }
+
+.dropdown-musteri{
+    background-color: #F8F8F8 !important;
+    border-radius: 8px;
+    padding: 20px !important;
+}
+
+
+.search_input{
+    position: relative;
+    svg{
+        position: absolute;
+        right: 0;
+        top: 2px;
+    }
+}

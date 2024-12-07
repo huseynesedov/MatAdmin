@@ -17,17 +17,46 @@ import TextArea from 'antd/es/input/TextArea';
 
 
 import fetchOrderDetail from '../index';
+import { useParams } from 'react-router-dom';
 
 
 
-const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, isEditDisabled, isDropdownDisabled, isSaveDisabled, orderData, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
+const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabled, isEditDisabled, isDropdownDisabled, isSaveDisabled, orderData, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
+    const [selectedcode, setSelectedcode] = useState(null);
+    const [selectedName, setSelectedName] = useState(null);
+    const [selectedManufacturer, setSelectedManufacturer] = useState(null);
+    const [selectedPrice, setSelectedPrice] = useState(null);
+    const [orderDetailIdHash, setorderDetailIdHash] = useState(null);
+    const [amount, setamount] = useState(null);
+    const [shippedQuantity, setshippedQuantity] = useState(0);
+    const [unitDiscountedPrice, setunitDiscountedPrice] = useState(null);
+    const [isk1, setisk1] = useState(null);
+    const [isk2, setisk2] = useState(null);
+    const [isk3, setisk3] = useState(null);
+    const [isk4, setisk4] = useState(null);
+    const [isk1_id, setisk1_id] = useState(null);
+    const [isk2_id, setisk2_id] = useState(null);
+    const [isk3_id, setisk3_id] = useState(null);
+    const [isk4_id, setisk4_id] = useState(null);
 
+    const [formLayout, setFormLayout] = useState('vertical');
+
+    // Storage list api - start
+
+    const [items, setItems] = useState([]);
+    const [selectedStorageCode, setSelectedStorageCode] = useState(orderData?.order?.shipmentTypeName || 'Kargo Bilgisi Yok');
+    const [selectedStorageKey, setSelectedStorageKey] = useState(orderData?.order?.shipmentTypeIdHash || 'Kargo Bilgisi Yok');
+    // Storage list api - end
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+
+    const s= "test"
 
     // Product List -Start
 
     const [data, setData] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
-    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
         if (Array.isArray(products) && products.length > 0) {
@@ -101,25 +130,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
     // Modal - Start
 
-    const [selectedcode, setSelectedcode] = useState(null);
-    const [selectedName, setSelectedName] = useState(null);
-    const [selectedManufacturer, setSelectedManufacturer] = useState(null);
-    const [selectedPrice, setSelectedPrice] = useState(null);
-    const [orderDetailIdHash, setorderDetailIdHash] = useState(null);
-    const [amount, setamount] = useState(null);
-    const [shippedQuantity, setshippedQuantity] = useState(0);
-    const [unitDiscountedPrice, setunitDiscountedPrice] = useState(null);
-    const [isk1, setisk1] = useState(null);
-    const [isk2, setisk2] = useState(null);
-    const [isk3, setisk3] = useState(null);
-    const [isk4, setisk4] = useState(null);
-    const [isk1_id, setisk1_id] = useState(null);
-    const [isk2_id, setisk2_id] = useState(null);
-    const [isk3_id, setisk3_id] = useState(null);
-    const [isk4_id, setisk4_id] = useState(null);
 
-    const [formLayout, setFormLayout] = useState('vertical');
-    const [form] = Form.useForm();
 
 
     const handleRowDoubleClick = (record) => {
@@ -185,17 +196,15 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                 },
             ],
         };
-    
+
         setLoadingModal(true);
-    
+
         BaseApi.put('/admin/v1/Order/UpdateOrderForOrderDetail', dataToSend)
-            .then(response => {
-                console.log('API yanıtı:', response);
-    
+
+            .then((response) => {
                 if (response.status === 200) {
-                    alert('Güncelleme başarılı!');
                     handleModalClose();
-                    fetchOrderDetail(); 
+                    fetchOrderDetail();
                 }
                 if (response.status === 500) {
                     alert('Xeta!');
@@ -209,20 +218,11 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                 setLoadingModal(false);
             });
     };
-    
-
-
 
     // Modal - End
 
-
-
-
+    
     // Storage list api - start
-
-    const [items, setItems] = useState([]);
-    const [selectedStorageCode, setSelectedStorageCode] = useState(orderData?.order?.shipmentTypeName || 'Kargo Bilgisi Yok');
-    const [selectedStorageKey, setSelectedStorageKey] = useState(orderData?.order?.shipmentTypeIdHash || 'Kargo Bilgisi Yok');
 
     useEffect(() => {
         const fetchShipmentTypes = async () => {
@@ -264,6 +264,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
     // buttonlar -Start
 
+    const { idHash } = useParams(); // Destructure idHash from useParams
 
 
 
@@ -304,14 +305,99 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
         }
     };
 
+    const [loadingAktar, setLoadingAkta] = useState(false);
 
 
+    const handleAktarClick = () => {
+        const dataToSend = {
+            orderIdHash: idHash // Send it as a string
+        };
+
+        console.log(dataToSend);
+
+        setLoadingAkta(true);
+
+        BaseApi.put('/admin/v1/Order/UpdateOrderApproved', dataToSend)
+            .then((response) => {
+                if (response.status === 200) {
+                    fetchOrderDetail();
+                }
+                if (response.status === 500) {
+                    alert('Xeta!');
+                }
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+                setLoadingAkta(false);
+            });
+    };
+
+
+    const [loadingHovuz, setLoadingHovuz] = useState(false);
+
+
+    const handleHovuzClick = () => {
+
+        setLoadingHovuz(true);
+
+        BaseApi.put(`/admin/v1/Order/UpdateOrderIntoPoolForOrderDetail?id=${idHash}`)
+            .then((response) => {
+                if (response.status === 200) {
+                    fetchOrderDetail();
+                }
+                if (response.status === 500) {
+                    alert('Xeta!');
+                }
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+                setLoadingHovuz(false);
+            });
+    };
+
+
+    const [loadingGeriAl, setLoadingGeriAl] = useState(false);
+
+
+    const handleGeriAlClick = () => {
+
+        setLoadingGeriAl(true);
+
+        BaseApi.put(`/admin/v1/Order/UndoOrderForOrderDetail?id=${idHash}`)
+            .then((response) => {
+                if (response.status === 200) {
+                    fetchOrderDetail();
+                }
+                if (response.status === 500) {
+                    alert('Xeta!');
+                }
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+                setLoadingGeriAl(false);
+            });
+    };
 
     // buttonlar -End
 
 
     const rowClassName = (record, index) => (index % 2 === 0 ? 'custom_bg' : '');
+    const orderStatusName = orderData?.order?.orderStatusName;
+    const disabledStatuses = ["Havuzda", "Havuzda bekleyen", "Onaylandı", "Silindi"];
 
+    const aktar = ["Onaylandı", "Silindi", "Havuzda bekleyen"];
+
+    const isDisabled = disabledStatuses.includes(orderStatusName);
+    const aktarisDisabled = aktar.includes(orderStatusName);
     return (
         <>
             <Table
@@ -340,6 +426,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
             <Modal
                 visible={isModalVisible}
+                onCancel={handleModalClose}
                 footer={null}
             >
                 <div className="d-flex w-100 justify-content-between mt-5">
@@ -351,8 +438,6 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
                 <Form
                     layout={formLayout}
-                    form={form}
-                    onFinish={handleFormSubmit}
                     onValuesChange={onFormLayoutChange}
                 >
                     <Spin spinning={loadingModal}>
@@ -380,7 +465,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                             </Form.Item>
                         </div>
                         <div className="d-flex mt-4 justify-content-end" >
-                            <span onCancel={handleModalClose} className="DetailButton2 degistir" onClick={() => form.submit()} >
+                            <span className="DetailButton2 degistir" onClick={handleFormSubmit} >
                                 <FiSave />
                                 <span className='ms-2'>
                                     Kaydet
@@ -483,12 +568,20 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
 
                 <div className="col-sm-5 d-flex" style={{ gap: "20px" }}>
-                    <span className="DetailButton aktar">
-                        <FaTruckRampBox />
-                        <span className='ms-2'>
-                            Aktar
+
+                    <Spin spinning={loadingAktar}>
+                        <span
+                            className={`DetailButton aktar ${aktarisDisabled ? 'disabled' : ''}`}
+                            style={{ cursor: aktarisDisabled ? 'not-allowed' : 'pointer' }}
+                            aria-disabled={aktarisDisabled}
+                            onClick={handleAktarClick} >
+                            <FaTruckRampBox />
+                            <span className='ms-2'>
+                                Aktar
+                            </span>
                         </span>
-                    </span>
+                    </Spin>
+
                     <span className="DetailButton yazdir">
                         <BsPrinterFill />
                         <span className='ms-2'>
@@ -519,12 +612,21 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
 
                 <div className="col-sm-6 justify-content-end d-flex" style={{ gap: "20px" }}>
-                    <span className="DetailButton hovuz">
-                        <FaSwimmingPool />
-                        <span className='ms-2'>
-                            Havuz
+                    <Spin spinning={loadingHovuz}>
+                        <span className={`DetailButton hovuz ${isDisabled ? 'disabled' : ''}`}
+                            style={{ cursor: isDisabled ? 'not-allowed' : 'pointer' }}
+                            aria-disabled={isDisabled}
+                            onClick={handleHovuzClick}
+                        >
+                            <FaSwimmingPool />
+                            <span className='ms-2'>
+                                Havuz
+                            </span>
                         </span>
-                    </span>
+                    </Spin>
+
+
+
                     <span className={`DetailButton degistir ${isEditDisabled ? 'disabled' : ''}`}
                         onClick={handleEditClick}
                         disabled={isEditDisabled}>
@@ -533,20 +635,17 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                             Degistir
                         </span>
                     </span>
-                    <span className="DetailButton sevkiyyat">
-                        <FaTruckPlane />
-                        <span className='ms-2'>
-                            Sevkiyyat
+                    <Spin spinning={loadingGeriAl}>
+
+                        <span className="DetailButton geri" onClick={handleGeriAlClick}>
+                            <IoMdReturnLeft />
+                            <span className='ms-2'>
+                                Geri al
+                            </span>
                         </span>
-                    </span>
-                    <span className="DetailButton geri">
-                        <IoMdReturnLeft />
-                        <span className='ms-2'>
-                            Geri al
-                        </span>
-                    </span>
+                    </Spin>
                 </div>
-            </div>
+            </div >
         </>
     );
 };
