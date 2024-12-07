@@ -10,7 +10,7 @@ const OrderList = ({ products, handlePageChange, currentDataPage, handlePageSize
         if (Array.isArray(products)) {
             const formattedData = products.map((item, index) => ({
                 key: index + 1,
-                idHash: item.idHash || '-', // idHash değeri eklendi
+                idHash: item.idHash || '-',
                 no: item.orderNumber || '-',
                 code: item.customerCode || '-',
                 address: item.customerName || '-',

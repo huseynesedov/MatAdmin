@@ -21,13 +21,14 @@ export const CatalogApi = {
         return BaseApi.get("/catalog/v1/Order/GetOrderStatusList", { ...params });
     },
     GetOrderTypeList(params) {
-        return BaseApi.get(apiRoutes.order.getOrderTypeList, { ...params });
+        return BaseApi.get('/catalog/v1/Order/GetOrderTypeList', { ...params });
     },
     GetShipmentStatusList(params) {
         return BaseApi.get(apiRoutes.order.getShipmentStatusList, { ...params });
     },
     GetShipmentTypeList(params) {
         return BaseApi.get(apiRoutes.order.getShipmentTypeList, { ...params });
+        
     },
     getVehicleModel(data) {
         return BaseApi.post(apiRoutes.catalog.getVehicleModels, data);
