@@ -319,12 +319,9 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
 
         BaseApi.put('/admin/v1/Order/UpdateOrderApproved', dataToSend)
             .then((response) => {
-                if (response.status === 200) {
-                    fetchOrderDetail();
-                }
-                if (response.status === 500) {
-                    alert('Xeta!');
-                }
+                fetchOrderDetail();
+                console.log(response);
+                handleModalClose()
             })
             .catch(error => {
                 console.error('API hatası:', error.response?.data || error.message);
