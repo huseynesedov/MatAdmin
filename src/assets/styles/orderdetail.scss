@@ -1,12 +1,13 @@
-.border_bottom{
+.border_bottom {
+    padding: 0 0 7px;
     border-bottom: 1.4px solid #E0E0E0;
 }
 
-.border_right{
+.border_right {
     border-right: 1.4px solid #E0E0E0;
 }
 
-.bg_gray{
+.bg_gray {
     width: 140px;
     height: 200px;
     padding: 15px;
@@ -17,7 +18,7 @@
     background-color: #F2F2F280;
 }
 
-.bg_grayRight{
+.bg_grayRight {
     width: 100%;
     height: 200px;
     display: flex;
@@ -25,4 +26,143 @@
     padding: 15px;
     justify-content: space-between;
     align-items: flex-start;
+}
+
+.red {
+    color: red;
+}
+
+.fw_600 {
+    font-weight: 600;
+}
+
+.fs_20 {
+    font-size: 20px;
+}
+
+.fs_18 {
+    font-size: 18px;
+}
+
+
+.ant-table-content {
+    padding-bottom: 20px;
+}
+
+
+.stroageDropdown {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1.4px solid #E2E8F0;
+}
+
+.btn-primary {
+    --bs-btn-color: #797979 !important;
+    --bs-btn-bg: #fff !important;
+    --bs-btn-border-color: #E2E8F0;
+
+    --bs-btn-hover-color: #797979;
+    --bs-btn-hover-bg: #fff !important;
+    --bs-btn-hover-border-color: #E2E8F0 !important;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #797979;
+    --bs-btn-active-bg: #E2E8F0;
+    --bs-btn-active-border-color: #E2E8F0;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #797979;
+    --bs-btn-disabled-bg: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-border-color: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.btn-primary2 {
+    background-color: #2C369A;
+    color: white;
+}
+
+.btn-primary2:hover {
+    background-color: #2C369A;
+    color: white;
+}
+
+.t_8F {
+    color: #8F8F8F;
+}
+
+.DetailButton {
+    width: 100px;
+    height: 85px;
+    border-radius: 8px;
+    display: flex;
+    border: 1px solid black;
+    align-items: center;
+    justify-content: center;
+}
+
+.DetailButton2 {
+    width: 100px;
+    height: 45px;
+    border-radius: 8px;
+    display: flex;
+    border: 1px solid black;
+    align-items: center;
+    justify-content: center;
+}
+.aktar {
+    border: 1px solid #0162DD;
+    color: #0162DD;
+}
+
+.yazdir {
+    color: #AF52DE;
+    border: 1px solid #AF52DE;
+}
+
+.sil {
+    color: #FF0066;
+    border: 1px solid #FF0066;
+}
+
+.hovuz {
+    border: 1px solid #0162DD;
+    color: #0162DD;
+}
+
+.degistir {
+    color: #34C759;
+    border: 1px solid #34C759;
+}
+
+.sevkiyyat {
+    color: #30B0C7;
+    border: 1px solid #30B0C7;
+}
+
+.geri{
+    color: #FFCC00;
+    border: 1px solid #FFCC00;
+}
+
+.disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+}
+
+
+:where(.css-dev-only-do-not-override-1uq9j6g).ant-modal {
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 14px;
+    line-height: 1.5714285714285714;
+    list-style: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    pointer-events: none;
+    position: relative;
+    top: 160px;
+    width: 750px !important;
+    max-width: calc(100vw - 32px);
+    padding-bottom: 24px;
 }

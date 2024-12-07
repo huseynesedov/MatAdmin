@@ -58,7 +58,7 @@ const Login = () => {
 
                                 <Button onClick={()=>{
                                     AdminLogin(userCode , passwordHash)
-                                }} variant="primary w-100 mt-4 rounded-pill" type="submit">
+                                }} variant="primary2 w-100 mt-4 rounded-pill" type="submit">
                                     Giriş
                                 </Button>
                         </div>

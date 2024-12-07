@@ -66,7 +66,7 @@ const RouteList = () => {
                        }
                    />
                    <Route
-                       path="/OrderDetail/:id"
+                       path="/OrderDetail/:idHash"
                        element={
                            <PrivateRoute>
                                <OrderDetail />

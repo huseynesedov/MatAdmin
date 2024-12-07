@@ -104,8 +104,8 @@ export const AdminApi = {
 
 
     // !!!!!!!!! OrderDetail !!!!!!!!!
-    GetOrderDetail(userId) {
-        return BaseApi.post(apiRoutes.orderDetail.getOrderDetail, { data: { id: userId } });
+    GetOrderDetail(params) {
+        return BaseApi.post(apiRoutes.orderDetail.getOrderDetail, { ...params});
     },
 
 

@@ -1,7 +1,7 @@
-import React, {createContext, useState, useContext, useEffect} from "react";
-import {AccountApi} from "./api/account.api";
-import {notification} from "antd";
-import {useNavigate} from "react-router-dom";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { AccountApi } from "./api/account.api";
+import { notification } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -9,7 +9,7 @@ export const useAuth = () => {
     return useContext(AuthContext);
 };
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
     const [logged, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
     const [loginLoading, setLoginLoading] = useState(false);
@@ -43,7 +43,7 @@ export const AuthProvider = ({children}) => {
 
     const AdminLogin = (userCode, passwordHash) => {
         setLoading(true);
-        AccountApi.AdminLogin({userCode, passwordHash})
+        AccountApi.AdminLogin({ userCode, passwordHash })
             .then((res) => {
                 setLoggedIn(true);
                 localStorage.setItem("loggedIn", true);
