@@ -40,8 +40,6 @@ const General = ({isSetData, handleShowModal2}) => {
                                             disabled={isDisabled}
                                             style={{ width: "240px" }}
                                         />
-
-
                                     </div>
                                 </Form.Item>
                                 <Form.Item label="Il">

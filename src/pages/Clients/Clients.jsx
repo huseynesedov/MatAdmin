@@ -332,11 +332,31 @@ const Clients = () => {
             discounts: data.discounts
         }
 
-        AdminApi.AddManufacturerAdditionalDiscount(dataMadel).then(res => {
-            console.log(res)
-            setChangeData(res)
-            handleCloseDiscount()
-        })
+        if (modalDiscountType !== 1) {
+            AdminApi.AddManufacturerAdditionalDiscount(dataMadel).then(res => {
+                console.log(res)
+                setChangeData(res)
+                handleCloseDiscount()
+            })
+        } else {
+            const updateData = {
+                termDay: Number(data.termDay),
+                discounDetails: data.discounts.map(m => {
+                    return {
+                        additionalIdHash: m.additionalIdHash,
+                        value: m.value
+                    }
+                })
+            }
+
+            AdminApi.UpdateManufacturerAdditionalDiscount(updateData).then(res => {
+                console.log(res)
+                setChangeData(res)
+                handleCloseDiscount()
+            })
+        }
+
+
 
         console.log(dataMadel, 'dataMadel dataMadel dataMadel')
     }
@@ -1074,7 +1094,7 @@ const Clients = () => {
                 </TabPane>
                 <TabPane tab="Ek Iskonto" key="12">
                     <Row gutter={16}>
-                        <Col span={12}>
+                        {/*<Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
                                 <img src={Images.add_circle_blue} alt="add" />
                                 Yeni
@@ -1088,7 +1108,7 @@ const Clients = () => {
                             <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
                             <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
                             <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                        </Col>
+                        </Col>*/}
                     </Row>
                     <Row gutter={16} className="mt-4" justify="space-around">
                         <Col span={12}>

@@ -1,35 +1,87 @@
-import { useEffect, useState } from 'react';
-import { Checkbox, Table } from 'antd';
+import React, { useEffect, useState } from 'react';
+import {Checkbox, Pagination, Table} from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
+import {useParams} from "react-router-dom";
 
 const Oil = () => {
     const [data, setData] = useState([]);
+    const [count, setCount] = useState([]);
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setdefaultPageSize] = useState(10);
+    let { id } = useParams();
+    const [dynamicColumns, setDynamicColumns] = useState([]);
 
     const rowClassName = (record, index) => {
         if (index % 2 === 0) return 'custom_bg';
         return '';
     };
 
+    const onChange = (page, pageSize) => {
+        setCurrent(page);
+        setdefaultPageSize(pageSize);
+    };
     const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                code: `test`,
-                name: `test`,
-                brend: `test`,
-                disk_1: `test`,
-                disk_2: `test`,
-                disk_3: `test`,
-                disk_4: `test`,
-            });
+        if (id) {
+
+            let data = {
+                customerIdHash: '3LlDuXpKEl0=',
+                pagingRequest: {
+                    page: current - 1,
+                    pageSize: pageSize,
+                    filters: []
+                }
+            }
+            AdminApi.GetUpdateProductAdditionalDiscountsByCustomerId(data).then(res => {
+                setCount(res.count)
+                const manufacturers = res?.data || [];
+                setData(
+                    manufacturers.map((item) => ({
+                        ...item,
+                        ...item.discounts.reduce((acc, discount) => {
+                            acc[`Disc_${discount.discountIdHash}`] = discount.value;
+                            return acc;
+                        }, {}),
+                    }))
+                );
+
+                console.log(res, 'GetProductAdditionalDiscountsByCustomerId')
+
+                if (manufacturers.length > 0 && manufacturers[0].discounts) {
+                    const discountColumns = manufacturers[0].discounts.map((discount) => ({
+                        title: discount.discountName,
+                        dataIndex: `Disc_${discount.discountIdHash}`,
+                        key: `Disc-${discount.discountIdHash}`,
+                        render: (value) => <div>{value || 0}</div>,
+                    }));
+
+                    /*"discounts": [
+                {
+                    "additionalDiscountIdHash": "4vqng5Jbglo=",
+                    "discountIdHash": "xFsQPkFTRN0=",
+                    "discountName": "Discount1",
+                    "value": 10
+                },
+*/
+                    setDynamicColumns(discountColumns);
+
+                }
+            })
         }
-        setData(arr);
+
+
+        /*setData(arr);*/
     };
 
+    const handleRowClick = (record) => {
+        /*editData(record);*/
+    };
     useEffect(() => {
         createData();
     }, []);
+
+    useEffect(() => {
+        createData();
+    }, [id]);
 
     const columns = [
         {
@@ -43,69 +95,30 @@ const Oil = () => {
                 </div>,
         },
         {
-            title: 'Kodu',
+            title: 'productCode',
             width: 77,
-            dataIndex: 'code',
-            key: 'code',
+            dataIndex: 'productCode',
+            key: 'productCode',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Name',
+            title: 'productName',
             width: 77,
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'productName',
+            key: 'productName',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Brend',
+            title: 'Üretici',
             width: 77,
-            dataIndex: 'brend',
-            key: 'brend',
+            dataIndex: 'manufacturerName',
+            key: 'manufacturerName',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
-        {
-            title: 'Disk-1',
-            width: 77,
-            dataIndex: 'disk_1',
-            key: 'disk_1',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        },
-        {
-            title: 'Disk-2',
-            width: 77,
-            dataIndex: 'disk_2',
-            key: 'disk_2',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        },
-        {
-            title: 'Disk-3',
-            width: 77,
-            dataIndex: 'disk_3',
-            key: 'disk_3',
-            sorter: true,
-            render: (text) =>
-                <div className="age-column d-flex">
-                    {text}
-                    <div className="ms-3 d-flex">
-                        <Checkbox />
-                    </div>
-                </div>,
-        },
-        {
-            title: 'Disk-4',
-            width: 77,
-            dataIndex: 'disk_4',
-            key: 'disk_4',
-            sorter: true,
-            render: () => <div className="age-column">
-                <Checkbox />
-            </div>,
-        }
+        ...dynamicColumns,
     ];
 
     return (
@@ -115,7 +128,11 @@ const Oil = () => {
                 columns={columns}
                 dataSource={data}
                 pagination={false}
+                onRow={(record) => ({
+                    onDoubleClick: () => handleRowClick(record),
+                })}
             />
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count}/>
         </>
     );
 };

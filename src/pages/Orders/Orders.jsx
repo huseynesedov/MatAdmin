@@ -15,7 +15,7 @@ const Orders = () => {
     const [toDate, setToDate] = useState(null);
     const [orderNumber, setOrderNumber] = useState('');
     const [currentDataPage, setCurrentDataPage] = useState(1);
-    const [loading, setLoading] = useState(false); // Loading durumu
+    const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
     const [orderStatusList, setOrderStatusList] = useState([]);
     const [count, setCount] = useState(0);
@@ -41,7 +41,6 @@ const Orders = () => {
     const getOrdersByStatus = (statusValue, page, filter = false) => {
         setLoading(true);
         let filters = [];
-
         if (filter) {
             if (fromDate) {
                 filters.push({
@@ -137,7 +136,6 @@ const Orders = () => {
                                         value={fromDate}
                                         onChange={(value) => {
                                             setFromDate(value);
-                                            // handleSearchClick();
                                         }}
                                         format="DD/MM/YYYY"
                                         style={{ width: '240px', height: '40px' }}
@@ -147,7 +145,6 @@ const Orders = () => {
                                         value={toDate}
                                         onChange={(value) => {
                                             setToDate(value);
-                                            // handleSearchClick();
                                         }}
                                         format="DD/MM/YYYY"
                                         style={{ width: '240px', height: '40px' }}

@@ -40,7 +40,7 @@ const ModalDiscount = ({ show, handleClose, handleClear, discountData, type, edi
 
         setDiscounts(formattedDiscounts);
 
-        // Form değerlerini doldur
+
         const initialValues = {};
         formattedDiscounts.forEach((item) => {
             initialValues[item.valueHash] = item.value;

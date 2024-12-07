@@ -4,6 +4,7 @@ import { useAuth } from "../AuthContext";
 import {Layout, Spin} from "antd";
 
 import "antd/dist/reset.css";
+import OrderDetail from "../pages/OrderDetail";
 
 const Home = lazy(() => import("../pages/Home/Home"));
 const Clients = lazy(() => import("../pages/Clients/Clients"));
@@ -61,6 +62,14 @@ const RouteList = () => {
                        element={
                            <PrivateRoute>
                                <Orders />
+                           </PrivateRoute>
+                       }
+                   />
+                   <Route
+                       path="/OrderDetail/:id"
+                       element={
+                           <PrivateRoute>
+                               <OrderDetail />
                            </PrivateRoute>
                        }
                    />

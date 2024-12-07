@@ -54,7 +54,7 @@ const Discount = ({showModalDiscount, changeDatas, editData}) => {
                     if (manufacturers.length > 0 && manufacturers[0].discounts) {
                         const discountColumns = manufacturers[0].discounts.map((discount) => ({
                             title: discount.discountName,
-                            dataIndex: `discount_${discount.discountIdHash}`, // Benzersiz bir dataIndex
+                            dataIndex: `discount_${discount.discountIdHash}`,
                             key: `discount-${discount.discountIdHash}`,
                             render: (value) => <div>{value || 0}</div>,
                         }));
@@ -153,9 +153,9 @@ const Discount = ({showModalDiscount, changeDatas, editData}) => {
     return (
         <>
             <div className="d-flex w-100 justify-content-between">
-                <Button type="default" icon={<img src={Images.edit_green} alt="edit"/>} className="button-margin bg_none edit_button p-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>
+               {/* <Button type="default" icon={<img src={Images.edit_green} alt="edit"/>} className="button-margin bg_none edit_button p-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>*/}
                 <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red mb-3" disabled={!selectedRowKeys.length > 0}
-                        onClick={showDeleteConfirm}></Button>
+                        onClick={showDeleteConfirm} ></Button>
             </div>
             <Table
                 scroll={{x: 'max-content'}}
@@ -166,7 +166,7 @@ const Discount = ({showModalDiscount, changeDatas, editData}) => {
                 rowKey="manufacturerIdHash"
                 className="mb-3"
                 onRow={(record) => ({
-                    onClick: () => handleRowClick(record),
+                    onDoubleClick: () => handleRowClick(record),
                 })}
             />
             <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count}/>

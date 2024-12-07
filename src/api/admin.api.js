@@ -57,6 +57,9 @@ export const AdminApi = {
     GetProductAdditionalDiscountsByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.getproductadditionaldiscountsbycustomerId, data);
     },
+    GetUpdateProductAdditionalDiscountsByCustomerId(data) {
+        return BaseApi.post(apiRoutes.customer.updateProductAdditionalDiscountsByCustomerId, data);
+    },
     UpdateCustomer(data) {
         return BaseApi.put(apiRoutes.customer.updateCustomer, data);
     },
