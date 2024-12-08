@@ -19,11 +19,30 @@ const OrderDetail = () => {
     const [orderData, setOrderData] = useState([]);
     const [products, setProducts] = useState([]);
 
+
+    const [storageNote, setStorageNote] = useState(' ');
+    const [salesmanNote, setSalesmanNote] = useState(' ');
+    const [storageCode, setStorageCode] = useState('');
+
+
+
+    const update = (storageNote, salesmanNote, storageCode) => {
+        setStorageNote(storageNote);
+        setSalesmanNote(salesmanNote);
+        setStorageCode(storageCode);
+    };
+
+
+    console.log("ssss   " ,  storageCode);
+
+
+    // console.log(storageCode);
+
+
+
     const navigate = useNavigate();
 
-
-
-    const fetchOrderDetail = (page, filter = false) => {
+    const fetchOrderDetail = (page) => {
         setLoading(true);
         let filters = [];
 
@@ -39,16 +58,16 @@ const OrderDetail = () => {
                 setOrderData(res.data);
                 setProducts(res.data.orderDetails || []);
                 setCount(res.count);
-                if (res.status === 204) {
+
+            })
+            .catch((error) => {
+                if (error.status === 204) {
                     notification.info({
                         description: 'Mehsul Yoxdur ...',
                         placement: 'topRight'
                     });
                     navigate("/Orders")
                 }
-            })
-            .catch((error) => {
-                console.error('Error fetching orders:', error);
             })
             .finally(() => {
                 setLoading(false);
@@ -58,6 +77,7 @@ const OrderDetail = () => {
 
     const handlePageSizeChange = (current, size) => {
         setPageSize(size);
+        setCurrentPage(1);
     };
 
     const handlePageChange = (page) => {
@@ -80,6 +100,8 @@ const OrderDetail = () => {
     const [items, setItems] = useState([]);
     const [selectedStorageCode, setSelectedStorageCode] = useState("Gonderici yoxdur !");
     const [selectedStorageKey, setSelectedStorageKey] = useState("id Yok");
+
+
 
     useEffect(() => {
         if (orderData?.order) {
@@ -115,6 +137,7 @@ const OrderDetail = () => {
     const handleDropdownSelect = (key) => {
         const selectedItem = items.find((item) => item.key === key);
         if (selectedItem) {
+            setSelectedStorageKey(selectedItem.key);
             setSelectedStorageCode(selectedItem.label);
         }
     };
@@ -138,7 +161,7 @@ const OrderDetail = () => {
     );
 
     const menu = (
-        <div className='dropdown-musteri' style={{ maxHeight: "35ras0px", overflowY: "auto" }}>
+        <div className='dropdown-musteri' style={{ maxHeight: "350px", overflowY: "auto" }}>
             <Input
                 placeholder="Ara..."
                 value={searchTerm}
@@ -169,7 +192,7 @@ const OrderDetail = () => {
         return <Spin spinning={true}></Spin>;
     }
 
-    const order = orderData?.order || "s";
+    const order = orderData?.order || "Order Yoxdur!";
 
     // ---------------------------------------
 
@@ -189,8 +212,105 @@ const OrderDetail = () => {
         setIsSaveDisabled(true);
         setIsDropdownDisabled(true);
         setIsnoteDisabled(true);
-
+        // salesmanName();
+        StorageCode();
+        // salesmanNoteUptade();
+        // storageNoteUptade();
     };
+
+    const salesmanName = () => {
+        const dataToSend = {
+            orderIdHash: idHash,
+            salesmanIdHash: selectedStorageKey,
+        };
+
+
+
+        BaseApi.put('/admin/v1/Order/UpdateSenderForOrder', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+
+            });
+    };
+
+
+    const StorageCode = () => {
+        const dataToSend = {
+            orderIdHash: idHash,
+            shipmentTypeHash: storageCode,
+        };
+
+
+
+        BaseApi.put('/admin/v1/Order/UpdateShipmentTypeForOrder', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+
+            });
+    };
+
+
+    const salesmanNoteUptade = () => {
+        const dataToSend = {
+            orderIdHash: idHash,
+            salesmanNote: salesmanNote,
+        };
+
+
+
+        BaseApi.put('/admin/v1/Order/UpdateSalesmanNoteSenderForOrder', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+
+            });
+    };
+
+
+    const storageNoteUptade = () => {
+        const dataToSend = {
+            orderIdHash: idHash,
+            note: storageNote,
+        };
+
+
+
+        BaseApi.put('/admin/v1/Order/UpdateNoteForOrder', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+
+            });
+    };
+
+
+
 
 
     return (
@@ -272,9 +392,13 @@ const OrderDetail = () => {
                                             disabled={isDropdownDisabled}
                                         >
                                             <a onClick={(e) => {
-                                                e.preventDefault();
+                                                if (isDropdownDisabled) {
+                                                    e.preventDefault(); // Tıklamayı durdur
+                                                    return;
+                                                }
                                                 handleMenuClick();
-                                            }} className="ant-dropdown-link">
+                                            }}
+                                                className="ant-dropdown-link">
                                                 <span className="me-2">{selectedStorageCode}</span>
                                                 <FaChevronDown className="mt-1" />
                                             </a>
@@ -312,7 +436,14 @@ const OrderDetail = () => {
                         isDropdownDisabled={isDropdownDisabled}
                         noteDisabled={noteDisabled}
                         fetchOrderDetail={fetchOrderDetail}
+                        currentPage={currentPage}
 
+                        update={update}
+
+                        setSalesmanNote={setSalesmanNote}
+                        setStorageNote={setStorageNote}
+                        storageNote={storageNote}
+                        salesmanNote={salesmanNote}
                     />
                 </Card>
             </Spin>

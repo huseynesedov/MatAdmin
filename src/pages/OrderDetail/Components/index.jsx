@@ -16,12 +16,11 @@ import Title from 'antd/es/typography/Title';
 import TextArea from 'antd/es/input/TextArea';
 
 
-import fetchOrderDetail from '../index';
 import { useParams } from 'react-router-dom';
 
 
 
-const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabled, isEditDisabled, isDropdownDisabled, isSaveDisabled, orderData, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
+const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageNote, salesmanNote, fetchOrderDetail, currentPage, handleEditClick, handleSaveClick, noteDisabled, isEditDisabled, isDropdownDisabled, isSaveDisabled, orderData, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
     const [selectedcode, setSelectedcode] = useState(null);
     const [selectedName, setSelectedName] = useState(null);
     const [selectedManufacturer, setSelectedManufacturer] = useState(null);
@@ -43,15 +42,11 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
 
     // Storage list api - start
 
-    const [items, setItems] = useState([]);
-    const [selectedStorageCode, setSelectedStorageCode] = useState(orderData?.order?.shipmentTypeName || 'Kargo Bilgisi Yok');
-    const [selectedStorageKey, setSelectedStorageKey] = useState(orderData?.order?.shipmentTypeIdHash || 'Kargo Bilgisi Yok');
-    // Storage list api - end
+
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
 
-    const s= "test"
 
     // Product List -Start
 
@@ -201,18 +196,14 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
 
         BaseApi.put('/admin/v1/Order/UpdateOrderForOrderDetail', dataToSend)
 
-            .then((response) => {
-                if (response.status === 200) {
-                    handleModalClose();
-                    fetchOrderDetail();
-                }
-                if (response.status === 500) {
-                    alert('Xeta!');
-                }
+            .then(() => {
+                handleModalClose();
+                fetchOrderDetail(currentPage - 1);
             })
             .catch(error => {
-                console.error('API hatası:', error.response?.data || error.message);
-                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+                if (error.status === 500) {
+                    alert('Yeniden yoxlayin!');
+                }
             })
             .finally(() => {
                 setLoadingModal(false);
@@ -221,7 +212,7 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
 
     // Modal - End
 
-    
+
     // Storage list api - start
 
     useEffect(() => {
@@ -249,13 +240,34 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
     const handleDropdownSelect = (key) => {
         const selectedItem = items.find((item) => item.key === key);
         if (selectedItem) {
-            setSelectedStorageKey(selectedItem.key);
-            setSelectedStorageCode(selectedItem.label);
+            setShipmentTypeKey(selectedItem.key);
+            setShipmentTypeName(selectedItem.label);
         }
     };
 
-    const storageNote = orderData?.order?.note || ' ';
-    const salesmanNote = orderData?.order?.salesmanNote || ' ';
+
+    const [items, setItems] = useState([]);
+    const [shipmentTypeList, setShipmentTypeName] = useState(orderData?.order?.shipmentTypeName || 'Kargo Bilgisi Yok');
+    const [shipmentTypeKey, setShipmentTypeKey] = useState(orderData?.order?.salesmanIdHash || 'Kargo Bilgisi Yok');
+    // Storage list api - end
+    console.log("Order listdeki IdHash :   " ,  shipmentTypeKey);
+
+    useEffect(() => {
+        setStorageNote(orderData?.order?.note || '');
+        setSalesmanNote(orderData?.order?.salesmanNote || '');
+        setStorageCode(shipmentTypeKey);
+
+    }, [orderData, shipmentTypeKey]);
+
+
+
+    const [storageCode, setStorageCode] = useState(shipmentTypeKey); // Başlangıç değerini eşitle
+
+
+    update(storageNote, salesmanNote, storageCode)
+
+
+
 
     // Storage list api - end
 
@@ -310,21 +322,17 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
 
     const handleAktarClick = () => {
         const dataToSend = {
-            orderIdHash: idHash // Send it as a string
+            orderIdHash: idHash
         };
 
-        console.log(dataToSend);
 
         setLoadingAkta(true);
 
         BaseApi.put('/admin/v1/Order/UpdateOrderApproved', dataToSend)
             .then((response) => {
-                if (response.status === 200) {
-                    fetchOrderDetail();
-                }
-                if (response.status === 500) {
-                    alert('Xeta!');
-                }
+                fetchOrderDetail();
+                console.log(response);
+
             })
             .catch(error => {
                 console.error('API hatası:', error.response?.data || error.message);
@@ -398,6 +406,10 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
 
     const isDisabled = disabledStatuses.includes(orderStatusName);
     const aktarisDisabled = aktar.includes(orderStatusName);
+
+
+
+
     return (
         <>
             <Table
@@ -443,25 +455,61 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
                     <Spin spinning={loadingModal}>
                         <div className="d-flex mt-4 justify-content-between">
                             <Form.Item label="Miqdarı">
-                                <Input style={{ width: "300px" }} placeholder="" value={amount} onChange={(e) => setamount(e.target.value)} />
+                                <Input
+                                    type="number"
+                                    style={{ width: "300px" }}
+                                    placeholder=""
+                                    value={amount}
+                                    onChange={(e) => setamount(Number(e.target.value))}
+                                />
                             </Form.Item>
                             <Form.Item label="Fiyat">
-                                <Input style={{ width: "300px" }} placeholder="" value={unitDiscountedPrice} onChange={(e) => setunitDiscountedPrice(e.target.value)} />
+                                <Input
+                                    type="number"
+                                    style={{ width: "300px" }}
+                                    placeholder=""
+                                    value={unitDiscountedPrice}
+                                    onChange={(e) => setunitDiscountedPrice(Number(e.target.value))}
+                                />
                             </Form.Item>
                         </div>
 
                         <div className="d-flex mt-4 justify-content-between">
                             <Form.Item label="Discount 1">
-                                <Input style={{ width: "150px" }} placeholder="" value={isk1} onChange={(e) => setisk1(e.target.value)} />
+                                <Input
+                                    type="number"
+                                    style={{ width: "150px" }}
+                                    placeholder=""
+                                    value={isk1}
+                                    onChange={(e) => setisk1(Number(e.target.value))}
+                                />
                             </Form.Item>
                             <Form.Item label="Discount 2">
-                                <Input style={{ width: "150px" }} placeholder="" value={isk2} onChange={(e) => setisk2(e.target.value)} />
+                                <Input
+                                    type="number"
+                                    style={{ width: "150px" }}
+                                    placeholder=""
+                                    value={isk2}
+                                    onChange={(e) => setisk2(Number(e.target.value))}
+                                />
                             </Form.Item>
                             <Form.Item label="Discount 3">
-                                <Input style={{ width: "150px" }} placeholder="" value={isk3} onChange={(e) => setisk3(e.target.value)} />
+                                <Input
+                                    type="number"
+                                    style={{ width: "150px" }}
+                                    placeholder=""
+                                    value={isk3}
+                                    onChange={(e) => setisk3(Number(e.target.value))}
+                                />
                             </Form.Item>
                             <Form.Item label="Discount 4">
-                                <Input style={{ width: "150px" }} placeholder="" value={isk4} onChange={(e) => setisk4(e.target.value)} />
+                                <Input
+                                    type="number"
+                                    style={{ width: "150px" }}
+                                    placeholder=""
+                                    value={isk4}
+                                    onChange={(e) => setisk4(Number(e.target.value))}
+                                />
                             </Form.Item>
                         </div>
                         <div className="d-flex mt-4 justify-content-end" >
@@ -486,7 +534,7 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
                         <Dropdown className='mt-3' disabled={isDropdownDisabled}>
                             <Dropdown.Toggle id="dropdown-basic" disabled={isDropdownDisabled}>
                                 <TruckOutlined />
-                                <span className='ms-2'>{selectedStorageCode}</span>
+                                <span className='ms-2'>{shipmentTypeList}</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {items.map((item) => (
@@ -504,13 +552,24 @@ const OrderList = ({ products,test, handleEditClick, handleSaveClick, noteDisabl
                     </div>
                     <div className="col-sm-3">
                         <Title level={5}>Müşteri Notu</Title>
-                        <TextArea rows={4} maxLength={6} value={storageNote} disabled={noteDisabled} />
+                        <TextArea
+                            rows={4}
+                            value={storageNote}
+                            onChange={(e) => setStorageNote(e.target.value)}
+                            disabled={noteDisabled}
+                        />
 
                     </div>
                     <div className="col-sm-3 me-4">
                         <Title level={5}>Plasiyyer Notu</Title>
 
-                        <TextArea rows={4} maxLength={6} value={salesmanNote} disabled={noteDisabled} />
+                        <TextArea
+                            rows={4}
+                            maxLength={6}
+                            value={salesmanNote}
+                            onChange={(e) => setSalesmanNote(e.target.value)}
+                            disabled={noteDisabled}
+                        />
                     </div>
                 </div>
                 <div className="col-sm-3">
