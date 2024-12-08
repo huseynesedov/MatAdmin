@@ -12,6 +12,8 @@ import { FaChevronDown } from "react-icons/fa";
 
 const OrderDetail = () => {
     const { idHash } = useParams();
+    const navigate = useNavigate();
+
     const [pageSize, setPageSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
     const [count, setCount] = useState(0);
@@ -24,6 +26,15 @@ const OrderDetail = () => {
     const [salesmanNote, setSalesmanNote] = useState(' ');
     const [storageCode, setStorageCode] = useState('');
 
+    const [isEditDisabled, setIsEditDisabled] = useState(false);
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+    const [isDropdownDisabled, setIsDropdownDisabled] = useState(true);
+    const [noteDisabled, setIsnoteDisabled] = useState(true);
+
+
+    const [items, setItems] = useState([]);
+    const [selectedStorageCode, setSelectedStorageCode] = useState("Gonderici yoxdur !");
+    const [selectedStorageKey, setSelectedStorageKey] = useState("id Yok");
 
 
     const update = (storageNote, salesmanNote, storageCode) => {
@@ -33,14 +44,8 @@ const OrderDetail = () => {
     };
 
 
-    console.log("ssss   " ,  storageCode);
 
 
-    // console.log(storageCode);
-
-
-
-    const navigate = useNavigate();
 
     const fetchOrderDetail = (page) => {
         setLoading(true);
@@ -63,7 +68,7 @@ const OrderDetail = () => {
             .catch((error) => {
                 if (error.status === 204) {
                     notification.info({
-                        description: 'Mehsul Yoxdur ...',
+                        description: 'Mehsul Yoxdur...',
                         placement: 'topRight'
                     });
                     navigate("/Orders")
@@ -89,24 +94,13 @@ const OrderDetail = () => {
         fetchOrderDetail(currentPage - 1);
     }, [currentPage]);
 
-    const [isEditDisabled, setIsEditDisabled] = useState(false);
-    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
-    const [isDropdownDisabled, setIsDropdownDisabled] = useState(true);
-    const [noteDisabled, setIsnoteDisabled] = useState(true);
-
-
-
-
-    const [items, setItems] = useState([]);
-    const [selectedStorageCode, setSelectedStorageCode] = useState("Gonderici yoxdur !");
-    const [selectedStorageKey, setSelectedStorageKey] = useState("id Yok");
-
+   
 
 
     useEffect(() => {
         if (orderData?.order) {
             setSelectedStorageCode(orderData.order.senderName || "Gonderici yoxdur !");
-            setSelectedStorageKey(orderData.order.shipmentTypeIdHash || "id Yok");
+            setSelectedStorageKey(orderData.order.salesmanIdHash || "id Yok");
         }
     }, [orderData]);
 
@@ -139,6 +133,7 @@ const OrderDetail = () => {
         if (selectedItem) {
             setSelectedStorageKey(selectedItem.key);
             setSelectedStorageCode(selectedItem.label);
+
         }
     };
 
@@ -198,7 +193,6 @@ const OrderDetail = () => {
 
 
 
-    // "Düzenle"
     const handleEditClick = () => {
         setIsEditDisabled(true);
         setIsSaveDisabled(false);
@@ -206,19 +200,28 @@ const OrderDetail = () => {
         setIsnoteDisabled(false);
     };
 
-    // "Kaydet" 
     const handleSaveClick = () => {
         setIsEditDisabled(false);
         setIsSaveDisabled(true);
         setIsDropdownDisabled(true);
         setIsnoteDisabled(true);
-        // salesmanName();
+        salesmanName();
         StorageCode();
-        // salesmanNoteUptade();
-        // storageNoteUptade();
+        salesmanNoteUptade();
+        storageNoteUptade();
     };
 
+
+
+
+
     const salesmanName = () => {
+
+
+        if (selectedStorageKey === null) {
+            return;
+        }
+
         const dataToSend = {
             orderIdHash: idHash,
             salesmanIdHash: selectedStorageKey,
@@ -233,12 +236,14 @@ const OrderDetail = () => {
             })
             .catch(error => {
                 console.error('API hatası:', error.response?.data || error.message);
-                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+                // alert('Bir hata oluştu, lütfen tekrar deneyin.');
             })
             .finally(() => {
 
             });
     };
+
+
 
 
     const StorageCode = () => {
@@ -262,6 +267,7 @@ const OrderDetail = () => {
 
             });
     };
+
 
 
     const salesmanNoteUptade = () => {

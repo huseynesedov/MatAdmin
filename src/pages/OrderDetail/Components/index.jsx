@@ -40,7 +40,9 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
 
     const [formLayout, setFormLayout] = useState('vertical');
 
-    // Storage list api - start
+
+    const { idHash } = useParams();
+
 
 
 
@@ -197,13 +199,8 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
         BaseApi.put('/admin/v1/Order/UpdateOrderForOrderDetail', dataToSend)
 
             .then(() => {
-                handleModalClose();
                 fetchOrderDetail(currentPage - 1);
-            })
-            .catch(error => {
-                if (error.status === 500) {
-                    alert('Yeniden yoxlayin!');
-                }
+                handleModalClose();
             })
             .finally(() => {
                 setLoadingModal(false);
@@ -246,11 +243,11 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     };
 
 
+
     const [items, setItems] = useState([]);
-    const [shipmentTypeList, setShipmentTypeName] = useState(orderData?.order?.shipmentTypeName || 'Kargo Bilgisi Yok');
-    const [shipmentTypeKey, setShipmentTypeKey] = useState(orderData?.order?.salesmanIdHash || 'Kargo Bilgisi Yok');
-    // Storage list api - end
-    console.log("Order listdeki IdHash :   " ,  shipmentTypeKey);
+    const [shipmentTypeList, setShipmentTypeName] = useState(orderData?.order?.shipmentTypeName || 'Sevkiyyat ismi');
+    const [shipmentTypeKey, setShipmentTypeKey] = useState(orderData?.order?.shipmentTypeIdHash || 'Sevkiyyat codu');
+
 
     useEffect(() => {
         setStorageNote(orderData?.order?.note || '');
@@ -276,46 +273,31 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
 
     // buttonlar -Start
 
-    const { idHash } = useParams(); // Destructure idHash from useParams
 
 
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         const selectedOrderDetailIdHashes = data
             .filter((item) => selectedRows.includes(item.key))
             .map((item) => item.idHash);
 
-        if (selectedOrderDetailIdHashes.length === 0) {
-            return; // Eğer seçili ürün yoksa hiçbir işlem yapma.
-        }
-
-        // Veriyi JSON formatında oluşturma
         const dataToSend = selectedOrderDetailIdHashes.map(idHash => ({
             idHash: idHash
         }));
 
-        // Veriyi konsola yazdırma (debug amaçlı)
-        console.log("Gönderilecek veri:", JSON.stringify(dataToSend, null, 2));
-
-        try {
-            // Silme isteği gönderiliyor
-            const response = await BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', {
-
-                data: dataToSend  // Veriyi JSON olarak gönderiyoruz
+        BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', {
+            
+            data: dataToSend,
+        })
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
             });
-
-            if (response.status === 200) {
-                console.log('Silme başarılı:', response.data);
-                // Silinen ürünleri tablodan kaldır.
-                setData((prevData) =>
-                    prevData.filter((item) => !selectedRows.includes(item.key))
-                );
-                setSelectedRows([]); // Seçili ürünleri sıfırla.
-            }
-        } catch (error) {
-            console.error('Silme işlemi sırasında hata:', error);
-        }
     };
+
 
     const [loadingAktar, setLoadingAkta] = useState(false);
 
@@ -329,14 +311,12 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
         setLoadingAkta(true);
 
         BaseApi.put('/admin/v1/Order/UpdateOrderApproved', dataToSend)
-            .then((response) => {
-                fetchOrderDetail();
-                console.log(response);
-
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+                handleModalClose()
             })
             .catch(error => {
                 console.error('API hatası:', error.response?.data || error.message);
-                alert('Bir hata oluştu, lütfen tekrar deneyin.');
             })
             .finally(() => {
                 setLoadingAkta(false);
@@ -352,17 +332,12 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
         setLoadingHovuz(true);
 
         BaseApi.put(`/admin/v1/Order/UpdateOrderIntoPoolForOrderDetail?id=${idHash}`)
-            .then((response) => {
-                if (response.status === 200) {
-                    fetchOrderDetail();
-                }
-                if (response.status === 500) {
-                    alert('Xeta!');
-                }
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
             })
             .catch(error => {
                 console.error('API hatası:', error.response?.data || error.message);
-                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+                // alert('Bir hata oluştu, lütfen tekrar deneyin.');
             })
             .finally(() => {
                 setLoadingHovuz(false);
@@ -379,16 +354,12 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
 
         BaseApi.put(`/admin/v1/Order/UndoOrderForOrderDetail?id=${idHash}`)
             .then((response) => {
-                if (response.status === 200) {
-                    fetchOrderDetail();
-                }
-                if (response.status === 500) {
-                    alert('Xeta!');
-                }
+                fetchOrderDetail(currentPage - 1);
+
             })
             .catch(error => {
                 console.error('API hatası:', error.response?.data || error.message);
-                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+                // alert('Bir hata oluştu, lütfen tekrar deneyin.');
             })
             .finally(() => {
                 setLoadingGeriAl(false);
@@ -398,7 +369,6 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     // buttonlar -End
 
 
-    const rowClassName = (record, index) => (index % 2 === 0 ? 'custom_bg' : '');
     const orderStatusName = orderData?.order?.orderStatusName;
     const disabledStatuses = ["Havuzda", "Havuzda bekleyen", "Onaylandı", "Silindi"];
 
@@ -408,6 +378,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     const aktarisDisabled = aktar.includes(orderStatusName);
 
 
+    const rowClassName = (record, index) => (index % 2 === 0 ? 'custom_bg' : '');
 
 
     return (
@@ -565,7 +536,6 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
 
                         <TextArea
                             rows={4}
-                            maxLength={6}
                             value={salesmanNote}
                             onChange={(e) => setSalesmanNote(e.target.value)}
                             disabled={noteDisabled}
