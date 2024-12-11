@@ -10,7 +10,7 @@ const { Title } = Typography;
 
 const Orders = () => {
     const [pageSize, setPageSize] = useState(10);
-    const [currentPage, setCurrentPage] = useState('all');
+    const [currentPage, setCurrentPage] = useState('xFsQPkFTRN0=');
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
     const [orderNumber, setOrderNumber] = useState('');
@@ -40,7 +40,17 @@ const Orders = () => {
 
     const getOrdersByStatus = (statusValue, page, filter = false) => {
         setLoading(true);
+    
         let filters = [];
+    
+        if (currentPage !== 0) {
+            filters.push({
+                value: currentPage,
+                fieldName: 'orderStatusIdHash',
+                equalityType: 'Equal',
+            });
+        }
+    
         if (filter) {
             if (fromDate) {
                 filters.push({
@@ -49,7 +59,7 @@ const Orders = () => {
                     equalityType: 'GreaterOrEqual',
                 });
             }
-
+    
             if (toDate) {
                 filters.push({
                     value: toDate,
@@ -57,7 +67,7 @@ const Orders = () => {
                     equalityType: 'LessOrEqual',
                 });
             }
-
+    
             if (statusValue && statusValue !== "all") {
                 filters.push({
                     value: statusValue,
@@ -66,7 +76,7 @@ const Orders = () => {
                 });
             }
         }
-
+    
         AdminApi.GetOrderList({
             page,
             pageSize,
@@ -83,12 +93,14 @@ const Orders = () => {
                 setLoading(false);
             });
     };
+    
 
     const clearFilter = () => {
         setFromDate(null);
         setToDate(null);
         setOrderNumber('');
-        getOrdersByStatus("all", 0, false);
+        setCurrentPage("xFsQPkFTRN0");
+        getOrdersByStatus("xFsQPkFTRN0", 0, false);
     };
 
     const disableFromDate = (current) => {
@@ -101,7 +113,7 @@ const Orders = () => {
 
     useEffect(() => {
         getOrderStatusList();
-        getOrdersByStatus("all", 0, false);
+        getOrdersByStatus("xFsQPkFTRN0=", 0, false);
     }, []);
 
     const handlePageChange = (page) => {
@@ -110,7 +122,11 @@ const Orders = () => {
     };
 
     const handlePageClick = (id) => {
-        setCurrentPage(id);
+        if (id === "all") {
+            setCurrentPage(0);
+        } else {
+            setCurrentPage(id);
+        }
         handleSearchClick();
     };
 
@@ -121,6 +137,7 @@ const Orders = () => {
     const handleSearchClick = () => {
         getOrdersByStatus(currentPage, 0, true);
     };
+    
 
     return (
         <div className="home">
@@ -157,7 +174,7 @@ const Orders = () => {
                                 <Radio.Group
                                     className="d-flex flex-wrap width-500"
                                     onChange={(e) => handlePageClick(e.target.value)}
-                                    defaultValue="all"
+                                    defaultValue="xFsQPkFTRN0="
                                 >
                                     <Radio value="all">Tümü</Radio>
                                     {orderStatusList.map((d) => (

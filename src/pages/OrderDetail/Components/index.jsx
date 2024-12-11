@@ -73,7 +73,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                     shippedQuantity: item.shippedQuantity,
                     manufacturer: item.productManufacturerName || '-',
                     amount: item.quantity || '-',
-                    br_Price: formatNumber(item.unitDiscountedPrice) || '-',
+                    br_Price: item.unitDiscountedPrice || '-',
                     WH_Baku: formatNumber(item?.productStorages?.[0]?.quantity) || '-',
                     WH_Gunesli: formatNumber(item?.productStorages?.[1]?.quantity) || '-',
                     WH_Gence: formatNumber(item?.productStorages?.[2]?.quantity) || '-',
@@ -618,6 +618,27 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                     </div>
                 </div>
 
+            </div>
+
+            <div className="row mt-3">
+                <div className="col-sm-3 d-flex justify-content-between">
+                    <div className="LeftText d-flex flex-column">
+                        <span className='fs_14 t_8F fw_600'>
+                            Cemi Odenis :
+                        </span>
+                        <span className='fs_14 t_8F fw_600 mt-4'>
+                            Cari Borc :
+                        </span>
+                    </div>
+                    <div className="RightText d-flex flex-column">
+                        <span className='fs_14 fw_600 red'>
+                            21.7690.32 AZN
+                        </span>
+                        <span className='fs_14 fw_600 red mt-4'>
+                            21.7690.32 AZN
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <div className="row mt-5 d-flex justify-content-between">
