@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Checkbox, Input, Pagination, Modal, Table, Form, notification, Spin } from 'antd';
 
 import { FaTruckPlane, FaTruckRampBox } from "react-icons/fa6";
@@ -21,6 +21,8 @@ import { useParams } from 'react-router-dom';
 
 
 const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageNote, salesmanNote, fetchOrderDetail, currentPage, handleEditClick, handleSaveClick, noteDisabled, isEditDisabled, isDropdownDisabled, isSaveDisabled, orderData, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
+    const { idHash } = useParams();
+
     const [selectedcode, setSelectedcode] = useState(null);
     const [selectedName, setSelectedName] = useState(null);
     const [selectedManufacturer, setSelectedManufacturer] = useState(null);
@@ -38,10 +40,12 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     const [isk3_id, setisk3_id] = useState(null);
     const [isk4_id, setisk4_id] = useState(null);
 
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+
     const [formLayout, setFormLayout] = useState('vertical');
 
 
-    const { idHash } = useParams();
 
 
 
@@ -275,28 +279,26 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
 
 
 
-
     const handleDelete = () => {
-        const selectedOrderDetailIdHashes = data
-            .filter((item) => selectedRows.includes(item.key))
-            .map((item) => item.idHash);
-
-        const dataToSend = selectedOrderDetailIdHashes.map(idHash => ({
-            idHash: idHash
-        }));
+        const requestBody = data
+            .filter(item => selectedRows.includes(item.key))
+            .map(item => ({ idHash: item.idHash }));  // Create the required format
 
         BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', {
-            
-            data: dataToSend,
+
+            data: requestBody,  // Send the body as JSON
         })
             .then(() => {
                 fetchOrderDetail(currentPage - 1);
             })
             .catch(error => {
-                console.error('API hatası:', error.response?.data || error.message);
-                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+                const errorMessage = error.response?.data?.message || error.message || 'Bir hata oluştu, lütfen tekrar deneyin.';
+                console.error('API hatası:', errorMessage);
+                alert(errorMessage);
             });
     };
+
+
 
 
     const [loadingAktar, setLoadingAkta] = useState(false);
@@ -355,7 +357,6 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
         BaseApi.put(`/admin/v1/Order/UndoOrderForOrderDetail?id=${idHash}`)
             .then((response) => {
                 fetchOrderDetail(currentPage - 1);
-
             })
             .catch(error => {
                 console.error('API hatası:', error.response?.data || error.message);
@@ -381,6 +382,17 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     const rowClassName = (record, index) => (index % 2 === 0 ? 'custom_bg' : '');
 
 
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const dropdownRef = useRef(null);
+
+    const filteredItems = items.filter((item) =>
+        item.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleInputClick = (e) => {
+        e.stopPropagation();  // Prevent the dropdown from closing when clicking on the input
+    };
     return (
         <>
             <Table
@@ -502,13 +514,23 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                     <div className="col-sm-3 d-flex flex-column">
                         <Title level={5}>Sevkiyyat yöntemi</Title>
 
-                        <Dropdown className='mt-3' disabled={isDropdownDisabled}>
+                        <Dropdown className='mt-3' disabled={isDropdownDisabled} ref={dropdownRef}>
                             <Dropdown.Toggle id="dropdown-basic" disabled={isDropdownDisabled}>
                                 <TruckOutlined />
                                 <span className='ms-2'>{shipmentTypeList}</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                {items.map((item) => (
+                                <Dropdown.Item as="div" className="px-3 py-2">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Search..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onClick={handleInputClick} // Prevent dropdown from closing
+                                    />
+                                </Dropdown.Item>
+                                {filteredItems.map((item) => (
                                     <Dropdown.Item
                                         key={item.key}
                                         onClick={() => handleDropdownSelect(item.key)}
@@ -518,6 +540,11 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                                 ))}
                             </Dropdown.Menu>
                         </Dropdown>
+
+
+
+
+
 
 
                     </div>

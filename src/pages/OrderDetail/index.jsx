@@ -63,16 +63,32 @@ const OrderDetail = () => {
                 setOrderData(res.data);
                 setProducts(res.data.orderDetails || []);
                 setCount(res.count);
-
             })
+
+            //     if (res.status === 204) {  // 204 yanıtı geldiğinde yönlendir
+            //         notification.info({
+            //             description: 'Bu URL-də heç bir məlumat yoxdur.',
+            //             placement: 'topRight',
+            //         });
+            //         navigate("/Orders");
+            //     } else {
+            //         setOrderData(res.data);
+            //         setProducts(res.data.orderDetails || []);
+            //         setCount(res.count);
+            //     }
+            // })
+
             .catch((error) => {
-                if (error.status === 204) {
+                if (error.status === 400 || 204) {
                     notification.info({
                         description: 'Mehsul Yoxdur...',
                         placement: 'topRight'
                     });
                     navigate("/Orders")
                 }
+                // const errorMessage = error.response?.data?.message || error.message || 'Bir hata oluştu, lütfen tekrar deneyin.';
+                // console.error('API hatası:', errorMessage);
+                // alert(errorMessage);
             })
             .finally(() => {
                 setLoading(false);
@@ -94,7 +110,7 @@ const OrderDetail = () => {
         fetchOrderDetail(currentPage - 1);
     }, [currentPage]);
 
-   
+
 
 
     useEffect(() => {
@@ -333,91 +349,89 @@ const OrderDetail = () => {
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-sm-6 d-flex ps-3 pt-3 pb-3 border_bottom border_right">
-                            <div className="bg_gray">
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">Cari kodu :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Ünvanı :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Adresi :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Cari Adresi :</span>
-                                </div>
-                            </div>
-                            <div className="bg_grayRight">
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.customerCode || '-'}</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.companyName || '-'}</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.companyAddress || '-'}</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.storageCode || '-'}</span>
-                                </div>
-                            </div>
+                        <div className="col-sm-6 d-flex ps-3 pt-3 pb-3 border_right">
+                            <table>
+                                <tbody className='Detail_table'>
+                                    <tr>
+                                        <th className='border_radius' scope="row">
+                                            Cari kodu :
+                                        </th>
+                                        <td>{order?.customerCode || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            Ünvanı :
+                                        </th>
+                                        <td>{order?.companyName || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            Adresi :
+                                        </th>
+                                        <td>{order?.companyAddress || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th className='border_radius_bottom' scope="row">
+                                            Cari Adresi :
+                                        </th>
+                                        <td>{order?.storageCode || '-'}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
                         </div>
-                        <div className="col-sm-6 d-flex ps-5 pt-3 pb-3 border_bottom">
-                            <div className="bg_gray">
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">Sipariş No :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Durum :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Gönderen :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Onaylayan :</span>
-                                </div>
-                            </div>
-                            <div className="bg_grayRight">
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_18 red">{order?.orderNumber || '-'}</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">
-                                        {order?.orderStatusName || '-'}
+                        <div className="col-sm-6 d-flex ps-5 pt-3 pb-3 ">
+                            <table>
+                                <tbody className='Detail_table'>
+                                    <tr>
+                                        <th className='border_radius' scope="row">
+                                            Sipariş No :
+                                        </th>
+                                        <td className="name fs_18 red">{order?.orderNumber || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            Durum :
+                                        </th>
+                                        <td>
+                                            {order?.orderStatusName || '-'}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            Gönderen :
+                                        </th>
+                                        <td>
+                                            <Dropdown
+                                                overlay={menu}
+                                                trigger={["click"]}
+                                                open={isOpen}
+                                                onOpenChange={(open) => setIsOpen(open)}
+                                                disabled={isDropdownDisabled}
+                                            >
+                                                <a onClick={(e) => {
+                                                    if (isDropdownDisabled) {
+                                                        e.preventDefault();
+                                                        return;
+                                                    }
+                                                    handleMenuClick();
+                                                }}
+                                                    className="ant-dropdown-link">
+                                                    <span className="me-2">{selectedStorageCode}</span>
+                                                    <FaChevronDown className="mt-1" />
+                                                </a>
+                                            </Dropdown>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th className='border_radius_bottom' scope="row">
+                                            Onaylayan :
+                                        </th>
+                                        <td>{order?.confirmByName || '-'}</td>
+                                    </tr>
+                                </tbody>
 
-                                    </span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">
-                                        <Dropdown
-                                            overlay={menu}
-                                            trigger={["click"]}
-                                            open={isOpen}
-                                            onOpenChange={(open) => setIsOpen(open)}
-                                            disabled={isDropdownDisabled}
-                                        >
-                                            <a onClick={(e) => {
-                                                if (isDropdownDisabled) {
-                                                    e.preventDefault(); // Tıklamayı durdur
-                                                    return;
-                                                }
-                                                handleMenuClick();
-                                            }}
-                                                className="ant-dropdown-link">
-                                                <span className="me-2">{selectedStorageCode}</span>
-                                                <FaChevronDown className="mt-1" />
-                                            </a>
-                                        </Dropdown>
-
-
-
-                                    </span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.confirmByName || '-'}</span>
-                                </div>
-                            </div>
+                            </table>
                         </div>
                     </div>
                 </Card>
