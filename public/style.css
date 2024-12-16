@@ -520,3 +520,7 @@ a{
     position: fixed !important;
     max-height: 100vh !important;
 }
+
+.w-auto {
+    width: auto !important;
+}

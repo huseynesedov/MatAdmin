@@ -21,16 +21,16 @@ import Licence from './Component/Licence';
 import Licence_mobil from './Component/Licence Mobil';
 import Login from './Component/Login';
 import Searches from './Component/Searches';
-import Bank from './Component/Bank Taksit';
 import Discount from './Component/Additional discount/discount';
 import Producer from './Component/Additional discount/producer';
 import Users from './Component/Users';
-import Oil from './Component/Oil Sales';
-import Integrated from './Component/Integrated';
 import {AdminApi} from "../../api/admin.api";
 import {useNavigate, useParams} from "react-router-dom";
 import General from "./Component/General";
 import ModalDiscount from "./Component/Modal/modalDiscount";
+import ProducerOil from "./Component/AdditionalOil/producerOil";
+import DiscountOil from "./Component/AdditionalOil/discountOil";
+import ModalDiscountOil from "./Component/Modal/modalDiscountOil";
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
@@ -38,14 +38,19 @@ const Clients = () => {
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [showDiscount, setShowDiscount] = useState(false);
+    const [showDiscountOil, setShowDiscountOil] = useState(false);
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(null);
     const [tabDisable, setTabDisable] = useState(false);
     const [isShowProduct, setShowProduct] = useState();
     const [manufacturerList, setManufacturerLists] = useState();
+    const [manufacturerListOil, setManufacturerListsOil] = useState();
     const [changeData, setChangeData] = useState();
+    const [changeDataOil, setChangeDataOil] = useState();
     const [modalDiscountType, setModalDiscountType] = useState();
+    const [modalDiscountTypeOil, setModalDiscountTypeOil] = useState();
     const [editDataDiscount, setEditDataDiscount] = useState();
+    const [editDataDiscountOil, setEditDataDiscountOil] = useState();
     let { id } = useParams();
     const [formData, setFormData] = useState({
         kodu: '',
@@ -67,9 +72,13 @@ const Clients = () => {
                 return 'GetSearchEquivalentProducts'
         }
     }
+
+    const handleTabChange = (activeKey) => {
+        setActiveTab(activeKey)
+    };
+
     useEffect(() => {
         setActiveTab(1)
-        console.log(id, 'id')
         if (id) {
             onProductDatas(id);
             onProductData();
@@ -83,6 +92,7 @@ const Clients = () => {
     const handleClose = () => setShow(false);
     const handleClose2 = () => setShow2(false);
     const handleCloseDiscount = () => setShowDiscount(false);
+    const handleCloseDiscountOil = () => setShowDiscountOil(false);
 
     const handleInputChangee = (e) => {
         const { name, value } = e.target;
@@ -111,14 +121,30 @@ const Clients = () => {
         setShowDiscount(true);
     };
 
+    const handleShowModalDiscountOil = (type) => {
+        setModalDiscountTypeOil(type)
+        setShowDiscountOil(true);
+    };
+
     const editDataDiscounts = (data) => {
         setModalDiscountType(1)
         setShowDiscount(true);
         setEditDataDiscount(data)
     };
 
+    const editDataDiscountsOil = (data) => {
+        setModalDiscountTypeOil(1)
+        setShowDiscountOil(true);
+        setEditDataDiscountOil(data)
+    };
+
     const setManufacturerList = (data) => {
         setManufacturerLists(data)
+        console.log(data, 'setManufacturerList')
+    }
+
+    const setManufacturerListOil = (data) => {
+        setManufacturerListsOil(data)
         console.log(data, 'setManufacturerList')
     }
 
@@ -248,6 +274,7 @@ const Clients = () => {
     const { selectedItem } = useContext(SearchContext);
 
     useEffect(() => {
+        setActiveTab(1)
         if (selectedItem) {
             setInputs({
                 product_code: selectedItem.product_code || '',
@@ -264,9 +291,9 @@ const Clients = () => {
                 selling_rate: selectedItem.selling_rate || '',
                 buy_rate: selectedItem.buy_rate || ''
             });
-            setIsDisabled(true); // Eğer veri varsa inputları disable yap
-            setIsSaveDisabled(false);  // Save butonunu etkinleştir
-            setIsDeleteDisabled(false); // Delete butonunu etkinleştir
+            setIsDisabled(true);
+            setIsSaveDisabled(false);
+            setIsDeleteDisabled(false);
         }
     }, [selectedItem]);
 
@@ -361,6 +388,43 @@ const Clients = () => {
         console.log(dataMadel, 'dataMadel dataMadel dataMadel')
     }
 
+    const additionalDiscountOil = (data) => {
+        console.log(data, 'additionlar data');
+
+        const dataMadel = {
+            customerIdHash: id,
+            productIds: manufacturerListOil,
+            discounts: data.discounts
+        }
+
+        if (modalDiscountType !== 1) {
+            AdminApi.AddProductAdditionalDiscount(dataMadel).then(res => {
+                console.log(res)
+                setChangeDataOil(res)
+                handleCloseDiscountOil()
+            })
+        } else {
+            const updateData = {
+                discounDetails: data.discounts.map(m => {
+                    return {
+                        additionalIdHash: m.additionalIdHash,
+                        value: m.value
+                    }
+                })
+            }
+
+            AdminApi.UpdateProductAdditionalDiscount(updateData).then(res => {
+                console.log(res)
+                setChangeDataOil(res)
+                handleCloseDiscountOil()
+            })
+        }
+
+
+
+        console.log(dataMadel, 'dataMadel dataMadel dataMadel')
+    }
+
 
     return (
         <div className="home">
@@ -418,8 +482,8 @@ const Clients = () => {
                     </Form.Item>
                 </Form>
             </Card>
-            <Tabs defaultActiveKey="1" className="product-tabs">
-                <TabPane tab="Genel" key="1">
+            <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
+                <TabPane disabled={tabDisable} tab="Genel" key="1">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button " >
@@ -458,9 +522,9 @@ const Clients = () => {
                         handleClear={handleClear}
                     />
                     <Divider />
-                    <General isSetData={isShowProduct} handleShowModal2={handleShowModal2}/>
+                    <General isSetData={isShowProduct} handleShowModal2={handleShowModal2} activeKey={activeTab === '1'}/>
                 </TabPane>
-                <TabPane tab="Diger Bilgileri" key="2">
+                <TabPane disabled={tabDisable} tab="Diger Bilgileri" key="2">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
@@ -719,112 +783,7 @@ const Clients = () => {
                         </Col>
                     </Row>
                 </TabPane>
-                <TabPane tab="Aciklama" key="3">
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button">
-                                <img src={Images.add_circle_blue} alt="add" />
-                                Yeni
-                            </Button>
-                            <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
-                                Degistir
-                            </Button>
-                        </Col>
-                        <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                        </Col>
-                    </Row>
-
-
-                    <Row gutter={16} className="mt-4">
-                        <Col span={24}>
-                            {/* <Description /> */}
-                        </Col>
-                    </Row>
-
-                </TabPane>
-                <TabPane tab="Pasif Ureticiler" key="4">
-
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button">
-                                <img src={Images.add_circle_blue} alt="add" />
-                                Yeni
-                            </Button>
-                            <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
-                                Degistir
-                            </Button>
-                        </Col>
-                        <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                        </Col>
-                    </Row>
-
-
-                    <Row gutter={16} className="mt-4" justify="space-around">
-                        <Col span={9}>
-                            <span className='fs_24 fw_600 t_18'>
-                                Aktiv Uretici
-                            </span>
-                            <div className="mt-4"></div>
-                            <Description_active className="mt-4" />
-
-                        </Col>
-
-                        <Col span={9}>
-                            <span className='fs_24 fw_600 t_18'>
-                                Pasif Uretici
-                            </span>
-                            <div className="mt-4"></div>
-                            <Description_passif className="mt-4" />
-
-                        </Col>
-
-                    </Row>
-                </TabPane>
-                <TabPane tab="Bagli Musteriler" key="5">
-
-                    <div>
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none add_button">
-                                    <img src={Images.add_circle_blue} alt="add" />
-                                    Yeni
-                                </Button>
-                                <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit" />
-                                    Degistir
-                                </Button>
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
-                                    className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
-                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
-                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                            </Col>
-                        </Row>
-
-                        <Row gutter={16}>
-                            <Col span={24}>
-                                <Customers />
-
-                            </Col>
-                        </Row>
-
-                    </div>
-
-
-
-                </TabPane>
-                <TabPane tab="Pasif urun" key="6">
+                <TabPane disabled={tabDisable} tab="Pasif urun" key="6">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
@@ -865,7 +824,7 @@ const Clients = () => {
 
                     </Row>
                 </TabPane>
-                <TabPane tab="Lisans" key="7">
+                <TabPane disabled={tabDisable} tab="Lisans" key="7">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
@@ -893,7 +852,7 @@ const Clients = () => {
                         </Col>
                     </ Row >
                 </TabPane>
-                <TabPane tab="Lisans Mobil" key="8">
+                <TabPane disabled={tabDisable} tab="Lisans Mobil" key="8">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
@@ -920,7 +879,7 @@ const Clients = () => {
                     </Row>
 
                 </TabPane>
-                <TabPane tab="Login" key="9">
+                <TabPane disabled={tabDisable} tab="Login" key="9">
                     <div>
                         <Row gutter={16}>
                             <Col span={12}>
@@ -946,7 +905,7 @@ const Clients = () => {
                         </div>
                     </div>
                 </TabPane>
-                <TabPane tab="Aramalar" key="10">
+                <TabPane disabled={tabDisable} tab="Aramalar" key="10">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
@@ -1071,28 +1030,7 @@ const Clients = () => {
                         </Col >
                     </Row>
                 </TabPane>
-                <TabPane tab="Banka Taksit Sayisi" key="11">
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
-                                <img src={Images.add_circle_blue} alt="add" />
-                                Yeni
-                            </Button>
-                            <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
-                                Degistir
-                            </Button>
-                        </Col>
-                        <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                        </Col>
-                    </Row>
-                    <div className="mt-4"></div>
-                    <Bank />
-                </TabPane>
-                <TabPane tab="Ek Iskonto" key="12">
+                <TabPane disabled={tabDisable} tab="Ek Iskonto" key="12">
                     <Row gutter={16}>
                         {/*<Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
@@ -1116,7 +1054,7 @@ const Clients = () => {
                                 Aktiv Uretici
                             </span>
                             <div className="mt-4"></div>
-                            <Producer showModalDiscount={handleShowModalDiscount} coolBackList={setManufacturerList} changeDatas={changeData} className="mt-4"/>
+                            <Producer showModalDiscount={handleShowModalDiscount} coolBackList={setManufacturerList} changeDatas={changeData} className="mt-4" activeKey={activeTab === '12'}/>
                         </Col>
 
                         <Col span={12}>
@@ -1125,14 +1063,14 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
 
-                            <Discount showModalDiscount={handleShowModalDiscount} changeDatas={changeData} editData={editDataDiscounts} className="mt-4"/>
+                            <Discount showModalDiscount={handleShowModalDiscount} changeDatas={changeData} editData={editDataDiscounts} className="mt-4" activeKey={activeTab === '12'}/>
 
                         </Col>
 
                     </Row>
                     <ModalDiscount handleClose={handleCloseDiscount} show={showDiscount} discountData={additionalDiscount} changeDatas={changeData} type={modalDiscountType} editData={editDataDiscount}/>
                 </TabPane>
-                <TabPane tab="Kullanicilar" key="13">
+                <TabPane disabled={tabDisable} tab="Kullanicilar" key="13">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
@@ -1155,8 +1093,8 @@ const Clients = () => {
                     <Users />
 
                 </TabPane>
-                <TabPane tab="Oil Satis isk" key="14">
-                    <Row gutter={16}>
+                <TabPane disabled={tabDisable} tab="Oil Satis isk" key="14">
+                  {/*  <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
                                 <img src={Images.add_circle_blue} alt="add" />
@@ -1172,49 +1110,35 @@ const Clients = () => {
                             <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
                             <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
-                    </Row>
+                    </Row>*/}
 
                     <div className="mt-4"></div>
+{/*
+                    <Oil />*/}
 
-                    <Oil />
-                </TabPane>
-                <TabPane tab="Entegrasyon" key="15">
-                    <Row gutter={16}>
+                    <Row gutter={16} className="mt-4" justify="space-around">
                         <Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
-                                <img src={Images.add_circle_blue} alt="add" />
-                                Yeni
-                            </Button>
-                            <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
-                                Degistir
-                            </Button>
+                            <span className='fs_24 fw_600 t_18'>
+                                Aktiv Uretici
+                            </span>
+                            <div className="mt-4"></div>
+                            <ProducerOil showModalDiscount={handleShowModalDiscountOil} coolBackList={setManufacturerListOil} changeDatas={changeDataOil} className="mt-4" activeKey={activeTab === '14'}/>
                         </Col>
-                        <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+
+                        <Col span={12}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Pasif Uretici
+                            </span>
+                            <div className="mt-4"></div>
+
+                            <DiscountOil showModalDiscount={handleShowModalDiscountOil} changeDatas={changeDataOil} editData={editDataDiscountsOil} className="mt-4" activeKey={activeTab === '14'}/>
+
                         </Col>
+
                     </Row>
+                    <ModalDiscountOil handleClose={handleCloseDiscountOil} show={showDiscountOil} discountData={additionalDiscountOil} changeDatas={changeDataOil} type={modalDiscountTypeOil} editData={editDataDiscountOil}/>
 
-                    <div className="mt-4"></div>
-                    <Card className="info-card " title="Entegrasyon">
 
-                        <Integrated />
-                        <div className="d-flex align-items-center justify-content-center mt-5">
-
-                            <div className='d-flex'>
-                                <div className="d-flex justify-content-center">
-                                    <Button type="default" className="button-margin bg_none add_button " >
-                                        <img src={Images.add_circle_blue} alt="add" />
-                                        Yeni Setir elave edin
-                                    </Button>
-                                </div>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green"></Button>
-                            </div>
-                        </div>
-
-                    </Card>
                 </TabPane>
             </Tabs>
         </div>

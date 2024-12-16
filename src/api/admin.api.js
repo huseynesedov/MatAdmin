@@ -16,7 +16,7 @@ export const AdminApi = {
         return BaseApi.post(apiRoutes.customer.addmanufactureradditionaldiscount, data);
     },
     AddProductAdditionalDiscount(data) {
-        return BaseApi.post(apiRoutes.customer.addproductadditionaldiscount, data, data);
+        return BaseApi.post(apiRoutes.customer.addproductadditionaldiscount, data);
     },
     DeleteCustomerManufacturerByIds(params) {
         return BaseApi.delete(apiRoutes.customer.deletecustomermanufacturerByIds, { ...params });
@@ -59,6 +59,9 @@ export const AdminApi = {
     },
     GetUpdateProductAdditionalDiscountsByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.updateProductAdditionalDiscountsByCustomerId, data);
+    },
+    GetUpdateGetAdminProductOilTypeList(data) {
+        return BaseApi.post(apiRoutes.customer.updateGetAdminProductOilTypeList, data);
     },
     UpdateCustomer(data) {
         return BaseApi.put(apiRoutes.customer.updateCustomer, data);

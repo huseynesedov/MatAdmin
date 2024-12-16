@@ -366,16 +366,16 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                         </div>
 
                         <div className="d-flex mt-4 justify-content-between">
-                            <Form.Item label="Discount 1">
+                            <Form.Item label="DiscountOil 1">
                                 <Input style={{ width: "150px" }} placeholder="" value={isk1} onChange={(e) => setisk1(e.target.value)} />
                             </Form.Item>
-                            <Form.Item label="Discount 2">
+                            <Form.Item label="DiscountOil 2">
                                 <Input style={{ width: "150px" }} placeholder="" value={isk2} onChange={(e) => setisk2(e.target.value)} />
                             </Form.Item>
-                            <Form.Item label="Discount 3">
+                            <Form.Item label="DiscountOil 3">
                                 <Input style={{ width: "150px" }} placeholder="" value={isk3} onChange={(e) => setisk3(e.target.value)} />
                             </Form.Item>
-                            <Form.Item label="Discount 4">
+                            <Form.Item label="DiscountOil 4">
                                 <Input style={{ width: "150px" }} placeholder="" value={isk4} onChange={(e) => setisk4(e.target.value)} />
                             </Form.Item>
                         </div>

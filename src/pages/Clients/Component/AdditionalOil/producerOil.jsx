@@ -5,7 +5,7 @@ import {useParams} from "react-router-dom";
 import {useAuth} from "../../../../AuthContext";
 import Images from "../../../../assets/images/js/Images";
 
-const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => {
+const ProducerOil = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => {
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
@@ -29,8 +29,9 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => 
                 }
             }
 
-            AdminApi.getAdminManufacturerList(data).then(res => {
-                if(res.data) {
+            AdminApi.GetUpdateGetAdminProductOilTypeList(data).then(res => {
+                console.log(res)
+                if (res.data) {
                     setData(res);
                 }
             }).catch((err) => {
@@ -41,23 +42,23 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => 
 
 
 
-    useEffect(() => {
+   /*  useEffect(() => {
         createData();
-    }, [id, changeDatas, activeKey]);
-
-
-    useEffect(() => {
-        createData();
-    }, [current, pageSize]);
+    }, [current, pageSize]);*/
     useEffect(() => {
         const data = selectedRowKeys.map(r => {
             return {
-                manufacturerIdHash: r
+                productIdHash: r
             }
         })
 
         coolBackList(data)
     }, [selectedRowKeys]);
+
+
+    useEffect(() => {
+        createData();
+    }, [id, changeDatas, activeKey, current, pageSize]);
 
 
     const handleCheckboxChange = (recordId, isChecked) => {
@@ -77,12 +78,12 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => 
         {
             title: '',
             width: 10,
-            dataIndex: 'manufacturerIdHash',
-            key: 'manufacturerIdHash',
+            dataIndex: 'productIdHash',
+            key: 'productIdHash',
             render: (_, record) => (
                 <Checkbox
-                    checked={selectedRowKeys.includes(record.manufacturerIdHash)} // Checkbox durumu
-                    onChange={(e) => handleCheckboxChange(record.manufacturerIdHash, e.target.checked)} // Durum değişikliği
+                    checked={selectedRowKeys.includes(record.productIdHash)}
+                    onChange={(e) => handleCheckboxChange(record.productIdHash, e.target.checked)}
                 />
             ),
         },
@@ -118,4 +119,4 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => 
     );
 };
 
-export default Producer;
+export default ProducerOil;

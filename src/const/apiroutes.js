@@ -107,7 +107,10 @@ export const apiRoutes = {
         updateProductAdditionalDiscount: '/admin/v1/Customer/UpdateProductAdditionalDiscount',
         updateUserListByCustomerId: '/admin/v1/Customer/GetUserListByCustomerId',
         updateProductAdditionalDiscountsByCustomerId: '/admin/v1/Customer/GetProductAdditionalDiscountsByCustomerId',
+        updateGetAdminProductOilTypeList: '/admin/v1/Customer/GetAdminProductOilTypeList',
     },
+
+
 
 
 

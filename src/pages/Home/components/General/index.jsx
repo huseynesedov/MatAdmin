@@ -798,7 +798,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                             ></Button>
                             <Button onClick={showDeleteConfirm} disabled={!id} type="default"
                                 icon={<img src={Images.delete_red} alt="delete" />}
-                                className="button-margin delete_red"></Button>
+                                className="button-margin delete_red" style={{width: "auto !important"}}></Button>
                         </Col>
                     </Row>
                     <Row gutter={16}>

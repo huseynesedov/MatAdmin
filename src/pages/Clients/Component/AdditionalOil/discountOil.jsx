@@ -7,7 +7,7 @@ import Images from "../../../../assets/images/js/Images";
 import {ExclamationCircleFilled} from "@ant-design/icons";
 
 const { confirm } = Modal;
-const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
+const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
     const [data, setData] = useState([]);
     const [count, setCount] = useState([]);
     const [current, setCurrent] = useState(1);
@@ -37,31 +37,31 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
                 }
             };
 
-            AdminApi.GetManufacturerAdditionalDiscountsByCustomerId(requestData)
+            AdminApi.GetUpdateProductAdditionalDiscountsByCustomerId(requestData)
                 .then((res) => {
-                    if(res.data) {
-                        setCount(res.count)
-                        const manufacturers = res?.data || [];
-                        setData(
-                            manufacturers.map((item) => ({
-                                ...item,
-                                ...item.discounts.reduce((acc, discount) => {
-                                    acc[`discount_${discount.discountIdHash}`] = discount.value;
-                                    return acc;
-                                }, {}),
-                            }))
-                        );
+                   if (res.data){
+                       setCount(res.count)
+                       const manufacturers = res?.data || [];
+                       setData(
+                           manufacturers.map((item) => ({
+                               ...item,
+                               ...item.discounts.reduce((acc, discount) => {
+                                   acc[`discount_${discount.discountIdHash}`] = discount.value;
+                                   return acc;
+                               }, {}),
+                           }))
+                       );
 
-                        if (manufacturers.length > 0 && manufacturers[0].discounts) {
-                            const discountColumns = manufacturers[0].discounts.map((discount) => ({
-                                title: discount.discountName,
-                                dataIndex: `discount_${discount.discountIdHash}`,
-                                key: `discount-${discount.discountIdHash}`,
-                                render: (value) => <div>{value || 0}</div>,
-                            }));
-                            setDynamicColumns(discountColumns);
-                        }
-                    }
+                       if (manufacturers.length > 0 && manufacturers[0].discounts) {
+                           const discountColumns = manufacturers[0].discounts.map((discount) => ({
+                               title: discount.discountName,
+                               dataIndex: `discount_${discount.discountIdHash}`,
+                               key: `discount-${discount.discountIdHash}`,
+                               render: (value) => <div>{value || 0}</div>,
+                           }));
+                           setDynamicColumns(discountColumns);
+                       }
+                   }
                 })
                 .catch(() => {
                     openNotification('Xəta baş verdi', '-', true);
@@ -88,8 +88,8 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
             key: 'id',
             render: (_, record) => (
                 <Checkbox
-                    checked={selectedRowKeys.includes(record.manufacturerIdHash)} // Checkbox durumu
-                    onChange={(e) => handleCheckboxChange(record.manufacturerIdHash, e.target.checked)} // Durum değişikliği
+                    checked={selectedRowKeys.includes(record.manufacturerHash)} // Checkbox durumu
+                    onChange={(e) => handleCheckboxChange(record.manufacturerHash, e.target.checked)} // Durum değişikliği
                 />
             ),
         },
@@ -98,14 +98,6 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
             width: 10,
             dataIndex: 'manufacturerName',
             key: 'manufacturerName',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        },
-        {
-            title: 'Term Day',
-            width: 10,
-            dataIndex: 'termDay',
-            key: 'termDay',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
@@ -165,7 +157,7 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
                 columns={columns}
                 dataSource={data}
                 pagination={false}
-                rowKey="manufacturerIdHash"
+                rowKey="manufacturerHash"
                 className="mb-3"
                 onRow={(record) => ({
                     onDoubleClick: () => handleRowClick(record),
@@ -176,4 +168,4 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
     );
 };
 
-export default Discount;
+export default DiscountOil;
