@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Form, Button, Card, Space, DatePicker, Radio, Spin } from 'antd'; // Spin import edildi
+import { Typography, Form, Button, Card, Space, DatePicker, Radio, Spin } from 'antd';
 import './../../assets/styles/Clients.scss';
 import Images from '../../assets/images/js/Images';
 import OrderList from './Components/OrderList/index';
@@ -20,6 +20,9 @@ const Orders = () => {
     const [orderStatusList, setOrderStatusList] = useState([]);
     const [count, setCount] = useState(0);
 
+
+    console.log("secilen status", currentPage);
+    
     const getOrderStatusList = () => {
         setLoading(true);
         CatalogApi.GetOrderStatusList()
@@ -40,9 +43,9 @@ const Orders = () => {
 
     const getOrdersByStatus = (statusValue, page, filter = false) => {
         setLoading(true);
-    
+
         let filters = [];
-    
+
         if (currentPage !== 0) {
             filters.push({
                 value: currentPage,
@@ -50,7 +53,7 @@ const Orders = () => {
                 equalityType: 'Equal',
             });
         }
-    
+
         if (filter) {
             if (fromDate) {
                 filters.push({
@@ -59,7 +62,7 @@ const Orders = () => {
                     equalityType: 'GreaterOrEqual',
                 });
             }
-    
+
             if (toDate) {
                 filters.push({
                     value: toDate,
@@ -67,7 +70,7 @@ const Orders = () => {
                     equalityType: 'LessOrEqual',
                 });
             }
-    
+
             if (statusValue && statusValue !== "all") {
                 filters.push({
                     value: statusValue,
@@ -76,7 +79,7 @@ const Orders = () => {
                 });
             }
         }
-    
+
         AdminApi.GetOrderList({
             page,
             pageSize,
@@ -93,7 +96,7 @@ const Orders = () => {
                 setLoading(false);
             });
     };
-    
+
 
     const clearFilter = () => {
         setFromDate(null);
@@ -137,7 +140,7 @@ const Orders = () => {
     const handleSearchClick = () => {
         getOrdersByStatus(currentPage, 0, true);
     };
-    
+
 
     return (
         <div className="home">
@@ -223,6 +226,9 @@ const Orders = () => {
                     <OrderList
                         pageSize={pageSize}
                         count={count}
+                        orderStatusList={orderStatusList}
+                        currentPage={currentPage}
+                        getOrdersByStatus={getOrdersByStatus}
                         products={products}
                         handlePageChange={handlePageChange}
                         currentDataPage={currentDataPage}

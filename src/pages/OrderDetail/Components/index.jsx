@@ -106,25 +106,53 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
         });
     };
 
+    const createUniqueFilters = (data, key) => [...new Set(data.map(item => item[key]))].map(value => ({ text: value, value }));
 
-    const columns = [
-        { title: (<Checkbox onChange={(e) => { if (e.target.checked) { const allRowKeys = data.map((row) => row.key); setSelectedRows(allRowKeys); } else { setSelectedRows([]); } }} checked={selectedRows.length === data.length && data.length > 0} />), width: 50, dataIndex: 'checkbox', key: 'checkbox', render: (_, record) => (<Checkbox onChange={() => handleRowCheckboxChange(record.key)} checked={selectedRows.includes(record.key)} />), },
-        { title: 'Kodu', width: 150, dataIndex: 'code', key: 'code', },
-        { title: 'Adi', width: 300, dataIndex: 'name', key: 'name', },
-        { title: 'Üretici', width: 150, dataIndex: 'manufacturer', key: 'manufacturer', },
-        { title: 'Miktar', width: 150, dataIndex: 'amount', key: 'amount', },
-        { title: 'Br.Fiyat', width: 150, dataIndex: 'br_Price', key: 'br_Price', },
-        { title: products?.[0]?.productStorages?.[0]?.code || '-', width: 110, dataIndex: 'WH_Baku', key: 'WH_Baku', },
-        { title: products?.[0]?.productStorages?.[1]?.code || '-', width: 120, dataIndex: 'WH_Gunesli', key: 'WH_Gunesli', },
-        { title: products?.[0]?.productStorages?.[2]?.code || '-', width: 120, dataIndex: 'WH_Gence', key: 'WH_Gence' },
-        { title: products?.[0]?.discounts?.[0]?.discountName || 'İsk1', width: 110, dataIndex: 'isk1', key: 'isk1', sorter: true, },
-        { title: products?.[0]?.discounts?.[1]?.discountName || 'İsk2', width: 110, dataIndex: 'isk2', key: 'isk2', sorter: true, },
-        { title: products?.[0]?.discounts?.[2]?.discountName || 'İsk3', width: 110, dataIndex: 'isk3', key: 'isk3', sorter: true, },
-        { title: products?.[0]?.discounts?.[3]?.discountName || 'İsk4', width: 110, dataIndex: 'isk4', key: 'isk4', sorter: true, },
-        { title: 'Tutar', width: 110, dataIndex: 'amount', key: 'amount', sorter: true },
-        { title: 'Net Fiyat', width: 130, dataIndex: 'net_price', key: 'net_price', sorter: true },
-        { title: 'Net Tutar', width: 130, dataIndex: 'net_amount', key: 'net_amount', sorter: true },
-    ];
+const columns = [
+    {
+        title: (
+            <Checkbox
+                onChange={(e) => {
+                    const allRowKeys = data.map(row => row.key);
+                    setSelectedRows(e.target.checked ? allRowKeys : []);
+                }}
+                checked={selectedRows.length === data.length && data.length > 0}
+            />
+        ),
+        width: 50,
+        dataIndex: 'checkbox',
+        key: 'checkbox',
+        render: (_, record) => (
+            <Checkbox
+                onChange={() => handleRowCheckboxChange(record.key)}
+                checked={selectedRows.includes(record.key)}
+            />
+        ),
+    },
+    ...[
+        { title: 'Kodu', dataIndex: 'code', width: 150 },
+        { title: 'Adi', dataIndex: 'name', width: 250 },
+        { title: 'Üretici', dataIndex: 'manufacturer', width: 100 },
+        { title: 'Miktar', dataIndex: 'amount', width: 100 },
+        { title: 'Br.Fiyat', dataIndex: 'br_Price', width: 100 },
+        { title: products?.[0]?.productStorages?.[0]?.code || '-', dataIndex: 'WH_Baku', width: 110 },
+        { title: products?.[0]?.productStorages?.[1]?.code || '-', dataIndex: 'WH_Gunesli', width: 110 },
+        { title: products?.[0]?.productStorages?.[2]?.code || '-', dataIndex: 'WH_Gence', width: 110 },
+        { title: products?.[0]?.discounts?.[0]?.discountName || 'İsk1', dataIndex: 'isk1', width: 110 },
+        { title: products?.[0]?.discounts?.[1]?.discountName || 'İsk2', dataIndex: 'isk2', width: 110 },
+        { title: products?.[0]?.discounts?.[2]?.discountName || 'İsk3', dataIndex: 'isk3', width: 110 },
+        { title: products?.[0]?.discounts?.[3]?.discountName || 'İsk4', dataIndex: 'isk4', width: 110 },
+        { title: 'Tutar', dataIndex: 'amount', width: 110 },
+        { title: 'Net Fiyat', dataIndex: 'net_price', width: 100 },
+        { title: 'Net Tutar', dataIndex: 'net_amount', width: 100 },
+    ].map(col => ({
+        ...col,
+        key: col.dataIndex,
+        filters: createUniqueFilters(data, col.dataIndex),
+        onFilter: (value, record) => record[col.dataIndex] === value,
+    })),
+];
+
 
     // Product List -end
 
@@ -262,7 +290,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
 
 
 
-    const [storageCode, setStorageCode] = useState(shipmentTypeKey); // Başlangıç değerini eşitle
+    const [storageCode, setStorageCode] = useState(shipmentTypeKey);
 
 
     update(storageNote, salesmanNote, storageCode)
@@ -282,12 +310,9 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     const handleDelete = () => {
         const requestBody = data
             .filter(item => selectedRows.includes(item.key))
-            .map(item => ({ idHash: item.idHash }));  // Create the required format
+            .map(item => ({ idHash: item.idHash }));
 
-        BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', {
-
-            data: requestBody,  // Send the body as JSON
-        })
+        BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', {data: requestBody,})
             .then(() => {
                 fetchOrderDetail(currentPage - 1);
             })
@@ -391,7 +416,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     );
 
     const handleInputClick = (e) => {
-        e.stopPropagation();  // Prevent the dropdown from closing when clicking on the input
+        e.stopPropagation();
     };
     return (
         <>
@@ -404,6 +429,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                 onRow={(record) => ({
                     onDoubleClick: () => handleRowDoubleClick(record),
                 })}
+                size="middle"
             />
             <div className="d-flex w-100 justify-content-end align-items-center mt-3">
                 <Pagination
@@ -412,8 +438,8 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                     onChange={handlePageChange}
                     pageSize={pageSize}
                     onShowSizeChange={handlePageSizeChange}
-                    showSizeChanger={true}
-                    pageSizeOptions={['5', '10', '20', '40', '50', '100']}
+                    // showSizeChanger={true}
+                    // pageSizeOptions={['5', '10', '20', '40', '50', '100']}
                 />
                 <span className="t_016 fs_16 fw_600 ms-2">Toplam {count}</span>
             </div>
@@ -527,7 +553,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                                         placeholder="Search..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        onClick={handleInputClick} // Prevent dropdown from closing
+                                        onClick={handleInputClick}
                                     />
                                 </Dropdown.Item>
                                 {filteredItems.map((item) => (
