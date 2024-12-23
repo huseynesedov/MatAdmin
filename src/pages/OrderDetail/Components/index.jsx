@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Checkbox, Input, Pagination, Modal, Table, Form, notification, Spin } from 'antd';
+import { useParams } from 'react-router-dom';
 
 import { FaTruckPlane, FaTruckRampBox } from "react-icons/fa6";
 import { BsPrinterFill } from "react-icons/bs";
@@ -14,9 +15,6 @@ import { BaseApi } from '../../../const/api';
 import Dropdown from "react-bootstrap/Dropdown";
 import Title from 'antd/es/typography/Title';
 import TextArea from 'antd/es/input/TextArea';
-
-
-import { useParams } from 'react-router-dom';
 
 
 
@@ -40,14 +38,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     const [isk3_id, setisk3_id] = useState(null);
     const [isk4_id, setisk4_id] = useState(null);
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-
     const [formLayout, setFormLayout] = useState('vertical');
-
-
-
-
 
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -108,59 +99,56 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
 
     const createUniqueFilters = (data, key) => [...new Set(data.map(item => item[key]))].map(value => ({ text: value, value }));
 
-const columns = [
-    {
-        title: (
-            <Checkbox
-                onChange={(e) => {
-                    const allRowKeys = data.map(row => row.key);
-                    setSelectedRows(e.target.checked ? allRowKeys : []);
-                }}
-                checked={selectedRows.length === data.length && data.length > 0}
-            />
-        ),
-        width: 50,
-        dataIndex: 'checkbox',
-        key: 'checkbox',
-        render: (_, record) => (
-            <Checkbox
-                onChange={() => handleRowCheckboxChange(record.key)}
-                checked={selectedRows.includes(record.key)}
-            />
-        ),
-    },
-    ...[
-        { title: 'Kodu', dataIndex: 'code', width: 150 },
-        { title: 'Adi', dataIndex: 'name', width: 250 },
-        { title: 'Üretici', dataIndex: 'manufacturer', width: 100 },
-        { title: 'Miktar', dataIndex: 'amount', width: 100 },
-        { title: 'Br.Fiyat', dataIndex: 'br_Price', width: 100 },
-        { title: products?.[0]?.productStorages?.[0]?.code || '-', dataIndex: 'WH_Baku', width: 110 },
-        { title: products?.[0]?.productStorages?.[1]?.code || '-', dataIndex: 'WH_Gunesli', width: 110 },
-        { title: products?.[0]?.productStorages?.[2]?.code || '-', dataIndex: 'WH_Gence', width: 110 },
-        { title: products?.[0]?.discounts?.[0]?.discountName || 'İsk1', dataIndex: 'isk1', width: 110 },
-        { title: products?.[0]?.discounts?.[1]?.discountName || 'İsk2', dataIndex: 'isk2', width: 110 },
-        { title: products?.[0]?.discounts?.[2]?.discountName || 'İsk3', dataIndex: 'isk3', width: 110 },
-        { title: products?.[0]?.discounts?.[3]?.discountName || 'İsk4', dataIndex: 'isk4', width: 110 },
-        { title: 'Tutar', dataIndex: 'amount', width: 110 },
-        { title: 'Net Fiyat', dataIndex: 'net_price', width: 100 },
-        { title: 'Net Tutar', dataIndex: 'net_amount', width: 100 },
-    ].map(col => ({
-        ...col,
-        key: col.dataIndex,
-        filters: createUniqueFilters(data, col.dataIndex),
-        onFilter: (value, record) => record[col.dataIndex] === value,
-    })),
-];
+    const columns = [
+        {
+            title: (
+                <Checkbox
+                    onChange={(e) => {
+                        const allRowKeys = data.map(row => row.key);
+                        setSelectedRows(e.target.checked ? allRowKeys : []);
+                    }}
+                    checked={selectedRows.length === data.length && data.length > 0}
+                />
+            ),
+            width: 50,
+            dataIndex: 'checkbox',
+            key: 'checkbox',
+            render: (_, record) => (
+                <Checkbox
+                    onChange={() => handleRowCheckboxChange(record.key)}
+                    checked={selectedRows.includes(record.key)}
+                />
+            ),
+        },
+        ...[
+            { title: 'Kodu', dataIndex: 'code', width: 150 },
+            { title: 'Adi', dataIndex: 'name', width: 250 },
+            { title: 'Üretici', dataIndex: 'manufacturer', width: 100 },
+            { title: 'Miktar', dataIndex: 'amount', width: 100 },
+            { title: 'Br.Fiyat', dataIndex: 'br_Price', width: 100 },
+            { title: products?.[0]?.productStorages?.[0]?.code || '-', dataIndex: 'WH_Baku', width: 110 },
+            { title: products?.[0]?.productStorages?.[1]?.code || '-', dataIndex: 'WH_Gunesli', width: 110 },
+            { title: products?.[0]?.productStorages?.[2]?.code || '-', dataIndex: 'WH_Gence', width: 110 },
+            { title: products?.[0]?.discounts?.[0]?.discountName || 'İsk1', dataIndex: 'isk1', width: 110 },
+            { title: products?.[0]?.discounts?.[1]?.discountName || 'İsk2', dataIndex: 'isk2', width: 110 },
+            { title: products?.[0]?.discounts?.[2]?.discountName || 'İsk3', dataIndex: 'isk3', width: 110 },
+            { title: products?.[0]?.discounts?.[3]?.discountName || 'İsk4', dataIndex: 'isk4', width: 110 },
+            { title: 'Tutar', dataIndex: 'amount', width: 110 },
+            { title: 'Net Fiyat', dataIndex: 'net_price', width: 100 },
+            { title: 'Net Tutar', dataIndex: 'net_amount', width: 100 },
+        ].map(col => ({
+            ...col,
+            key: col.dataIndex,
+            filters: createUniqueFilters(data, col.dataIndex),
+            onFilter: (value, record) => record[col.dataIndex] === value,
+        })),
+    ];
 
 
     // Product List -end
 
 
     // Modal - Start
-
-
-
 
     const handleRowDoubleClick = (record) => {
         setSelectedcode(record.code);
@@ -312,7 +300,7 @@ const columns = [
             .filter(item => selectedRows.includes(item.key))
             .map(item => ({ idHash: item.idHash }));
 
-        BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', {data: requestBody,})
+        BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', { data: requestBody, })
             .then(() => {
                 fetchOrderDetail(currentPage - 1);
             })
@@ -438,8 +426,8 @@ const columns = [
                     onChange={handlePageChange}
                     pageSize={pageSize}
                     onShowSizeChange={handlePageSizeChange}
-                    // showSizeChanger={true}
-                    // pageSizeOptions={['5', '10', '20', '40', '50', '100']}
+                // showSizeChanger={true}
+                // pageSizeOptions={['5', '10', '20', '40', '50', '100']}
                 />
                 <span className="t_016 fs_16 fw_600 ms-2">Toplam {count}</span>
             </div>
@@ -677,7 +665,7 @@ const columns = [
                             className={`DetailButton aktar ${aktarisDisabled ? 'disabled' : ''}`}
                             style={{ cursor: aktarisDisabled ? 'not-allowed' : 'pointer' }}
                             aria-disabled={aktarisDisabled}
-                            onClick={handleAktarClick} >
+                            onClick={!aktarisDisabled ? handleAktarClick : undefined} >
                             <FaTruckRampBox />
                             <span className='ms-2'>
                                 Aktar
@@ -693,8 +681,7 @@ const columns = [
                     </span>
                     <span
                         className={`DetailButton sil ${selectedRows.length === 0 ? 'disabled' : ''}`}
-                        onClick={handleDelete}
-                        disabled={selectedRows.length === 0}
+                        onClick={selectedRows.length > 0 ? handleDelete : undefined}
                     >
                         <MdDelete />
                         <span className='ms-2'>
@@ -703,8 +690,7 @@ const columns = [
                     </span>
                     <span
                         className={`DetailButton degistir ${isSaveDisabled ? 'disabled' : ''}`}
-                        onClick={handleSaveClick}
-                        disabled={isSaveDisabled}
+                        onClick={!isSaveDisabled ? handleSaveClick : undefined}
                     >
                         <FiSave />
                         <span className='ms-2'>
@@ -718,8 +704,7 @@ const columns = [
                     <Spin spinning={loadingHovuz}>
                         <span className={`DetailButton hovuz ${isDisabled ? 'disabled' : ''}`}
                             style={{ cursor: isDisabled ? 'not-allowed' : 'pointer' }}
-                            aria-disabled={isDisabled}
-                            onClick={handleHovuzClick}
+                            onClick={!isDisabled ? handleHovuzClick : undefined}
                         >
                             <FaSwimmingPool />
                             <span className='ms-2'>
@@ -730,16 +715,17 @@ const columns = [
 
 
 
-                    <span className={`DetailButton degistir ${isEditDisabled ? 'disabled' : ''}`}
-                        onClick={handleEditClick}
-                        disabled={isEditDisabled}>
+                    <span
+                        className={`DetailButton degistir ${isEditDisabled ? 'disabled' : ''}`}
+                        onClick={!isEditDisabled ? handleEditClick : undefined}
+                    >
                         <FaPencilAlt />
                         <span className='ms-2'>
                             Degistir
                         </span>
                     </span>
+                    
                     <Spin spinning={loadingGeriAl}>
-
                         <span className="DetailButton geri" onClick={handleGeriAlClick}>
                             <IoMdReturnLeft />
                             <span className='ms-2'>

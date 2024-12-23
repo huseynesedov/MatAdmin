@@ -268,7 +268,7 @@ return (
                 disabled={isSaveDisabled}
                 icon={<LuCombine />}
             >
-                Kaydet
+                Birlesdir
             </Button>
         )}
 
