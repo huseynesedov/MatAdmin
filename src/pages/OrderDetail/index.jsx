@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, Dropdown, Spin } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Card, Dropdown, Input, notification, Spin, } from 'antd';
 import { AdminApi } from '../../api/admin.api';
 import { BaseApi } from '../../const/api';
 
 import OrderList from './Components';
 import Title from 'antd/es/typography/Title';
+import { FaSearch } from "react-icons/fa";
 
 import { FaChevronDown } from "react-icons/fa";
 
 const OrderDetail = () => {
     const { idHash } = useParams();
+    const navigate = useNavigate();
+
     const [pageSize, setPageSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
     const [count, setCount] = useState(0);
@@ -19,7 +22,32 @@ const OrderDetail = () => {
     const [products, setProducts] = useState([]);
 
 
-    const fetchOrderDetail = (page, filter = false) => {
+    const [storageNote, setStorageNote] = useState(' ');
+    const [salesmanNote, setSalesmanNote] = useState(' ');
+    const [storageCode, setStorageCode] = useState('');
+
+    const [isEditDisabled, setIsEditDisabled] = useState(false);
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+    const [isDropdownDisabled, setIsDropdownDisabled] = useState(true);
+    const [noteDisabled, setIsnoteDisabled] = useState(true);
+
+
+    const [items, setItems] = useState([]);
+    const [selectedStorageCode, setSelectedStorageCode] = useState("Gonderici yoxdur !");
+    const [selectedStorageKey, setSelectedStorageKey] = useState("id Yok");
+
+
+    const update = (storageNote, salesmanNote, storageCode) => {
+        setStorageNote(storageNote);
+        setSalesmanNote(salesmanNote);
+        setStorageCode(storageCode);
+    };
+
+
+
+
+
+    const fetchOrderDetail = (page) => {
         setLoading(true);
         let filters = [];
 
@@ -36,8 +64,31 @@ const OrderDetail = () => {
                 setProducts(res.data.orderDetails || []);
                 setCount(res.count);
             })
+
+            //     if (res.status === 204) {  // 204 yanıtı geldiğinde yönlendir
+            //         notification.info({
+            //             description: 'Bu URL-də heç bir məlumat yoxdur.',
+            //             placement: 'topRight',
+            //         });
+            //         navigate("/Orders");
+            //     } else {
+            //         setOrderData(res.data);
+            //         setProducts(res.data.orderDetails || []);
+            //         setCount(res.count);
+            //     }
+            // })
+
             .catch((error) => {
-                console.error('Error fetching orders:', error);
+                if (error.status === 400 || 204) {
+                    notification.info({
+                        description: 'Mehsul Yoxdur...',
+                        placement: 'topRight'
+                    });
+                    navigate("/Orders")
+                }
+                // const errorMessage = error.response?.data?.message || error.message || 'Bir hata oluştu, lütfen tekrar deneyin.';
+                // console.error('API hatası:', errorMessage);
+                // alert(errorMessage);
             })
             .finally(() => {
                 setLoading(false);
@@ -47,6 +98,7 @@ const OrderDetail = () => {
 
     const handlePageSizeChange = (current, size) => {
         setPageSize(size);
+        setCurrentPage(1);
     };
 
     const handlePageChange = (page) => {
@@ -58,26 +110,19 @@ const OrderDetail = () => {
         fetchOrderDetail(currentPage - 1);
     }, [currentPage]);
 
-    const [isEditDisabled, setIsEditDisabled] = useState(false); // "Değiştir" butonu başlangıç durumu
-    const [isSaveDisabled, setIsSaveDisabled] = useState(true);  // "Kaydet" butonu başlangıç durumu
-    const [isDropdownDisabled, setIsDropdownDisabled] = useState(true); // Dropdown başlangıç durumu
-    const [noteDisabled, setIsnoteDisabled] = useState(true); // Dropdown başlangıç durumu
 
- 
-    
-    
-    const [items, setItems] = useState([]);
-    const [selectedStorageCode, setSelectedStorageCode] = useState("Gonderici yoxdur !"); // Başlangıç değeri
-    const [selectedStorageKey, setSelectedStorageKey] = useState("id Yok");
+
 
     useEffect(() => {
         if (orderData?.order) {
-          setSelectedStorageCode(orderData.order.senderName || "Gonderici yoxdur !");
-          setSelectedStorageKey(orderData.order.shipmentTypeIdHash || "id Yok");
+            setSelectedStorageCode(orderData.order.senderName || "Gonderici yoxdur !");
+            setSelectedStorageKey(orderData.order.salesmanIdHash || "id Yok");
         }
-      }, [orderData]);
+    }, [orderData]);
 
 
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchShipmentTypes = async () => {
@@ -97,7 +142,6 @@ const OrderDetail = () => {
             }
         };
         fetchShipmentTypes();
-
     }, []);
 
     const handleDropdownSelect = (key) => {
@@ -105,11 +149,52 @@ const OrderDetail = () => {
         if (selectedItem) {
             setSelectedStorageKey(selectedItem.key);
             setSelectedStorageCode(selectedItem.label);
+
         }
     };
 
+    const filteredItems = items.filter((item) =>
+        item.label.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
+    const handleMenuClick = (e) => {
+        setIsOpen(!isOpen);
+    };
+    const suffix = (
+        <FaSearch
+            style={{
+                fontSize: 16,
+                color: '#1677ff',
+                top: '7px',
+                right: "7px"
+            }}
+        />
+    );
 
+    const menu = (
+        <div className='dropdown-musteri' style={{ maxHeight: "350px", overflowY: "auto" }}>
+            <Input
+                placeholder="Ara..."
+                value={searchTerm}
+                className="search_input"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ marginBottom: "8px" }}
+                suffix={suffix}
+            />
+            {filteredItems.map((item) => (
+                <div
+                    key={item.key}
+                    onClick={() => {
+                        handleDropdownSelect(item.key);
+                        setIsOpen(false);
+                    }}
+                    style={{ padding: "8px", cursor: "pointer" }}
+                >
+                    {item.label}
+                </div>
+            ))}
+        </div>
+    );
 
 
 
@@ -118,29 +203,136 @@ const OrderDetail = () => {
         return <Spin spinning={true}></Spin>;
     }
 
-    const order = orderData?.order || "s";
+    const order = orderData?.order || "Order Yoxdur!";
 
     // ---------------------------------------
 
 
 
-    // "Düzenle" butonuna klikledikde
     const handleEditClick = () => {
-        setIsEditDisabled(true);           // "Düzenle" butonunu devre dışı bırak
-        setIsSaveDisabled(false);          // "Kaydet" butonunu etkinleştir
-        setIsDropdownDisabled(false);     // Dropdown'u etkinleştir
+        setIsEditDisabled(true);
+        setIsSaveDisabled(false);
+        setIsDropdownDisabled(false);
         setIsnoteDisabled(false);
-
     };
 
-    // "Kaydet" butonuna tıklandığında
     const handleSaveClick = () => {
         setIsEditDisabled(false);
         setIsSaveDisabled(true);
         setIsDropdownDisabled(true);
         setIsnoteDisabled(true);
-
+        salesmanName();
+        StorageCode();
+        salesmanNoteUptade();
+        storageNoteUptade();
     };
+
+
+
+
+
+    const salesmanName = () => {
+
+
+        if (selectedStorageKey === null) {
+            return;
+        }
+
+        const dataToSend = {
+            orderIdHash: idHash,
+            salesmanIdHash: selectedStorageKey,
+        };
+
+
+
+        BaseApi.put('/admin/v1/Order/UpdateSenderForOrder', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                // alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+
+            });
+    };
+
+
+
+
+    const StorageCode = () => {
+        const dataToSend = {
+            orderIdHash: idHash,
+            shipmentTypeHash: storageCode,
+        };
+
+
+
+        BaseApi.put('/admin/v1/Order/UpdateShipmentTypeForOrder', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+
+            });
+    };
+
+
+
+    const salesmanNoteUptade = () => {
+        const dataToSend = {
+            orderIdHash: idHash,
+            salesmanNote: salesmanNote,
+        };
+
+
+
+        BaseApi.put('/admin/v1/Order/UpdateSalesmanNoteSenderForOrder', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+
+            });
+    };
+
+
+    const storageNoteUptade = () => {
+        const dataToSend = {
+            orderIdHash: idHash,
+            note: storageNote,
+        };
+
+
+
+        BaseApi.put('/admin/v1/Order/UpdateNoteForOrder', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+
+            });
+    };
+
+
+
 
 
     return (
@@ -157,91 +349,89 @@ const OrderDetail = () => {
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-sm-6 d-flex ps-3 pt-3 pb-3 border_bottom border_right">
-                            <div className="bg_gray">
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">Cari kodu :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Ünvanı :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Adresi :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Cari Adresi :</span>
-                                </div>
-                            </div>
-                            <div className="bg_grayRight">
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.customerCode || '-'}</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.companyName || '-'}</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.companyAddress || '-'}</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.storageCode || '-'}</span>
-                                </div>
-                            </div>
+                        <div className="col-sm-6 d-flex ps-3 pt-3 pb-3 border_right">
+                            <table>
+                                <tbody className='Detail_table'>
+                                    <tr>
+                                        <th className='border_radius' scope="row">
+                                            Cari kodu :
+                                        </th>
+                                        <td>{order?.customerCode || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            Ünvanı :
+                                        </th>
+                                        <td>{order?.companyName || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            Adresi :
+                                        </th>
+                                        <td>{order?.companyAddress || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th className='border_radius_bottom' scope="row">
+                                            Cari Adresi :
+                                        </th>
+                                        <td>{order?.storageCode || '-'}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
                         </div>
-                        <div className="col-sm-6 d-flex ps-5 pt-3 pb-3 border_bottom">
-                            <div className="bg_gray">
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">Sipariş No :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Durum :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Gönderen :</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name">Onaylayan :</span>
-                                </div>
-                            </div>
-                            <div className="bg_grayRight">
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_18 red">{order?.orderNumber || '-'}</span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">
-                                        {order?.orderStatusName || '-'}
+                        <div className="col-sm-6 d-flex ps-5 pt-3 pb-3 ">
+                            <table>
+                                <tbody className='Detail_table'>
+                                    <tr>
+                                        <th className='border_radius' scope="row">
+                                            Sipariş No :
+                                        </th>
+                                        <td className="name fs_18 red">{order?.orderNumber || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            Durum :
+                                        </th>
+                                        <td>
+                                            {order?.orderStatusName || '-'}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            Gönderen :
+                                        </th>
+                                        <td>
+                                            <Dropdown
+                                                overlay={menu}
+                                                trigger={["click"]}
+                                                open={isOpen}
+                                                onOpenChange={(open) => setIsOpen(open)}
+                                                disabled={isDropdownDisabled}
+                                            >
+                                                <a onClick={(e) => {
+                                                    if (isDropdownDisabled) {
+                                                        e.preventDefault();
+                                                        return;
+                                                    }
+                                                    handleMenuClick();
+                                                }}
+                                                    className="ant-dropdown-link">
+                                                    <span className="me-2">{selectedStorageCode}</span>
+                                                    <FaChevronDown className="mt-1" />
+                                                </a>
+                                            </Dropdown>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th className='border_radius_bottom' scope="row">
+                                            Onaylayan :
+                                        </th>
+                                        <td>{order?.confirmByName || '-'}</td>
+                                    </tr>
+                                </tbody>
 
-                                    </span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">
-                                        <Dropdown
-                                            overlay={null} // Bunu kaldırabilirsiniz, çünkü artık gerek yok.
-                                            menu={{
-                                                items: items.map((item) => ({
-                                                    key: item.key,
-                                                    label: (
-                                                        <span onClick={() => handleDropdownSelect(item.key)}>
-                                                            {item.label}
-                                                        </span>
-                                                    ),
-                                                })),
-                                            }}
-                                            disabled={isDropdownDisabled}
-                                        >
-                                            <a onClick={(e) => e.preventDefault()} className="ant-dropdown-link">
-                                                <span className='me-2'>{selectedStorageCode}</span>
-                                                <FaChevronDown className='mt-1' />
-                                            </a>
-                                        </Dropdown>
-
-
-
-                                    </span>
-                                </div>
-                                <div className="border_bottom w-100">
-                                    <span className="name fs_14">{order?.confirmByName || '-'}</span>
-                                </div>
-                            </div>
+                            </table>
                         </div>
                     </div>
                 </Card>
@@ -266,6 +456,14 @@ const OrderDetail = () => {
                         isDropdownDisabled={isDropdownDisabled}
                         noteDisabled={noteDisabled}
                         fetchOrderDetail={fetchOrderDetail}
+                        currentPage={currentPage}
+
+                        update={update}
+
+                        setSalesmanNote={setSalesmanNote}
+                        setStorageNote={setStorageNote}
+                        storageNote={storageNote}
+                        salesmanNote={salesmanNote}
                     />
                 </Card>
             </Spin>

@@ -65,11 +65,11 @@ export const BaseApi = {
         let config = createFormDataConfig();
         return axios.post(fullUrl, formData, config).then(response => response.data);
     },
-    delete(url, params) {
+    delete(url, params,queryParams) {
         let fullUrl = `${BASE_URL}${url}`;
-        let config = createJsonConfig(params);
+        let config = createJsonConfig(queryParams);
 
-        return axios.delete(fullUrl, config).then(response => response.data);
+        return axios.delete(fullUrl,params, config).then(response => response.data);
     },
     deleteNew(url, params) {
         let fullUrl = `${BASE_URL}${url}`;

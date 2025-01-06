@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Checkbox, Input, Pagination, Modal, Table, Form, notification, Spin } from 'antd';
+import { useParams } from 'react-router-dom';
 
 import { FaTruckPlane, FaTruckRampBox } from "react-icons/fa6";
 import { BsPrinterFill } from "react-icons/bs";
@@ -16,18 +17,38 @@ import Title from 'antd/es/typography/Title';
 import TextArea from 'antd/es/input/TextArea';
 
 
-import fetchOrderDetail from '../index';
+
+const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageNote, salesmanNote, fetchOrderDetail, currentPage, handleEditClick, handleSaveClick, noteDisabled, isEditDisabled, isDropdownDisabled, isSaveDisabled, orderData, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
+    const { idHash } = useParams();
+
+    const [selectedcode, setSelectedcode] = useState(null);
+    const [selectedName, setSelectedName] = useState(null);
+    const [selectedManufacturer, setSelectedManufacturer] = useState(null);
+    const [selectedPrice, setSelectedPrice] = useState(null);
+    const [orderDetailIdHash, setorderDetailIdHash] = useState(null);
+    const [amount, setamount] = useState(null);
+    const [shippedQuantity, setshippedQuantity] = useState(0);
+    const [unitDiscountedPrice, setunitDiscountedPrice] = useState(null);
+    const [isk1, setisk1] = useState(null);
+    const [isk2, setisk2] = useState(null);
+    const [isk3, setisk3] = useState(null);
+    const [isk4, setisk4] = useState(null);
+    const [isk1_id, setisk1_id] = useState(null);
+    const [isk2_id, setisk2_id] = useState(null);
+    const [isk3_id, setisk3_id] = useState(null);
+    const [isk4_id, setisk4_id] = useState(null);
+
+    const [formLayout, setFormLayout] = useState('vertical');
 
 
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
-const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, isEditDisabled, isDropdownDisabled, isSaveDisabled, orderData, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
 
 
     // Product List -Start
 
     const [data, setData] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
-    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
         if (Array.isArray(products) && products.length > 0) {
@@ -43,7 +64,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                     shippedQuantity: item.shippedQuantity,
                     manufacturer: item.productManufacturerName || '-',
                     amount: item.quantity || '-',
-                    br_Price: formatNumber(item.unitDiscountedPrice) || '-',
+                    br_Price: item.unitDiscountedPrice || '-',
                     WH_Baku: formatNumber(item?.productStorages?.[0]?.quantity) || '-',
                     WH_Gunesli: formatNumber(item?.productStorages?.[1]?.quantity) || '-',
                     WH_Gence: formatNumber(item?.productStorages?.[2]?.quantity) || '-',
@@ -76,51 +97,58 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
         });
     };
 
+    const createUniqueFilters = (data, key) => [...new Set(data.map(item => item[key]))].map(value => ({ text: value, value }));
 
     const columns = [
-        { title: (<Checkbox onChange={(e) => { if (e.target.checked) { const allRowKeys = data.map((row) => row.key); setSelectedRows(allRowKeys); } else { setSelectedRows([]); } }} checked={selectedRows.length === data.length && data.length > 0} />), width: 50, dataIndex: 'checkbox', key: 'checkbox', render: (_, record) => (<Checkbox onChange={() => handleRowCheckboxChange(record.key)} checked={selectedRows.includes(record.key)} />), },
-        { title: 'Kodu', width: 150, dataIndex: 'code', key: 'code', },
-        { title: 'Adi', width: 300, dataIndex: 'name', key: 'name', },
-        { title: 'Üretici', width: 150, dataIndex: 'manufacturer', key: 'manufacturer', },
-        { title: 'Miktar', width: 150, dataIndex: 'amount', key: 'amount', },
-        { title: 'Br.Fiyat', width: 150, dataIndex: 'br_Price', key: 'br_Price', },
-        { title: products?.[0]?.productStorages?.[0]?.code || '-', width: 110, dataIndex: 'WH_Baku', key: 'WH_Baku', },
-        { title: products?.[0]?.productStorages?.[1]?.code || '-', width: 120, dataIndex: 'WH_Gunesli', key: 'WH_Gunesli', },
-        { title: products?.[0]?.productStorages?.[2]?.code || '-', width: 120, dataIndex: 'WH_Gence', key: 'WH_Gence' },
-        { title: products?.[0]?.discounts?.[0]?.discountName || 'İsk1', width: 110, dataIndex: 'isk1', key: 'isk1', sorter: true, },
-        { title: products?.[0]?.discounts?.[1]?.discountName || 'İsk2', width: 110, dataIndex: 'isk2', key: 'isk2', sorter: true, },
-        { title: products?.[0]?.discounts?.[2]?.discountName || 'İsk3', width: 110, dataIndex: 'isk3', key: 'isk3', sorter: true, },
-        { title: products?.[0]?.discounts?.[3]?.discountName || 'İsk4', width: 110, dataIndex: 'isk4', key: 'isk4', sorter: true, },
-        { title: 'Tutar', width: 110, dataIndex: 'amount', key: 'amount', sorter: true },
-        { title: 'Net Fiyat', width: 130, dataIndex: 'net_price', key: 'net_price', sorter: true },
-        { title: 'Net Tutar', width: 130, dataIndex: 'net_amount', key: 'net_amount', sorter: true },
+        {
+            title: (
+                <Checkbox
+                    onChange={(e) => {
+                        const allRowKeys = data.map(row => row.key);
+                        setSelectedRows(e.target.checked ? allRowKeys : []);
+                    }}
+                    checked={selectedRows.length === data.length && data.length > 0}
+                />
+            ),
+            width: 50,
+            dataIndex: 'checkbox',
+            key: 'checkbox',
+            render: (_, record) => (
+                <Checkbox
+                    onChange={() => handleRowCheckboxChange(record.key)}
+                    checked={selectedRows.includes(record.key)}
+                />
+            ),
+        },
+        ...[
+            { title: 'Kodu', dataIndex: 'code', width: 150 },
+            { title: 'Adi', dataIndex: 'name', width: 250 },
+            { title: 'Üretici', dataIndex: 'manufacturer', width: 100 },
+            { title: 'Miktar', dataIndex: 'amount', width: 100 },
+            { title: 'Br.Fiyat', dataIndex: 'br_Price', width: 100 },
+            { title: products?.[0]?.productStorages?.[0]?.code || '-', dataIndex: 'WH_Baku', width: 110 },
+            { title: products?.[0]?.productStorages?.[1]?.code || '-', dataIndex: 'WH_Gunesli', width: 110 },
+            { title: products?.[0]?.productStorages?.[2]?.code || '-', dataIndex: 'WH_Gence', width: 110 },
+            { title: products?.[0]?.discounts?.[0]?.discountName || 'İsk1', dataIndex: 'isk1', width: 110 },
+            { title: products?.[0]?.discounts?.[1]?.discountName || 'İsk2', dataIndex: 'isk2', width: 110 },
+            { title: products?.[0]?.discounts?.[2]?.discountName || 'İsk3', dataIndex: 'isk3', width: 110 },
+            { title: products?.[0]?.discounts?.[3]?.discountName || 'İsk4', dataIndex: 'isk4', width: 110 },
+            { title: 'Tutar', dataIndex: 'amount', width: 110 },
+            { title: 'Net Fiyat', dataIndex: 'net_price', width: 100 },
+            { title: 'Net Tutar', dataIndex: 'net_amount', width: 100 },
+        ].map(col => ({
+            ...col,
+            key: col.dataIndex,
+            filters: createUniqueFilters(data, col.dataIndex),
+            onFilter: (value, record) => record[col.dataIndex] === value,
+        })),
     ];
+
 
     // Product List -end
 
 
     // Modal - Start
-
-    const [selectedcode, setSelectedcode] = useState(null);
-    const [selectedName, setSelectedName] = useState(null);
-    const [selectedManufacturer, setSelectedManufacturer] = useState(null);
-    const [selectedPrice, setSelectedPrice] = useState(null);
-    const [orderDetailIdHash, setorderDetailIdHash] = useState(null);
-    const [amount, setamount] = useState(null);
-    const [shippedQuantity, setshippedQuantity] = useState(0);
-    const [unitDiscountedPrice, setunitDiscountedPrice] = useState(null);
-    const [isk1, setisk1] = useState(null);
-    const [isk2, setisk2] = useState(null);
-    const [isk3, setisk3] = useState(null);
-    const [isk4, setisk4] = useState(null);
-    const [isk1_id, setisk1_id] = useState(null);
-    const [isk2_id, setisk2_id] = useState(null);
-    const [isk3_id, setisk3_id] = useState(null);
-    const [isk4_id, setisk4_id] = useState(null);
-
-    const [formLayout, setFormLayout] = useState('vertical');
-    const [form] = Form.useForm();
-
 
     const handleRowDoubleClick = (record) => {
         setSelectedcode(record.code);
@@ -185,44 +213,24 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                 },
             ],
         };
-    
+
         setLoadingModal(true);
-    
+
         BaseApi.put('/admin/v1/Order/UpdateOrderForOrderDetail', dataToSend)
-            .then(response => {
-                console.log('API yanıtı:', response);
-    
-                if (response.status === 200) {
-                    alert('Güncelleme başarılı!');
-                    handleModalClose();
-                    fetchOrderDetail(); 
-                }
-                if (response.status === 500) {
-                    alert('Xeta!');
-                }
-            })
-            .catch(error => {
-                console.error('API hatası:', error.response?.data || error.message);
-                alert('Bir hata oluştu, lütfen tekrar deneyin.');
+
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+                handleModalClose();
             })
             .finally(() => {
                 setLoadingModal(false);
             });
     };
-    
-
-
 
     // Modal - End
 
 
-
-
     // Storage list api - start
-
-    const [items, setItems] = useState([]);
-    const [selectedStorageCode, setSelectedStorageCode] = useState(orderData?.order?.shipmentTypeName || 'Kargo Bilgisi Yok');
-    const [selectedStorageKey, setSelectedStorageKey] = useState(orderData?.order?.shipmentTypeIdHash || 'Kargo Bilgisi Yok');
 
     useEffect(() => {
         const fetchShipmentTypes = async () => {
@@ -249,13 +257,34 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
     const handleDropdownSelect = (key) => {
         const selectedItem = items.find((item) => item.key === key);
         if (selectedItem) {
-            setSelectedStorageKey(selectedItem.key);
-            setSelectedStorageCode(selectedItem.label);
+            setShipmentTypeKey(selectedItem.key);
+            setShipmentTypeName(selectedItem.label);
         }
     };
 
-    const storageNote = orderData?.order?.note || ' ';
-    const salesmanNote = orderData?.order?.salesmanNote || ' ';
+
+
+    const [items, setItems] = useState([]);
+    const [shipmentTypeList, setShipmentTypeName] = useState(orderData?.order?.shipmentTypeName || 'Sevkiyyat ismi');
+    const [shipmentTypeKey, setShipmentTypeKey] = useState(orderData?.order?.shipmentTypeIdHash || 'Sevkiyyat codu');
+
+
+    useEffect(() => {
+        setStorageNote(orderData?.order?.note || '');
+        setSalesmanNote(orderData?.order?.salesmanNote || '');
+        setStorageCode(shipmentTypeKey);
+
+    }, [orderData, shipmentTypeKey]);
+
+
+
+    const [storageCode, setStorageCode] = useState(shipmentTypeKey);
+
+
+    update(storageNote, salesmanNote, storageCode)
+
+
+
 
     // Storage list api - end
 
@@ -266,52 +295,117 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
 
 
+    const handleDelete = () => {
+        const requestBody = data
+            .filter(item => selectedRows.includes(item.key))
+            .map(item => ({ idHash: item.idHash }));
 
-    const handleDelete = async () => {
-        const selectedOrderDetailIdHashes = data
-            .filter((item) => selectedRows.includes(item.key))
-            .map((item) => item.idHash);
-
-        if (selectedOrderDetailIdHashes.length === 0) {
-            return; // Eğer seçili ürün yoksa hiçbir işlem yapma.
-        }
-
-        // Veriyi JSON formatında oluşturma
-        const dataToSend = selectedOrderDetailIdHashes.map(idHash => ({
-            idHash: idHash
-        }));
-
-        // Veriyi konsola yazdırma (debug amaçlı)
-        console.log("Gönderilecek veri:", JSON.stringify(dataToSend, null, 2));
-
-        try {
-            // Silme isteği gönderiliyor
-            const response = await BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', {
-
-                data: dataToSend  // Veriyi JSON olarak gönderiyoruz
+        BaseApi.delete('/admin/v1/OrderDetail/DeleteByIds', { data: requestBody, })
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+            })
+            .catch(error => {
+                const errorMessage = error.response?.data?.message || error.message || 'Bir hata oluştu, lütfen tekrar deneyin.';
+                console.error('API hatası:', errorMessage);
+                alert(errorMessage);
             });
-
-            if (response.status === 200) {
-                console.log('Silme başarılı:', response.data);
-                // Silinen ürünleri tablodan kaldır.
-                setData((prevData) =>
-                    prevData.filter((item) => !selectedRows.includes(item.key))
-                );
-                setSelectedRows([]); // Seçili ürünleri sıfırla.
-            }
-        } catch (error) {
-            console.error('Silme işlemi sırasında hata:', error);
-        }
     };
 
 
 
 
+    const [loadingAktar, setLoadingAkta] = useState(false);
+
+
+    const handleAktarClick = () => {
+        const dataToSend = {
+            orderIdHash: idHash
+        };
+
+
+        setLoadingAkta(true);
+
+        BaseApi.put('/admin/v1/Order/UpdateOrderApproved', dataToSend)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+                handleModalClose()
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+            })
+            .finally(() => {
+                setLoadingAkta(false);
+            });
+    };
+
+
+    const [loadingHovuz, setLoadingHovuz] = useState(false);
+
+
+    const handleHovuzClick = () => {
+
+        setLoadingHovuz(true);
+
+        BaseApi.put(`/admin/v1/Order/UpdateOrderIntoPoolForOrderDetail?id=${idHash}`)
+            .then(() => {
+                fetchOrderDetail(currentPage - 1);
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                // alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+                setLoadingHovuz(false);
+            });
+    };
+
+
+    const [loadingGeriAl, setLoadingGeriAl] = useState(false);
+
+
+    const handleGeriAlClick = () => {
+
+        setLoadingGeriAl(true);
+
+        BaseApi.put(`/admin/v1/Order/UndoOrderForOrderDetail?id=${idHash}`)
+            .then((response) => {
+                fetchOrderDetail(currentPage - 1);
+            })
+            .catch(error => {
+                console.error('API hatası:', error.response?.data || error.message);
+                // alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            })
+            .finally(() => {
+                setLoadingGeriAl(false);
+            });
+    };
+
     // buttonlar -End
+
+
+    const orderStatusName = orderData?.order?.orderStatusName;
+    const disabledStatuses = ["Havuzda", "Havuzda bekleyen", "Onaylandı", "Silindi"];
+
+    const aktar = ["Onaylandı", "Silindi", "Havuzda bekleyen"];
+
+    const isDisabled = disabledStatuses.includes(orderStatusName);
+    const aktarisDisabled = aktar.includes(orderStatusName);
 
 
     const rowClassName = (record, index) => (index % 2 === 0 ? 'custom_bg' : '');
 
+
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const dropdownRef = useRef(null);
+
+    const filteredItems = items.filter((item) =>
+        item.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleInputClick = (e) => {
+        e.stopPropagation();
+    };
     return (
         <>
             <Table
@@ -323,6 +417,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                 onRow={(record) => ({
                     onDoubleClick: () => handleRowDoubleClick(record),
                 })}
+                size="middle"
             />
             <div className="d-flex w-100 justify-content-end align-items-center mt-3">
                 <Pagination
@@ -331,8 +426,8 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                     onChange={handlePageChange}
                     pageSize={pageSize}
                     onShowSizeChange={handlePageSizeChange}
-                    showSizeChanger={true}
-                    pageSizeOptions={['5', '10', '20', '40', '50', '100']}
+                    // showSizeChanger={true}
+                    // pageSizeOptions={['5', '10', '20', '40', '50', '100']}
                 />
                 <span className="t_016 fs_16 fw_600 ms-2">Toplam {count}</span>
             </div>
@@ -340,6 +435,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
             <Modal
                 visible={isModalVisible}
+                onCancel={handleModalClose}
                 footer={null}
             >
                 <div className="d-flex w-100 justify-content-between mt-5">
@@ -351,36 +447,70 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
                 <Form
                     layout={formLayout}
-                    form={form}
-                    onFinish={handleFormSubmit}
                     onValuesChange={onFormLayoutChange}
                 >
                     <Spin spinning={loadingModal}>
                         <div className="d-flex mt-4 justify-content-between">
                             <Form.Item label="Miqdarı">
-                                <Input style={{ width: "300px" }} placeholder="" value={amount} onChange={(e) => setamount(e.target.value)} />
+                                <Input
+                                    type="number"
+                                    style={{ width: "300px" }}
+                                    placeholder=""
+                                    value={amount}
+                                    onChange={(e) => setamount(Number(e.target.value))}
+                                />
                             </Form.Item>
                             <Form.Item label="Fiyat">
-                                <Input style={{ width: "300px" }} placeholder="" value={unitDiscountedPrice} onChange={(e) => setunitDiscountedPrice(e.target.value)} />
+                                <Input
+                                    type="number"
+                                    style={{ width: "300px" }}
+                                    placeholder=""
+                                    value={unitDiscountedPrice}
+                                    onChange={(e) => setunitDiscountedPrice(Number(e.target.value))}
+                                />
                             </Form.Item>
                         </div>
 
                         <div className="d-flex mt-4 justify-content-between">
-                            <Form.Item label="DiscountOil 1">
-                                <Input style={{ width: "150px" }} placeholder="" value={isk1} onChange={(e) => setisk1(e.target.value)} />
+                            <Form.Item label="Discount 1">
+                                <Input
+                                    type="number"
+                                    style={{ width: "150px" }}
+                                    placeholder=""
+                                    value={isk1}
+                                    onChange={(e) => setisk1(Number(e.target.value))}
+                                />
                             </Form.Item>
-                            <Form.Item label="DiscountOil 2">
-                                <Input style={{ width: "150px" }} placeholder="" value={isk2} onChange={(e) => setisk2(e.target.value)} />
+                            <Form.Item label="Discount 2">
+                                <Input
+                                    type="number"
+                                    style={{ width: "150px" }}
+                                    placeholder=""
+                                    value={isk2}
+                                    onChange={(e) => setisk2(Number(e.target.value))}
+                                />
                             </Form.Item>
-                            <Form.Item label="DiscountOil 3">
-                                <Input style={{ width: "150px" }} placeholder="" value={isk3} onChange={(e) => setisk3(e.target.value)} />
+                            <Form.Item label="Discount 3">
+                                <Input
+                                    type="number"
+                                    style={{ width: "150px" }}
+                                    placeholder=""
+                                    value={isk3}
+                                    onChange={(e) => setisk3(Number(e.target.value))}
+                                />
                             </Form.Item>
-                            <Form.Item label="DiscountOil 4">
-                                <Input style={{ width: "150px" }} placeholder="" value={isk4} onChange={(e) => setisk4(e.target.value)} />
+                            <Form.Item label="Discount 4">
+                                <Input
+                                    type="number"
+                                    style={{ width: "150px" }}
+                                    placeholder=""
+                                    value={isk4}
+                                    onChange={(e) => setisk4(Number(e.target.value))}
+                                />
                             </Form.Item>
                         </div>
                         <div className="d-flex mt-4 justify-content-end" >
-                            <span onCancel={handleModalClose} className="DetailButton2 degistir" onClick={() => form.submit()} >
+                            <span className="DetailButton2 degistir" onClick={handleFormSubmit} >
                                 <FiSave />
                                 <span className='ms-2'>
                                     Kaydet
@@ -398,13 +528,23 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                     <div className="col-sm-3 d-flex flex-column">
                         <Title level={5}>Sevkiyyat yöntemi</Title>
 
-                        <Dropdown className='mt-3' disabled={isDropdownDisabled}>
+                        <Dropdown className='mt-3' disabled={isDropdownDisabled} ref={dropdownRef}>
                             <Dropdown.Toggle id="dropdown-basic" disabled={isDropdownDisabled}>
                                 <TruckOutlined />
-                                <span className='ms-2'>{selectedStorageCode}</span>
+                                <span className='ms-2'>{shipmentTypeList}</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                {items.map((item) => (
+                                <Dropdown.Item as="div" className="px-3 py-2">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Search..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onClick={handleInputClick}
+                                    />
+                                </Dropdown.Item>
+                                {filteredItems.map((item) => (
                                     <Dropdown.Item
                                         key={item.key}
                                         onClick={() => handleDropdownSelect(item.key)}
@@ -416,16 +556,31 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                         </Dropdown>
 
 
+
+
+
+
+
                     </div>
                     <div className="col-sm-3">
                         <Title level={5}>Müşteri Notu</Title>
-                        <TextArea rows={4} maxLength={6} value={storageNote} disabled={noteDisabled} />
+                        <TextArea
+                            rows={4}
+                            value={storageNote}
+                            onChange={(e) => setStorageNote(e.target.value)}
+                            disabled={noteDisabled}
+                        />
 
                     </div>
                     <div className="col-sm-3 me-4">
                         <Title level={5}>Plasiyyer Notu</Title>
 
-                        <TextArea rows={4} maxLength={6} value={salesmanNote} disabled={noteDisabled} />
+                        <TextArea
+                            rows={4}
+                            value={salesmanNote}
+                            onChange={(e) => setSalesmanNote(e.target.value)}
+                            disabled={noteDisabled}
+                        />
                     </div>
                 </div>
                 <div className="col-sm-3">
@@ -479,16 +634,45 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
             </div>
 
+            <div className="row mt-3">
+                <div className="col-sm-3 d-flex justify-content-between">
+                    <div className="LeftText d-flex flex-column">
+                        <span className='fs_14 t_8F fw_600'>
+                            Cemi Odenis :
+                        </span>
+                        <span className='fs_14 t_8F fw_600 mt-4'>
+                            Cari Borc :
+                        </span>
+                    </div>
+                    <div className="RightText d-flex flex-column">
+                        <span className='fs_14 fw_600 red'>
+                            21.7690.32 AZN
+                        </span>
+                        <span className='fs_14 fw_600 red mt-4'>
+                            21.7690.32 AZN
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             <div className="row mt-5 d-flex justify-content-between">
 
 
                 <div className="col-sm-5 d-flex" style={{ gap: "20px" }}>
-                    <span className="DetailButton aktar">
-                        <FaTruckRampBox />
-                        <span className='ms-2'>
-                            Aktar
+
+                    <Spin spinning={loadingAktar}>
+                        <span
+                            className={`DetailButton aktar ${aktarisDisabled ? 'disabled' : ''}`}
+                            style={{ cursor: aktarisDisabled ? 'not-allowed' : 'pointer' }}
+                            aria-disabled={aktarisDisabled}
+                            onClick={!aktarisDisabled ? handleAktarClick : undefined} >
+                            <FaTruckRampBox />
+                            <span className='ms-2'>
+                                Aktar
+                            </span>
                         </span>
-                    </span>
+                    </Spin>
+
                     <span className="DetailButton yazdir">
                         <BsPrinterFill />
                         <span className='ms-2'>
@@ -497,8 +681,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                     </span>
                     <span
                         className={`DetailButton sil ${selectedRows.length === 0 ? 'disabled' : ''}`}
-                        onClick={handleDelete}
-                        disabled={selectedRows.length === 0}
+                        onClick={selectedRows.length > 0 ? handleDelete : undefined}
                     >
                         <MdDelete />
                         <span className='ms-2'>
@@ -507,8 +690,7 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
                     </span>
                     <span
                         className={`DetailButton degistir ${isSaveDisabled ? 'disabled' : ''}`}
-                        onClick={handleSaveClick}
-                        disabled={isSaveDisabled}
+                        onClick={!isSaveDisabled ? handleSaveClick : undefined}
                     >
                         <FiSave />
                         <span className='ms-2'>
@@ -519,34 +701,40 @@ const OrderList = ({ products, handleEditClick, handleSaveClick, noteDisabled, i
 
 
                 <div className="col-sm-6 justify-content-end d-flex" style={{ gap: "20px" }}>
-                    <span className="DetailButton hovuz">
-                        <FaSwimmingPool />
-                        <span className='ms-2'>
-                            Havuz
+                    <Spin spinning={loadingHovuz}>
+                        <span className={`DetailButton hovuz ${isDisabled ? 'disabled' : ''}`}
+                              style={{ cursor: isDisabled ? 'not-allowed' : 'pointer' }}
+                              onClick={!isDisabled ? handleHovuzClick : undefined}
+                        >
+                            <FaSwimmingPool />
+                            <span className='ms-2'>
+                                Havuz
+                            </span>
                         </span>
-                    </span>
-                    <span className={`DetailButton degistir ${isEditDisabled ? 'disabled' : ''}`}
-                        onClick={handleEditClick}
-                        disabled={isEditDisabled}>
+                    </Spin>
+
+
+
+                    <span
+                        className={`DetailButton degistir ${isEditDisabled ? 'disabled' : ''}`}
+                        onClick={!isEditDisabled ? handleEditClick : undefined}
+                    >
                         <FaPencilAlt />
                         <span className='ms-2'>
                             Degistir
                         </span>
                     </span>
-                    <span className="DetailButton sevkiyyat">
-                        <FaTruckPlane />
-                        <span className='ms-2'>
-                            Sevkiyyat
+
+                    <Spin spinning={loadingGeriAl}>
+                        <span className="DetailButton geri" onClick={handleGeriAlClick}>
+                            <IoMdReturnLeft />
+                            <span className='ms-2'>
+                                Geri al
+                            </span>
                         </span>
-                    </span>
-                    <span className="DetailButton geri">
-                        <IoMdReturnLeft />
-                        <span className='ms-2'>
-                            Geri al
-                        </span>
-                    </span>
+                    </Spin>
                 </div>
-            </div>
+            </div >
         </>
     );
 };
