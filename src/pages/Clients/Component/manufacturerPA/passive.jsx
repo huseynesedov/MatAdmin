@@ -35,7 +35,7 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
                 }
             }
 
-            AdminApi.getCustomerProductListByCustomerId(data).then(res => {
+            AdminApi.getCustomerManufacturerListByCustomerId(data).then(res => {
                 if(res.data) {
                     setData(res);
                     setSelectedRowKeys([])
@@ -78,28 +78,20 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
         {
             title: '',
             width: 10,
-            dataIndex: 'productIdHash',
-            key: 'productIdHash',
+            dataIndex: 'manufacturerIdHash',
+            key: 'manufacturerIdHash',
             render: (_, record) => (
                 <Checkbox
-                    checked={selectedRowKeys.includes(record.productIdHash)}
-                    onChange={(e) => handleCheckboxChange(record.productIdHash, e.target.checked)}
+                    checked={selectedRowKeys.includes(record.manufacturerIdHash)}
+                    onChange={(e) => handleCheckboxChange(record.manufacturerIdHash, e.target.checked)}
                 />
             ),
         },
         {
-            title: 'Ürün',
+            title: 'Üretici',
             width: 10,
-            dataIndex: 'productName',
-            key: 'productName',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        },
-        {
-            title: 'Ürün kodu',
-            width: 10,
-            dataIndex: 'productCode',
-            key: 'productCode',
+            dataIndex: 'manufacturerName',
+            key: 'manufacturerName',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },

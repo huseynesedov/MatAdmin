@@ -393,7 +393,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
 
         console.log(prices, 'prices prices ')
 
-
         if (id) {
             let getBrands = [];
 

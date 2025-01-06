@@ -1,77 +1,129 @@
-import { useEffect, useState } from 'react';
-import { Checkbox, Table } from 'antd';
+import React, { useEffect, useState } from 'react';
+import {Button, Checkbox, Pagination, Table} from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
+import {useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
+import Images from "../../../../assets/images/js/Images";
 
-const Product_active = () => {
+const Product_active = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => {
     const [data, setData] = useState([]);
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setdefaultPageSize] = useState(10);
+    let { id } = useParams();
+    const { openNotification } = useAuth()
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
 
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
     const createData = () => {
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                seller_code: `test${i + 1}`,
-                seller_name: `test${i + 1}`,
-                button: `Passive Cevrilsin`
-            });
+        if (id) {
+            let data = {
+                customerIdHash: id,
+                pagingRequest: {
+                    page: current - 1,
+                    pageSize: pageSize,
+                    filters: [
+                        {
+                            value: true,
+                            fieldName: "status",
+                            equalityType: "Equal"
+                        }
+                    ]
+                }
+            }
+
+            AdminApi.getCustomerProductListByCustomerId(data).then(res => {
+                if(res.data) {
+                    setData(res);
+                    setSelectedRowKeys([])
+                }
+            }).catch((err) => {
+                openNotification('Xəta baş verdi' , '-'  , true )
+            })
         }
-        setData(arr);
     };
+
+
 
     useEffect(() => {
         createData();
-    }, []);
+    }, [id, changeDatas, activeKey]);
+
+
+    useEffect(() => {
+        createData();
+    }, [current, pageSize]);
+
+    useEffect(() => {
+        coolBackList(selectedRowKeys)
+    }, [selectedRowKeys]);
+
+
+    const handleCheckboxChange = (recordId, isChecked) => {
+        setSelectedRowKeys((prev) => {
+            if (isChecked) {
+                return [...prev, recordId];
+            }
+            return prev.filter((id) => id !== recordId);
+        });
+    };
+
+    const additionalDiscount = () => {
+        showModalDiscount(0)
+    }
 
     const columns = [
         {
             title: '',
             width: 10,
-            dataIndex: 'id',
-            key: 'id',
-            render: () => <div className="age-column">
-                <Checkbox />
-            </div>,
+            dataIndex: 'productIdHash',
+            key: 'productIdHash',
+            render: (_, record) => (
+                <Checkbox
+                    checked={selectedRowKeys.includes(record.productIdHash)}
+                    onChange={(e) => handleCheckboxChange(record.productIdHash, e.target.checked)}
+                />
+            ),
         },
         {
-            title: 'Uretici Kodu',
+            title: 'Ürün',
             width: 10,
-            dataIndex: 'seller_code',
-            key: 'seller_code',
+            dataIndex: 'productName',
+            key: 'productName',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Uretici adi',
+            title: 'Ürün kodu',
             width: 10,
-            dataIndex: 'seller_name',
-            key: 'seller_name',
+            dataIndex: 'productCode',
+            key: 'productCode',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
-        {
-            title: '',
-            width: 10,
-            dataIndex: 'button',
-            key: 'button',
-            render: (text) => <div className="age-column">
-                <div className='Passive'>
-                    {text}
-                </div>
-            </div>,
-        }
     ];
+
+    const onChange = (page, pageSize) => {
+        setCurrent(page);
+        setdefaultPageSize(pageSize);
+    };
 
     return (
         <>
+            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green mb-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>
             <Table
                 rowClassName={rowClassName}
                 columns={columns}
-                dataSource={data}
+                dataSource={data.data}
                 pagination={false}
+                className="mb-3"
             />
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data.count}/>
+
+
         </>
     );
 };

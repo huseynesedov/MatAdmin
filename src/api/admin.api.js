@@ -54,8 +54,14 @@ export const AdminApi = {
     getAdminManufacturerList(data) {
         return BaseApi.post(apiRoutes.customer.getAdminManufacturerLists, data);
     },
+    getCustomerManufacturerListByCustomerId(data) {
+        return BaseApi.post(apiRoutes.customer.getCustomerManufacturerListByCustomerId, data);
+    },
     GetProductAdditionalDiscountsByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.getproductadditionaldiscountsbycustomerId, data);
+    },
+    getCustomerProductListByCustomerId(data) {
+        return BaseApi.post(apiRoutes.customer.getCustomerProductListByCustomerId, data);
     },
     GetUpdateProductAdditionalDiscountsByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.updateProductAdditionalDiscountsByCustomerId, data);
@@ -66,8 +72,17 @@ export const AdminApi = {
     UpdateCustomer(data) {
         return BaseApi.put(apiRoutes.customer.updateCustomer, data);
     },
+    updateCustomerProduct(data) {
+        return BaseApi.put(apiRoutes.customer.updateCustomerProduct, data);
+    },
     UpdateCustomerManufacturerByIds(params) {
         return BaseApi.delete(apiRoutes.customer.updatecustomermanufacturerByIds, { ...params });
+    },
+    UpdateCustomerManufacturerByIds(params) {
+        return BaseApi.delete(apiRoutes.customer.updatecustomermanufacturerByIds, { ...params });
+    },
+    UpdateCustomerDeleteId(params) {
+        return BaseApi.deleteNew(apiRoutes.customer.updatecustomermanuDelete, params);
     },
     UpdateCustomerNote(data) {
         return BaseApi.put(apiRoutes.customer.updateCustomerNote, data);

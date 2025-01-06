@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, Checkbox, Radio, notification,} from 'antd';
-
 
 
 import SearchModal from './Component/Modal/modal';
@@ -13,7 +12,7 @@ import './../../assets/styles/Clients.scss';
 
 import Images from '../../assets/images/js/Images';
 
-import { SearchContext } from '../../searchprovider';
+import {SearchContext} from '../../searchprovider';
 import Customers from './Component/Connected Customers';
 import Product_passive from './Component/Passive Product/passive';
 import Product_active from './Component/Passive Product/active';
@@ -31,13 +30,21 @@ import ModalDiscount from "./Component/Modal/modalDiscount";
 import ProducerOil from "./Component/AdditionalOil/producerOil";
 import DiscountOil from "./Component/AdditionalOil/discountOil";
 import ModalDiscountOil from "./Component/Modal/modalDiscountOil";
-const { Title } = Typography;
-const { TabPane } = Tabs;
+import ModalDiscountProduct from "./Component/Modal/modalDiscountProduct";
+import Active from "./Component/manufacturerPA/active";
+import Passif from "./Component/Description/passif";
+import Passive from "./Component/manufacturerPA/passive";
+import ModalDiscountManufacturer from "./Component/Modal/modalDiscountManufacturer";
+
+const {Title} = Typography;
+const {TabPane} = Tabs;
 
 const Clients = () => {
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [showDiscount, setShowDiscount] = useState(false);
+    const [showDiscountProduct, setShowDiscountProduct] = useState(false);
+    const [showDiscountManufacturer, setShowDiscountManufacturer] = useState(false);
     const [showDiscountOil, setShowDiscountOil] = useState(false);
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(null);
@@ -45,13 +52,19 @@ const Clients = () => {
     const [isShowProduct, setShowProduct] = useState();
     const [manufacturerList, setManufacturerLists] = useState();
     const [manufacturerListOil, setManufacturerListsOil] = useState();
+    const [manufacturerListProduct, setManufacturerListsProduct] = useState();
+    const [manufacturerListManufacturer, setManufacturerListsManufacturer] = useState();
     const [changeData, setChangeData] = useState();
+    const [changeDataProduct, setChangeDataProduct] = useState();
+    const [changeDataManufacturer, setChangeDataManufacturer] = useState();
     const [changeDataOil, setChangeDataOil] = useState();
     const [modalDiscountType, setModalDiscountType] = useState();
+    const [modalDiscountTypeProduct, setModalDiscountTypeProduct] = useState();
+    const [modalDiscountTypeManufacturer, setModalDiscountTypeManufacturer] = useState();
     const [modalDiscountTypeOil, setModalDiscountTypeOil] = useState();
     const [editDataDiscount, setEditDataDiscount] = useState();
     const [editDataDiscountOil, setEditDataDiscountOil] = useState();
-    let { id } = useParams();
+    let {id} = useParams();
     const [formData, setFormData] = useState({
         kodu: '',
         uretici: '',
@@ -84,7 +97,7 @@ const Clients = () => {
             onProductData();
             setTabDisable(false)
         } else {
-            setTabDisable( true)
+            setTabDisable(true)
 
         }
     }, [id]);
@@ -93,10 +106,12 @@ const Clients = () => {
     const handleClose2 = () => setShow2(false);
     const handleCloseDiscount = () => setShowDiscount(false);
     const handleCloseDiscountOil = () => setShowDiscountOil(false);
+    const handleCloseDiscountProduct = () => setShowDiscountProduct(false);
+    const handleCloseDiscountManufacturer = () => setShowDiscountManufacturer(false);
 
     const handleInputChangee = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const {name, value} = e.target;
+        setFormData({...formData, [name]: value});
     };
 
     const handleClear = () => {
@@ -119,6 +134,17 @@ const Clients = () => {
     const handleShowModalDiscount = (type) => {
         setModalDiscountType(type)
         setShowDiscount(true);
+    };
+
+    const handleShowModalDiscountManufacturer = (type) => {
+        setModalDiscountTypeManufacturer(type)
+        setShowDiscountManufacturer(true);
+    };
+
+
+    const handleShowModalDiscountProduct = (type) => {
+        setModalDiscountTypeProduct(type)
+        setShowDiscountProduct(true);
     };
 
     const handleShowModalDiscountOil = (type) => {
@@ -145,6 +171,16 @@ const Clients = () => {
 
     const setManufacturerListOil = (data) => {
         setManufacturerListsOil(data)
+        console.log(data, 'setManufacturerList')
+    }
+
+    const setManufacturerListManufacturer = (data) => {
+        setManufacturerListsManufacturer(data)
+        console.log(data, 'setManufacturerList')
+    }
+
+    const setManufacturerListProduct = (data) => {
+        setManufacturerListsProduct(data)
         console.log(data, 'setManufacturerList')
     }
 
@@ -189,7 +225,6 @@ const Clients = () => {
     const handleCloseAlert = () => {
         setShowAlert(false);
     };
-
 
 
     const openNotification = (message, description, error) => {
@@ -259,7 +294,7 @@ const Clients = () => {
         AdminApi.customerGetById({id: values}).then((res) => {
             data = res
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         }).finally(r => {
             setShowProduct(data);
             console.log(data, '')
@@ -268,37 +303,12 @@ const Clients = () => {
     const onProductData = () => {
         setShow2(false);
     };
-    const [isDisabled, setIsDisabled] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(true);
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
-    const { selectedItem } = useContext(SearchContext);
-
-    useEffect(() => {
-        setActiveTab(1)
-        if (selectedItem) {
-            setInputs({
-                product_code: selectedItem.product_code || '',
-                product_name: selectedItem.product_name || '',
-                seller_code: selectedItem.seller_code || '',
-                seller: selectedItem.seller || '',
-                company: selectedItem.company || '',
-                case: selectedItem.case || '',
-                foregin_selling_rate: selectedItem.foregin_selling_rate || '',
-                raf_address: selectedItem.raf_address || '',
-                photo: selectedItem.photo || '',
-                balance_1: selectedItem.balance_1 || '',
-                balance_2: selectedItem.balance_2 || '',
-                selling_rate: selectedItem.selling_rate || '',
-                buy_rate: selectedItem.buy_rate || ''
-            });
-            setIsDisabled(true);
-            setIsSaveDisabled(false);
-            setIsDeleteDisabled(false);
-        }
-    }, [selectedItem]);
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setInputs({
             ...inputs,
             [name]: value,
@@ -306,16 +316,12 @@ const Clients = () => {
     };
 
     const handleEditClick = () => {
-        setIsDisabled(false);
+        if (id) {
+            setIsDisabled(!isDisabled);
+        }
     };
 
-    const handleSaveClickk = () => {
-        setIsSaveDisabled(true);
-        setTimeout(() => {
-            setIsSaveDisabled(false);
-            setIsDisabled(true);
-        }, 1000);
-    };
+
     const getSearch = (values) => {
         const data = {
             page: current - 1,
@@ -384,8 +390,47 @@ const Clients = () => {
         }
 
 
-
         console.log(dataMadel, 'dataMadel dataMadel dataMadel')
+    }
+
+    const additionalProduct = (data) => {
+        console.log(data, 'additionlar data');
+
+        const dataMadel = {
+            customerIdHash: id,
+            productIdHashs: manufacturerListProduct,
+            status: modalDiscountTypeProduct !== 0
+        }
+
+        AdminApi.updateCustomerProduct(dataMadel).then(res => {
+            console.log(res)
+
+            setShowDiscountProduct(false);
+            setChangeDataProduct(Date.now())
+            /*
+            handleCloseDiscount()*/
+            openNotification('Uğurlu əməliyyat..', `-`, false)
+        }).catch((err) => {
+            openNotification('Xəta baş verdi', '-', true)
+        })
+    }
+
+    const additionalManufacturer = (data) => {
+        const dataMadel = {
+            customerIdHash: id,
+            manufacturerIdHashs: manufacturerListManufacturer,
+            status: modalDiscountTypeManufacturer !== 0
+        }
+
+        AdminApi.getCustomerManufacturerListByCustomerId(dataMadel).then(res => {
+            setShowDiscountProduct(false);
+            setChangeDataProduct(Date.now())
+            /*
+            handleCloseDiscount()*/
+            openNotification('Uğurlu əməliyyat..', `-`, false)
+        }).catch((err) => {
+            openNotification('Xəta baş verdi', '-', true)
+        })
     }
 
     const additionalDiscountOil = (data) => {
@@ -419,10 +464,39 @@ const Clients = () => {
                 handleCloseDiscountOil()
             })
         }
+    }
 
+    const additionalDiscountProduct = (data) => {
+        console.log(data, 'additionlar data');
 
+        const dataMadel = {
+            customerIdHash: id,
+            productIds: manufacturerListOil,
+            discounts: data.discounts
+        }
 
-        console.log(dataMadel, 'dataMadel dataMadel dataMadel')
+        if (modalDiscountType !== 1) {
+            AdminApi.AddProductAdditionalDiscount(dataMadel).then(res => {
+                console.log(res)
+                setChangeDataOil(res)
+                handleCloseDiscountOil()
+            })
+        } else {
+            const updateData = {
+                discounDetails: data.discounts.map(m => {
+                    return {
+                        additionalIdHash: m.additionalIdHash,
+                        value: m.value
+                    }
+                })
+            }
+
+            AdminApi.UpdateProductAdditionalDiscount(updateData).then(res => {
+                console.log(res)
+                setChangeDataOil(res)
+                handleCloseDiscountOil()
+            })
+        }
     }
 
 
@@ -484,23 +558,19 @@ const Clients = () => {
             </Card>
             <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
                 <TabPane disabled={tabDisable} tab="Genel" key="1">
-                    <Row gutter={16}>
+                    {/*<Row gutter={16}>
                         <Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button " >
-                                <img src={Images.add_circle_blue} alt="add" />
-                                Yeni
-                            </Button>
-                            <Button type="default" className="button-margin bg_none edit_button" onClick={handleEditClick}>
+                            <Button type="default" className="button-margin bg_none edit_button" onClick={handleEditClick} disabled={!id}>
                                 <img src={Images.edit_green} alt="edit" />
                                 Degistir
                             </Button>
                         </Col>
                         <Col span={12} className="text-right">
                             <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" onClick={handleSaveClickk} disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={!id}></Button>
                         </Col>
-                    </Row>
+                    </Row>*/}
                     <SearchModal
                         show={show}
                         handleClose={handleClose}
@@ -521,25 +591,29 @@ const Clients = () => {
                         handleClose={handleClose2}
                         handleClear={handleClear}
                     />
-                    <Divider />
-                    <General isSetData={isShowProduct} handleShowModal2={handleShowModal2} activeKey={activeTab === '1'}/>
+                    <Divider/>
+                    <General isSetData={isShowProduct} handleShowModal2={handleShowModal2} activeKey={activeTab === '1'}
+                             isDisableds={isDisabled} handleEditClickk={handleEditClick}/>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Diger Bilgileri" key="2">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
-                                <img src={Images.add_circle_blue} alt="add" />
+                                <img src={Images.add_circle_blue} alt="add"/>
                                 Yeni
                             </Button>
                             <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
+                                <img src={Images.edit_green} alt="edit"/>
                                 Degistir
                             </Button>
                         </Col>
                         <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
+                                    className="button-margin Save_green"></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
                     </Row>
 
@@ -551,8 +625,10 @@ const Clients = () => {
                                 <Form layout="Horizontal">
                                     <Form.Item label="Plasiyer">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px", height: "44px" }} className="position-relative" />
-                                            <img src={Images.Search_blue} className='position-absolute' style={{ right: "10px", top: "10px" }} />
+                                            <Input style={{width: "240px", height: "44px"}}
+                                                   className="position-relative"/>
+                                            <img src={Images.Search_blue} className='position-absolute'
+                                                 style={{right: "10px", top: "10px"}}/>
                                         </div>
                                     </Form.Item>
                                 </Form>
@@ -562,31 +638,37 @@ const Clients = () => {
                                 <Form layout="Horizontal">
                                     <Form.Item label="Satis Kosulu">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px", height: "40px" }} placeholder="0.00" />
+                                            <Input style={{width: "240px", height: "40px"}} placeholder="0.00"/>
                                         </div>
                                     </Form.Item>
-                                    <Form.Item label="Kullanici Sayisi" >
+                                    <Form.Item label="Kullanici Sayisi">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px", height: "40px" }} placeholder="777777" />
+                                            <Input style={{width: "240px", height: "40px"}} placeholder="777777"/>
 
                                         </div>
                                     </Form.Item>
-                                    <Form.Item label="Kullanici Sayisi Android" >
+                                    <Form.Item label="Kullanici Sayisi Android">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" disabled />
-                                            <img className='position-absolute' style={{ top: "16px", right: "12px" }} src={Images.Down2_gray} alt="" />
+                                            <Input style={{width: "240px", height: "40px"}}
+                                                   className='position-relative' placeholder="" disabled/>
+                                            <img className='position-absolute' style={{top: "16px", right: "12px"}}
+                                                 src={Images.Down2_gray} alt=""/>
                                         </div>
                                     </Form.Item>
-                                    <Form.Item label="Kullanici Sayisi Ios" >
+                                    <Form.Item label="Kullanici Sayisi Ios">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" disabled />
-                                            <img className='position-absolute' style={{ top: "16px", right: "12px" }} src={Images.Down2_gray} alt="" />
+                                            <Input style={{width: "240px", height: "40px"}}
+                                                   className='position-relative' placeholder="" disabled/>
+                                            <img className='position-absolute' style={{top: "16px", right: "12px"}}
+                                                 src={Images.Down2_gray} alt=""/>
                                         </div>
                                     </Form.Item>
-                                    <Form.Item label="Cari Haraket Sifre" >
+                                    <Form.Item label="Cari Haraket Sifre">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" disabled />
-                                            <img className='position-absolute' style={{ top: "16px", right: "12px" }} src={Images.Down2_gray} alt="" />
+                                            <Input style={{width: "240px", height: "40px"}}
+                                                   className='position-relative' placeholder="" disabled/>
+                                            <img className='position-absolute' style={{top: "16px", right: "12px"}}
+                                                 src={Images.Down2_gray} alt=""/>
                                         </div>
                                     </Form.Item>
                                     <h4 className='t_44 fs_16 fw_600 mt-5'>
@@ -595,30 +677,36 @@ const Clients = () => {
                                     <div className="Line_E2"></div>
 
                                     <Form layout="horizontal" className="mt-4">
-                                        <Form.Item label="ISMaster" >
+                                        <Form.Item label="ISMaster">
                                             <div className='d-flex justify-content-end'>
-                                                <Checkbox />
+                                                <Checkbox/>
                                             </div>
                                         </Form.Item>
-                                        <Form.Item label="SparePart Customer" >
+                                        <Form.Item label="SparePart Customer">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" />
-                                                <img className='position-absolute' style={{ top: "11px", right: "51px" }} src={Images.search_gray} alt="" />
-                                                <img className='ms-3' src={Images.Close_gray} alt="" />
+                                                <Input style={{width: "240px", height: "40px"}}
+                                                       className='position-relative' placeholder=""/>
+                                                <img className='position-absolute' style={{top: "11px", right: "51px"}}
+                                                     src={Images.search_gray} alt=""/>
+                                                <img className='ms-3' src={Images.Close_gray} alt=""/>
                                             </div>
                                         </Form.Item>
-                                        <Form.Item label="Oil Customer" >
+                                        <Form.Item label="Oil Customer">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" />
-                                                <img className='position-absolute' style={{ top: "11px", right: "51px" }} src={Images.search_gray} alt="" />
-                                                <img className='ms-3' src={Images.Close_gray} alt="" />
+                                                <Input style={{width: "240px", height: "40px"}}
+                                                       className='position-relative' placeholder=""/>
+                                                <img className='position-absolute' style={{top: "11px", right: "51px"}}
+                                                     src={Images.search_gray} alt=""/>
+                                                <img className='ms-3' src={Images.Close_gray} alt=""/>
                                             </div>
                                         </Form.Item>
-                                        <Form.Item label="Battery Customer" >
+                                        <Form.Item label="Battery Customer">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px", height: "40px" }} className='position-relative' placeholder="" />
-                                                <img className='position-absolute' style={{ top: "11px", right: "51px" }} src={Images.search_gray} alt="" />
-                                                <img className='ms-3' src={Images.Close_gray} alt="" />
+                                                <Input style={{width: "240px", height: "40px"}}
+                                                       className='position-relative' placeholder=""/>
+                                                <img className='position-absolute' style={{top: "11px", right: "51px"}}
+                                                     src={Images.search_gray} alt=""/>
+                                                <img className='ms-3' src={Images.Close_gray} alt=""/>
                                             </div>
                                         </Form.Item>
                                     </Form>
@@ -632,12 +720,12 @@ const Clients = () => {
                                     <Form layout="Horizontal" className='mt-4'>
                                         <Form.Item label="Kredi Limit">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px", height: "44px" }} />
+                                                <Input style={{width: "240px", height: "44px"}}/>
                                             </div>
                                         </Form.Item>
                                         <Form.Item label="Risk Limit">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{ width: "240px", height: "44px" }} />
+                                                <Input style={{width: "240px", height: "44px"}}/>
                                             </div>
                                         </Form.Item>
                                     </Form>
@@ -648,7 +736,7 @@ const Clients = () => {
                                             Odeme şekli
                                         </h4>
 
-                                        <h4 className='t_44 fs_16 fw_600 mt-4' style={{ marginLeft: "560px" }}>
+                                        <h4 className='t_44 fs_16 fw_600 mt-4' style={{marginLeft: "560px"}}>
                                             Sipariş Kilitle
                                         </h4>
                                     </div>
@@ -658,41 +746,43 @@ const Clients = () => {
                                         <div>
                                             <Form layout="Vertical" className='mt-4'>
                                                 <Form.Item>
-                                                    <Radio />
+                                                    <Radio/>
                                                     <span className='fs_14 fw_400 t_44'>Pesin</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Radio />
+                                                    <Radio/>
                                                     <span className='fs_14 fw_400 t_44'>Vadeli</span>
                                                 </Form.Item>
 
                                             </Form>
                                         </div>
 
-                                        <div style={{ marginLeft: "560px" }}>
+                                        <div style={{marginLeft: "560px"}}>
                                             <Form layout="Vertical" className='mt-4'>
                                                 <Form.Item>
-                                                    <Radio />
+                                                    <Radio/>
                                                     <span className='fs_14 fw_400 t_44'>0</span>
                                                 </Form.Item>
 
-                                                <Form.Item >
+                                                <Form.Item>
                                                     <div className='d-flex align-items-center justify-content-center'>
 
-                                                        <Radio />
+                                                        <Radio/>
                                                         <span className='fs_14 fw_400 t_44'>1.Seviye</span>
-                                                        <div className='Comment d-flex align-items-center justify-content-center ms-2'>
+                                                        <div
+                                                            className='Comment d-flex align-items-center justify-content-center ms-2'>
                                                             Mesaj
                                                         </div>
                                                     </div>
                                                 </Form.Item>
 
-                                                <Form.Item >
+                                                <Form.Item>
                                                     <div className='d-flex align-items-center justify-content-center'>
 
-                                                        <Radio />
+                                                        <Radio/>
                                                         <span className='fs_14 fw_400 t_44'>2.Seviye</span>
-                                                        <div className='Comment d-flex align-items-center justify-content-center ms-2'>
+                                                        <div
+                                                            className='Comment d-flex align-items-center justify-content-center ms-2'>
                                                             Mesaj
                                                         </div>
                                                     </div>
@@ -712,31 +802,31 @@ const Clients = () => {
                                         <div>
                                             <Form layout="Vertical" className='mt-4'>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>B2B</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Aktif</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Kampaniya</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>İade Yapabilsin</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Yedek Parca</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Yag</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Aku</span>
                                                 </Form.Item>
 
@@ -744,34 +834,35 @@ const Clients = () => {
                                             </Form>
                                         </div>
 
-                                        <div style={{ marginLeft: "509px" }}>
+                                        <div style={{marginLeft: "509px"}}>
                                             <Form layout="Vertical" className='mt-4'>
                                                 <Form.Item>
-                                                    <Checkbox />
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Sanalpos Direct Odeme</span>
+                                                    <Checkbox/>
+                                                    <span
+                                                        className='fs_14 fw_400 t_44 ms-2'>Sanalpos Direct Odeme</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Muşteri Kilitli</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Sepette Seçme işlemi</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Genel</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>WH Baku</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>WH Gence</span>
                                                 </Form.Item>
                                                 <Form.Item>
-                                                    <Checkbox />
+                                                    <Checkbox/>
                                                     <span className='fs_14 fw_400 t_44 ms-2'>Depo Transfer</span>
                                                 </Form.Item>
                                             </Form>
@@ -783,8 +874,40 @@ const Clients = () => {
                         </Col>
                     </Row>
                 </TabPane>
-                <TabPane disabled={tabDisable} tab="Pasif urun" key="6">
-                    <Row gutter={16}>
+                <TabPane disabled={tabDisable} tab="Aktiv/Pasif üreticilər" key="5">
+
+                    <Row gutter={16} className="mt-4" justify="space-around">
+                        <Col span={11}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Aktiv ürün
+                            </span>
+                            <div className="mt-4"></div>
+
+                            <Active  showModalDiscount={handleShowModalDiscountManufacturer}
+                                     coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
+                                     className="mt-4" activeKey={activeTab === '5'}/>
+                        </Col>
+
+                        <Col span={11}>
+                            <span className='fs_24 fw_600 t_18'>
+                                Pasif ürün
+                            </span>
+                            <div className="mt-4"></div>
+
+                            <Passive  showModalDiscount={handleShowModalDiscountManufacturer}
+                                      coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
+                                      className="mt-4" activeKey={activeTab === '5'}/>
+                        </Col>
+
+                    </Row>
+
+                    <ModalDiscountManufacturer handleClose={handleCloseDiscountManufacturer} show={showDiscountManufacturer}
+                                                          discountData={additionalManufacturer} changeDatas={manufacturerListManufacturer}
+                                                          type={modalDiscountTypeManufacturer}/>
+
+                </TabPane>
+                <TabPane disabled={tabDisable} tab="Aktiv/Pasif ürünler" key="6">
+                    {/* <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
                                 <img src={Images.add_circle_blue} alt="add" />
@@ -801,80 +924,92 @@ const Clients = () => {
                             <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
                             <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin bg_none delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
-                    </Row>
+                    </Row>*/}
 
                     <Row gutter={16} className="mt-4" justify="space-around">
                         <Col span={11}>
                             <span className='fs_24 fw_600 t_18'>
-                                Aktiv Uretici
+                                Aktiv ürün
                             </span>
                             <div className="mt-4"></div>
-                            <Product_active className="mt-4" />
-
+                            <Product_active showModalDiscount={handleShowModalDiscountProduct}
+                                            coolBackList={setManufacturerListProduct} changeDatas={changeDataProduct}
+                                            className="mt-4" activeKey={activeTab === '6'}/>
                         </Col>
 
                         <Col span={11}>
                             <span className='fs_24 fw_600 t_18'>
-                                Pasif Uretici
+                                Pasif ürün
                             </span>
                             <div className="mt-4"></div>
-                            <Product_passive className="mt-4" />
-
+                            <Product_passive showModalDiscount={handleShowModalDiscountProduct}
+                                             coolBackList={setManufacturerListProduct} changeDatas={changeDataProduct}
+                                             className="mt-4" activeKey={activeTab === '6'}/>
                         </Col>
 
                     </Row>
+
+                    <ModalDiscountProduct handleClose={handleCloseDiscountProduct} show={showDiscountProduct}
+                                          discountData={additionalProduct} changeDatas={manufacturerListProduct}
+                                          type={modalDiscountTypeProduct}/>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Lisans" key="7">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
-                                <img src={Images.add_circle_blue} alt="add" />
+                                <img src={Images.add_circle_blue} alt="add"/>
                                 Yeni
                             </Button>
                             <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
+                                <img src={Images.edit_green} alt="edit"/>
                                 Degistir
                             </Button>
 
                         </Col>
                         <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin bg_none delete_red" disabled={isDeleteDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
+                                    className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
+                                    className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
+                                    className="button-margin bg_none delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
                     </Row>
 
                     <Row gutter={16} className="mt-4">
                         <Col span={24}>
-                            <Licence />
+                            <Licence/>
 
 
                         </Col>
-                    </ Row >
+                    </ Row>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Lisans Mobil" key="8">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
-                                <img src={Images.add_circle_blue} alt="add" />
+                                <img src={Images.add_circle_blue} alt="add"/>
                                 Yeni
                             </Button>
                             <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
+                                <img src={Images.edit_green} alt="edit"/>
                                 Degistir
                             </Button>
                         </Col>
                         <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
                     </Row>
 
 
                     <Row gutter={16} className="mt-4">
                         <Col span={24}>
-                            <Licence_mobil />
+                            <Licence_mobil/>
                         </Col>
                     </Row>
 
@@ -883,109 +1018,133 @@ const Clients = () => {
                     <div>
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
-                                    <img src={Images.add_circle_blue} alt="add" />
+                                <Button type="default" className="button-margin bg_none add_button"
+                                        onClick={handleNewFotoClick}>
+                                    <img src={Images.add_circle_blue} alt="add"/>
                                     Yeni
                                 </Button>
                                 <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit" />
+                                    <img src={Images.edit_green} alt="edit"/>
                                     Degistir
                                 </Button>
                             </Col>
                             <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
+                                        className="button-margin Search_blue" onClick={handleShow}></Button>
+                                <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
+                                        className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                                <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
+                                        className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                             </Col>
                         </Row>
 
                         <div className='mt-3'>
 
-                            <Login />
+                            <Login/>
                         </div>
                     </div>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aramalar" key="10">
                     <Row gutter={16}>
                         <Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
-                                <img src={Images.add_circle_blue} alt="add" />
+                            <Button type="default" className="button-margin bg_none add_button"
+                                    onClick={handleNewFotoClick}>
+                                <img src={Images.add_circle_blue} alt="add"/>
                                 Yeni
                             </Button>
                             <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
+                                <img src={Images.edit_green} alt="edit"/>
                                 Degistir
                             </Button>
                         </Col>
                         <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
                     </Row>
 
 
                     <Row gutter={16}>
                         <Col span={24}>
-                            <Card className="info-card mt-4 " title="Arama Detaylari" >
+                            <Card className="info-card mt-4 " title="Arama Detaylari">
                                 <Form layout="inline">
                                     <Form.Item>
-                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <div style={{display: 'flex', flexDirection: 'column'}}>
                                             <label>Tarih</label>
-                                            <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="2021-06-08" />
-                                            <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            <Input className="position-relative mt-2"
+                                                   style={{width: '240px', height: "40px"}} placeholder="2021-06-08"/>
+                                            <img src={Images.Down_gray} className="position-absolute"
+                                                 style={{right: '10px', top: '33px'}}/>
                                         </div>
                                     </Form.Item>
                                     <Form.Item>
-                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                        <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
                                             <label>Durum</label>
-                                            <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="Success" />
-                                            <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            <Input className="position-relative mt-2"
+                                                   style={{width: '240px', height: "40px"}} placeholder="Success"/>
+                                            <img src={Images.Down_gray} className="position-absolute"
+                                                 style={{right: '10px', top: '33px'}}/>
                                         </div>
                                     </Form.Item>
                                     <Form.Item>
-                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                        <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
                                             <label>Genel</label>
-                                            <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} />
-                                            <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            <Input className="position-relative mt-2"
+                                                   style={{width: '240px', height: "40px"}}/>
+                                            <img src={Images.Down_gray} className="position-absolute"
+                                                 style={{right: '10px', top: '33px'}}/>
                                         </div>
                                     </Form.Item>
                                     <Form.Item>
-                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                        <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
                                             <label>Üretici</label>
-                                            <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="*" />
-                                            <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                            <Input className="position-relative mt-2"
+                                                   style={{width: '240px', height: "40px"}} placeholder="*"/>
+                                            <img src={Images.Down_gray} className="position-absolute"
+                                                 style={{right: '10px', top: '33px'}}/>
                                         </div>
                                     </Form.Item>
                                 </Form>
                                 <div className="mt-3">
                                     <Form layout="inline">
                                         <Form.Item>
-                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <div style={{display: 'flex', flexDirection: 'column'}}>
                                                 <label>Ana Grup</label>
-                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="12345" />
-                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                                <Input className="position-relative mt-2"
+                                                       style={{width: '240px', height: "40px"}} placeholder="12345"/>
+                                                <img src={Images.Down_gray} className="position-absolute"
+                                                     style={{right: '10px', top: '33px'}}/>
                                             </div>
                                         </Form.Item>
                                         <Form.Item>
-                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                            <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
                                                 <label>Alt Grup 1</label>
-                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="12345" />
-                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                                <Input className="position-relative mt-2"
+                                                       style={{width: '240px', height: "40px"}} placeholder="12345"/>
+                                                <img src={Images.Down_gray} className="position-absolute"
+                                                     style={{right: '10px', top: '33px'}}/>
                                             </div>
                                         </Form.Item>
                                         <Form.Item>
-                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                            <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
                                                 <label>Alt Grup 2</label>
-                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="12345" />
-                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                                <Input className="position-relative mt-2"
+                                                       style={{width: '240px', height: "40px"}} placeholder="12345"/>
+                                                <img src={Images.Down_gray} className="position-absolute"
+                                                     style={{right: '10px', top: '33px'}}/>
                                             </div>
                                         </Form.Item>
                                         <Form.Item>
-                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
+                                            <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
                                                 <label>Arac Marka</label>
-                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="*" />
-                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                                <Input className="position-relative mt-2"
+                                                       style={{width: '240px', height: "40px"}} placeholder="*"/>
+                                                <img src={Images.Down_gray} className="position-absolute"
+                                                     style={{right: '10px', top: '33px'}}/>
                                             </div>
                                         </Form.Item>
                                     </Form>
@@ -993,29 +1152,31 @@ const Clients = () => {
                                 <div className="mt-3">
                                     <Form layout="inline">
                                         <Form.Item>
-                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <div style={{display: 'flex', flexDirection: 'column'}}>
                                                 <label>Arac Model</label>
-                                                <Input className="position-relative mt-2" style={{ width: '240px', height: "40px" }} placeholder="12345" />
-                                                <img src={Images.Down_gray} className="position-absolute" style={{ right: '10px', top: '33px' }} />
+                                                <Input className="position-relative mt-2"
+                                                       style={{width: '240px', height: "40px"}} placeholder="12345"/>
+                                                <img src={Images.Down_gray} className="position-absolute"
+                                                     style={{right: '10px', top: '33px'}}/>
                                             </div>
                                         </Form.Item>
                                         <div className='mt-4 d-flex'>
 
                                             <Form.Item>
-                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
-                                                    <Checkbox />
+                                                <div style={{flexDirection: 'column'}} className='ms-4'>
+                                                    <Checkbox/>
                                                     <label className='ms-2'>Kampanya</label>
                                                 </div>
                                             </Form.Item>
                                             <Form.Item>
-                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
-                                                    <Checkbox />
+                                                <div style={{flexDirection: 'column'}} className='ms-4'>
+                                                    <Checkbox/>
                                                     <label className='ms-2'>Yeni urun</label>
                                                 </div>
                                             </Form.Item>
                                             <Form.Item>
-                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
-                                                    <Checkbox />
+                                                <div style={{flexDirection: 'column'}} className='ms-4'>
+                                                    <Checkbox/>
                                                     <label className='ms-2'>Bugun Gelen</label>
                                                 </div>
                                             </Form.Item>
@@ -1024,10 +1185,10 @@ const Clients = () => {
                                 </div>
 
 
-                            </Card >
+                            </Card>
 
-                            <Searches className="mt-4" />
-                        </Col >
+                            <Searches className="mt-4"/>
+                        </Col>
                     </Row>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Ek Iskonto" key="12">
@@ -1054,7 +1215,8 @@ const Clients = () => {
                                 Aktiv Uretici
                             </span>
                             <div className="mt-4"></div>
-                            <Producer showModalDiscount={handleShowModalDiscount} coolBackList={setManufacturerList} changeDatas={changeData} className="mt-4" activeKey={activeTab === '12'}/>
+                            <Producer showModalDiscount={handleShowModalDiscount} coolBackList={setManufacturerList}
+                                      changeDatas={changeData} className="mt-4" activeKey={activeTab === '12'}/>
                         </Col>
 
                         <Col span={12}>
@@ -1063,38 +1225,45 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
 
-                            <Discount showModalDiscount={handleShowModalDiscount} changeDatas={changeData} editData={editDataDiscounts} className="mt-4" activeKey={activeTab === '12'}/>
+                            <Discount showModalDiscount={handleShowModalDiscount} changeDatas={changeData}
+                                      editData={editDataDiscounts} className="mt-4" activeKey={activeTab === '12'}/>
 
                         </Col>
 
                     </Row>
-                    <ModalDiscount handleClose={handleCloseDiscount} show={showDiscount} discountData={additionalDiscount} changeDatas={changeData} type={modalDiscountType} editData={editDataDiscount}/>
+                    <ModalDiscount handleClose={handleCloseDiscount} show={showDiscount}
+                                   discountData={additionalDiscount} changeDatas={changeData} type={modalDiscountType}
+                                   editData={editDataDiscount}/>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Kullanicilar" key="13">
                     <Row gutter={16}>
                         <Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
-                                <img src={Images.add_circle_blue} alt="add" />
+                            <Button type="default" className="button-margin bg_none add_button"
+                                    onClick={handleNewFotoClick}>
+                                <img src={Images.add_circle_blue} alt="add"/>
                                 Yeni
                             </Button>
                             <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
+                                <img src={Images.edit_green} alt="edit"/>
                                 Degistir
                             </Button>
                         </Col>
                         <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
+                                    className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
+                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
+                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
                     </Row>
                     <div className="mt-4"></div>
 
-                    <Users />
+                    <Users/>
 
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Oil Satis isk" key="14">
-                  {/*  <Row gutter={16}>
+                    {/*  <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
                                 <img src={Images.add_circle_blue} alt="add" />
@@ -1113,7 +1282,7 @@ const Clients = () => {
                     </Row>*/}
 
                     <div className="mt-4"></div>
-{/*
+                    {/*
                     <Oil />*/}
 
                     <Row gutter={16} className="mt-4" justify="space-around">
@@ -1122,7 +1291,9 @@ const Clients = () => {
                                 Aktiv Uretici
                             </span>
                             <div className="mt-4"></div>
-                            <ProducerOil showModalDiscount={handleShowModalDiscountOil} coolBackList={setManufacturerListOil} changeDatas={changeDataOil} className="mt-4" activeKey={activeTab === '14'}/>
+                            <ProducerOil showModalDiscount={handleShowModalDiscountOil}
+                                         coolBackList={setManufacturerListOil} changeDatas={changeDataOil}
+                                         className="mt-4" activeKey={activeTab === '14'}/>
                         </Col>
 
                         <Col span={12}>
@@ -1131,12 +1302,16 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
 
-                            <DiscountOil showModalDiscount={handleShowModalDiscountOil} changeDatas={changeDataOil} editData={editDataDiscountsOil} className="mt-4" activeKey={activeTab === '14'}/>
+                            <DiscountOil showModalDiscount={handleShowModalDiscountOil} changeDatas={changeDataOil}
+                                         editData={editDataDiscountsOil} className="mt-4"
+                                         activeKey={activeTab === '14'}/>
 
                         </Col>
 
                     </Row>
-                    <ModalDiscountOil handleClose={handleCloseDiscountOil} show={showDiscountOil} discountData={additionalDiscountOil} changeDatas={changeDataOil} type={modalDiscountTypeOil} editData={editDataDiscountOil}/>
+                    <ModalDiscountOil handleClose={handleCloseDiscountOil} show={showDiscountOil}
+                                      discountData={additionalDiscountOil} changeDatas={changeDataOil}
+                                      type={modalDiscountTypeOil} editData={editDataDiscountOil}/>
 
 
                 </TabPane>

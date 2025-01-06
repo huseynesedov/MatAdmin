@@ -26,7 +26,7 @@ const ModalDiscount = ({ show, handleClose, handleClear, discountData, type, edi
                 value: ""
             }));
             setDiscounts(formattedDiscounts);
-            form.resetFields(); // Formu sıfırla
+            form.resetFields();
         });
     };
 
@@ -45,7 +45,7 @@ const ModalDiscount = ({ show, handleClose, handleClear, discountData, type, edi
         formattedDiscounts.forEach((item) => {
             initialValues[item.valueHash] = item.value;
         });
-        initialValues["termDay"] = editData.termDay; // termDay için değer ekle
+        initialValues["termDay"] = editData.termDay;
         form.setFieldsValue(initialValues);
     };
 
@@ -58,7 +58,6 @@ const ModalDiscount = ({ show, handleClose, handleClear, discountData, type, edi
     const handleSubmit = () => {
         const formData = form.getFieldsValue();
 
-        // Discounts verisini oluştur
         const payloadDiscounts = discounts.map((item) => ({
             discountIdHash: type === 0 ? item.valueHash : undefined,
             additionalIdHash: type === 1 ? item.additionalIdHash : undefined,

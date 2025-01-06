@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {Button, Checkbox, Pagination, Table} from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
 import {useParams} from "react-router-dom";
 import {useAuth} from "../../../../AuthContext";
-import {AdminApi} from "../../../../api/admin.api";
 import Images from "../../../../assets/images/js/Images";
 
-const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => {
+const Product_active = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => {
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
@@ -27,7 +27,7 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
                     pageSize: pageSize,
                     filters: [
                         {
-                            value: false,
+                            value: true,
                             fieldName: "status",
                             equalityType: "Equal"
                         }
@@ -35,7 +35,7 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
                 }
             }
 
-            AdminApi.getCustomerProductListByCustomerId(data).then(res => {
+            AdminApi.getCustomerManufacturerListByCustomerId(data).then(res => {
                 if(res.data) {
                     setData(res);
                     setSelectedRowKeys([])
@@ -45,6 +45,8 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
             })
         }
     };
+
+
 
     useEffect(() => {
         createData();
@@ -57,7 +59,6 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
 
     useEffect(() => {
         coolBackList(selectedRowKeys)
-        console.log(selectedRowKeys, 'selectedRowKeys')
     }, [selectedRowKeys]);
 
 
@@ -71,35 +72,27 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
     };
 
     const additionalDiscount = () => {
-        showModalDiscount(1)
+        showModalDiscount(0)
     }
 
     const columns = [
         {
             title: '',
             width: 10,
-            dataIndex: 'productIdHash',
-            key: 'productIdHash',
+            dataIndex: 'manufacturerIdHash',
+            key: 'manufacturerIdHash',
             render: (_, record) => (
                 <Checkbox
-                    checked={selectedRowKeys.includes(record.productIdHash)}
-                    onChange={(e) => handleCheckboxChange(record.productIdHash, e.target.checked)}
+                    checked={selectedRowKeys.includes(record.manufacturerIdHash)}
+                    onChange={(e) => handleCheckboxChange(record.manufacturerIdHash, e.target.checked)}
                 />
             ),
         },
         {
             title: 'Ürün',
             width: 10,
-            dataIndex: 'productName',
-            key: 'productName',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        },
-        {
-            title: 'Ürün kodu',
-            width: 10,
-            dataIndex: 'productCode',
-            key: 'productCode',
+            dataIndex: 'manufacturerName',
+            key: 'manufacturerName',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
@@ -127,4 +120,4 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
     );
 };
 
-export default Product_passive;
+export default Product_active;
