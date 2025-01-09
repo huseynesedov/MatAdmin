@@ -72,6 +72,9 @@ export const AdminApi = {
     UpdateCustomer(data) {
         return BaseApi.put(apiRoutes.customer.updateCustomer, data);
     },
+    UpdateCustomerManufacturer(data) {
+        return BaseApi.put(apiRoutes.customer.updateCustomerManufacturer, data);
+    },
     updateCustomerProduct(data) {
         return BaseApi.put(apiRoutes.customer.updateCustomerProduct, data);
     },
@@ -162,7 +165,7 @@ export const AdminApi = {
         return BaseApi.get(apiRoutes.photos.getProductFileByProductId, {...userId});
     },
     deleteProductPhoto(userId) {
-        return BaseApi.delete(apiRoutes.photos.deleteByProductFileId, { ...{ id: userId } });
+        return BaseApi.delete(`${apiRoutes.photos.deleteByProductFileId}?productFileId=${userId}`);
     },
     GetVehicleBrandProductId(params) {
         return BaseApi.get(apiRoutes.adminProduct.getVehicleBrandListByProductId, { ...params });

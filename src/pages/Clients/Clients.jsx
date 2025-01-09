@@ -370,6 +370,9 @@ const Clients = () => {
                 console.log(res)
                 setChangeData(res)
                 handleCloseDiscount()
+                openNotification('Uğurlu əməliyyat..', `-`, false)
+            }).catch((err) => {
+                openNotification('Xəta baş verdi', '-', true)
             })
         } else {
             const updateData = {
@@ -386,6 +389,9 @@ const Clients = () => {
                 console.log(res)
                 setChangeData(res)
                 handleCloseDiscount()
+                openNotification('Uğurlu əməliyyat..', `-`, false)
+            }).catch((err) => {
+                openNotification('Xəta baş verdi', '-', true)
             })
         }
 
@@ -422,9 +428,9 @@ const Clients = () => {
             status: modalDiscountTypeManufacturer !== 0
         }
 
-        AdminApi.getCustomerManufacturerListByCustomerId(dataMadel).then(res => {
-            setShowDiscountProduct(false);
-            setChangeDataProduct(Date.now())
+        AdminApi.UpdateCustomerManufacturer(dataMadel).then(res => {
+            setChangeDataManufacturer(Date.now())
+            setShowDiscountManufacturer(false);
             /*
             handleCloseDiscount()*/
             openNotification('Uğurlu əməliyyat..', `-`, false)
@@ -445,7 +451,7 @@ const Clients = () => {
         if (modalDiscountType !== 1) {
             AdminApi.AddProductAdditionalDiscount(dataMadel).then(res => {
                 console.log(res)
-                setChangeDataOil(res)
+                setChangeDataOil(Date.now())
                 handleCloseDiscountOil()
             })
         } else {
@@ -905,6 +911,8 @@ const Clients = () => {
                                                           discountData={additionalManufacturer} changeDatas={manufacturerListManufacturer}
                                                           type={modalDiscountTypeManufacturer}/>
 
+
+
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aktiv/Pasif ürünler" key="6">
                     {/* <Row gutter={16}>
@@ -1040,7 +1048,7 @@ const Clients = () => {
 
                         <div className='mt-3'>
 
-                            <Login/>
+                            {/*<Login/>*/}
                         </div>
                     </div>
                 </TabPane>
@@ -1192,23 +1200,7 @@ const Clients = () => {
                     </Row>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Ek Iskonto" key="12">
-                    <Row gutter={16}>
-                        {/*<Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button" onClick={handleNewFotoClick}>
-                                <img src={Images.add_circle_blue} alt="add" />
-                                Yeni
-                            </Button>
-                            <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit" />
-                                Degistir
-                            </Button>
-                        </Col>
-                        <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                        </Col>*/}
-                    </Row>
+
                     <Row gutter={16} className="mt-4" justify="space-around">
                         <Col span={12}>
                             <span className='fs_24 fw_600 t_18'>
@@ -1310,7 +1302,7 @@ const Clients = () => {
 
                     </Row>
                     <ModalDiscountOil handleClose={handleCloseDiscountOil} show={showDiscountOil}
-                                      discountData={additionalDiscountOil} changeDatas={changeDataOil}
+                                      discountData={additionalDiscountOil} changeDatas={setChangeDataOil}
                                       type={modalDiscountTypeOil} editData={editDataDiscountOil}/>
 
 

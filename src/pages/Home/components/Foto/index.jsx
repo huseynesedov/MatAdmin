@@ -62,6 +62,7 @@ const Equivalent = (activeKey) => {
         /*AdminApi.DeleteOem*/
         AdminApi.deleteProductPhoto(id).then(res => {
             console.log(res.status, 'res')
+            getData();
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
             openNotification('Xəta baş verdi' , err.response.data.message  , true )

@@ -47,20 +47,13 @@ const Product_active = ({showModalDiscount, coolBackList, changeDatas, activeKey
     };
 
 
-
-    useEffect(() => {
-        createData();
-    }, [id, changeDatas, activeKey]);
-
-
-    useEffect(() => {
-        createData();
-    }, [current, pageSize]);
-
     useEffect(() => {
         coolBackList(selectedRowKeys)
     }, [selectedRowKeys]);
 
+    useEffect(() => {
+        createData();
+    }, [current, pageSize, id, changeDatas, activeKey]);
 
     const handleCheckboxChange = (recordId, isChecked) => {
         setSelectedRowKeys((prev) => {

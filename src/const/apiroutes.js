@@ -102,6 +102,7 @@ export const apiRoutes = {
         getproductadditionaldiscountsbycustomerId: '/admin/v1/Customer/GetProductAdditionalDiscountsByCustomerId',
         getCustomerProductListByCustomerId: '/admin/v1/Customer/GetCustomerProductListByCustomerId',
         updateCustomer: '/admin/v1/Customer/UpdateCustomer',
+        updateCustomerManufacturer: '/admin/v1/Customer/UpdateCustomerManufacturer',
         updatecustomermanufacturerByIds: '/admin/v1/Customer/UpdateCustomerManufacturerByIds',
         updatecustomermanuDelete: '/admin/v1/Customer/Delete',
         updateCustomerNote: '/admin/v1/Customer/UpdateCustomerNote',

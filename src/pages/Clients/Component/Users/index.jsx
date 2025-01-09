@@ -1,35 +1,62 @@
-import { useEffect, useState } from 'react';
-import { Checkbox, Table } from 'antd';
+import React, { useEffect, useState } from 'react';
+import {Checkbox, Pagination, Table} from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
+import {useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
 
-const Users = () => {
+const Users = ({}) => {
     const [data, setData] = useState([]);
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setdefaultPageSize] = useState(10);
+    let { id } = useParams();
+    const { openNotification } = useAuth()
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
 
     const rowClassName = (record, index) => {
         if (index % 2 === 0) return 'custom_bg';
         return '';
     };
 
-    const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                code: `test`,
-                location: `test`,
-                password: `test`,
-                tel_1_tel_2: `test`,
-                gsm: `test`,
-                mail: `test`,
-                condition_code: `test`,
-            });
-        }
-        setData(arr);
-    };
-
     useEffect(() => {
         createData();
-    }, []);
+    }, [current, pageSize]);
+/*    useEffect(() => {
+        createData();
+    }, [id, changeDatas, activeKey]);*/
+
+    const createData = () => {
+        if (id) {
+            let data = {
+                customerIdHash: id,
+                pagingRequest: {
+                    page: current - 1,
+                    pageSize: pageSize,
+                    filters: [
+                        {
+                            value: false,
+                            fieldName: "status",
+                            equalityType: "Equal"
+                        }
+                    ]
+                }
+            }
+
+            AdminApi.getCustomerManufacturerListByCustomerId(data).then(res => {
+                if(res.data) {
+                    setData(res);
+                    setSelectedRowKeys([])
+                }
+            }).catch((err) => {
+                openNotification('Xəta baş verdi' , '-'  , true )
+            })
+        }
+    };
+
+    const onChange = (page, pageSize) => {
+        setCurrent(page);
+        setdefaultPageSize(pageSize);
+    };
 
     const columns = [
         {
@@ -110,7 +137,6 @@ const Users = () => {
                     <Checkbox />
                 </div>,
         },
-        ,
         {
             title: 'B2B',
             width: 77,
@@ -129,9 +155,11 @@ const Users = () => {
             <Table
                 rowClassName={rowClassName}
                 columns={columns}
-                dataSource={data}
+                dataSource={data.data}
                 pagination={false}
+                className="mb-3"
             />
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data.count}/>
         </>
     );
 };
