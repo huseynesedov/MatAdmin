@@ -5,6 +5,7 @@ import {Layout, Spin} from "antd";
 
 import "antd/dist/reset.css";
 import OrderDetail from "../pages/OrderDetail";
+import ChildUser from "../pages/Clients/Component/Users/childUser";
 
 const Home = lazy(() => import("../pages/Home/Home"));
 const Clients = lazy(() => import("../pages/Clients/Clients"));
@@ -55,8 +56,9 @@ const RouteList = () => {
                            <PrivateRoute>
                                <Clients />
                            </PrivateRoute>
-                       }
-                   />
+                       }>
+                       <Route path="details" element={<ChildUser />} />
+                   </Route>
                    <Route
                        path="/orders"
                        element={

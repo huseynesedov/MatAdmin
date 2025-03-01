@@ -57,6 +57,9 @@ export const AdminApi = {
     getCustomerManufacturerListByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.getCustomerManufacturerListByCustomerId, data);
     },
+    getUpdateUserListByCustomerId(data) {
+        return BaseApi.post(apiRoutes.customer.updateUserListByCustomerId, data);
+    },
     GetProductAdditionalDiscountsByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.getproductadditionaldiscountsbycustomerId, data);
     },
@@ -100,6 +103,25 @@ export const AdminApi = {
         return BaseApi.put(apiRoutes.customer.updateProductAdditionalDiscount, data);
     },
 
+    GetCustomerAdditionalInfo(data) {
+        return BaseApi.post(apiRoutes.customer.getCustomerAdditionalInfo, data);
+    },
+
+    GetLoginHistoryByCustomerCode(data) {
+        return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerCode, data);
+    },
+
+    getProductTransactionsByCustomerId(data) {
+        return BaseApi.post(apiRoutes.customer.getProductTransactionsByCustomerId, data);
+    },
+
+    getLicenseHistoryByCustomerId(data) {
+        return BaseApi.post(apiRoutes.customer.getLicenseHistoryByCustomerId, data);
+    },
+
+    GetSalesmanGetTableAsync() {
+        return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, '');
+    },
 
     /*Search*/
 
@@ -205,6 +227,18 @@ export const AdminApi = {
     },
     UpdateProductVehicleBrand(data) {
         return BaseApi.put(apiRoutes.product.updateProductVehicleBrand, data);
+    },
+
+
+    // !!!!!!!!! User !!!!!!!!!
+
+    AddCustomerAddUsers(data) {
+        return BaseApi.post(apiRoutes.user.addCustomerAddUser, data);
+    },
+
+
+    AddCustomerUpdateUsers(data) {
+        return BaseApi.put(apiRoutes.user.addCustomerUpdateUser, data);
     },
 
 /*

@@ -35,6 +35,8 @@ import Active from "./Component/manufacturerPA/active";
 import Passif from "./Component/Description/passif";
 import Passive from "./Component/manufacturerPA/passive";
 import ModalDiscountManufacturer from "./Component/Modal/modalDiscountManufacturer";
+import ClientUsers from "./Component/Modal/clientUsers";
+import OtherInfo from "./Component/OtherInfo";
 
 const {Title} = Typography;
 const {TabPane} = Tabs;
@@ -43,6 +45,7 @@ const Clients = () => {
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [showDiscount, setShowDiscount] = useState(false);
+    const [showUsers, setShowUsers] = useState(false);
     const [showDiscountProduct, setShowDiscountProduct] = useState(false);
     const [showDiscountManufacturer, setShowDiscountManufacturer] = useState(false);
     const [showDiscountOil, setShowDiscountOil] = useState(false);
@@ -55,6 +58,7 @@ const Clients = () => {
     const [manufacturerListProduct, setManufacturerListsProduct] = useState();
     const [manufacturerListManufacturer, setManufacturerListsManufacturer] = useState();
     const [changeData, setChangeData] = useState();
+    const [changeDataUsers, setChangeDataUsers] = useState();
     const [changeDataProduct, setChangeDataProduct] = useState();
     const [changeDataManufacturer, setChangeDataManufacturer] = useState();
     const [changeDataOil, setChangeDataOil] = useState();
@@ -62,6 +66,7 @@ const Clients = () => {
     const [modalDiscountTypeProduct, setModalDiscountTypeProduct] = useState();
     const [modalDiscountTypeManufacturer, setModalDiscountTypeManufacturer] = useState();
     const [modalDiscountTypeOil, setModalDiscountTypeOil] = useState();
+    const [modalUsersType, setModalUsersType] = useState();
     const [editDataDiscount, setEditDataDiscount] = useState();
     const [editDataDiscountOil, setEditDataDiscountOil] = useState();
     let {id} = useParams();
@@ -105,6 +110,7 @@ const Clients = () => {
     const handleClose = () => setShow(false);
     const handleClose2 = () => setShow2(false);
     const handleCloseDiscount = () => setShowDiscount(false);
+    const handleCloseUsers = () => setShowUsers(false);
     const handleCloseDiscountOil = () => setShowDiscountOil(false);
     const handleCloseDiscountProduct = () => setShowDiscountProduct(false);
     const handleCloseDiscountManufacturer = () => setShowDiscountManufacturer(false);
@@ -134,6 +140,11 @@ const Clients = () => {
     const handleShowModalDiscount = (type) => {
         setModalDiscountType(type)
         setShowDiscount(true);
+    };
+    const handleShowModalUsers = (data) => {
+        setChangeDataUsers(data)
+        setModalUsersType(0)
+        setShowUsers(true);
     };
 
     const handleShowModalDiscountManufacturer = (type) => {
@@ -471,6 +482,23 @@ const Clients = () => {
             })
         }
     }
+    const additionalClient = (data) => {
+        console.log(data, 'additionlar data');
+
+        if (modalUsersType === 1) {
+            AdminApi.AddCustomerAddUsers(data).then(res => {
+                console.log(res)
+                setChangeDataOil(Date.now())
+                handleCloseDiscountOil()
+            })
+        } else {
+            AdminApi.AddCustomerUpdateUsers(data).then(res => {
+                console.log(res)
+                setChangeDataOil(res)
+                handleCloseDiscountOil()
+            })
+        }
+    }
 
     const additionalDiscountProduct = (data) => {
         console.log(data, 'additionlar data');
@@ -505,6 +533,11 @@ const Clients = () => {
         }
     }
 
+
+    const addUser = () => {
+        setModalUsersType(1)
+        setShowUsers(true);
+    }
 
     return (
         <div className="home">
@@ -624,261 +657,9 @@ const Clients = () => {
                     </Row>
 
 
-                    <Row gutter={16}>
-
-                        <Col span={24}>
-                            <Card className="info-card mt-3" title="Satiş Təmsilcisi">
-                                <Form layout="Horizontal">
-                                    <Form.Item label="Plasiyer">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "44px"}}
-                                                   className="position-relative"/>
-                                            <img src={Images.Search_blue} className='position-absolute'
-                                                 style={{right: "10px", top: "10px"}}/>
-                                        </div>
-                                    </Form.Item>
-                                </Form>
-                            </Card>
-
-                            <Card className="info-card " title="Musteri Grupu">
-                                <Form layout="Horizontal">
-                                    <Form.Item label="Satis Kosulu">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}} placeholder="0.00"/>
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Kullanici Sayisi">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}} placeholder="777777"/>
-
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Kullanici Sayisi Android">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}}
-                                                   className='position-relative' placeholder="" disabled/>
-                                            <img className='position-absolute' style={{top: "16px", right: "12px"}}
-                                                 src={Images.Down2_gray} alt=""/>
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Kullanici Sayisi Ios">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}}
-                                                   className='position-relative' placeholder="" disabled/>
-                                            <img className='position-absolute' style={{top: "16px", right: "12px"}}
-                                                 src={Images.Down2_gray} alt=""/>
-                                        </div>
-                                    </Form.Item>
-                                    <Form.Item label="Cari Haraket Sifre">
-                                        <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}}
-                                                   className='position-relative' placeholder="" disabled/>
-                                            <img className='position-absolute' style={{top: "16px", right: "12px"}}
-                                                 src={Images.Down2_gray} alt=""/>
-                                        </div>
-                                    </Form.Item>
-                                    <h4 className='t_44 fs_16 fw_600 mt-5'>
-                                        Grup Bilfileri
-                                    </h4>
-                                    <div className="Line_E2"></div>
-
-                                    <Form layout="horizontal" className="mt-4">
-                                        <Form.Item label="ISMaster">
-                                            <div className='d-flex justify-content-end'>
-                                                <Checkbox/>
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="SparePart Customer">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "40px"}}
-                                                       className='position-relative' placeholder=""/>
-                                                <img className='position-absolute' style={{top: "11px", right: "51px"}}
-                                                     src={Images.search_gray} alt=""/>
-                                                <img className='ms-3' src={Images.Close_gray} alt=""/>
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Oil Customer">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "40px"}}
-                                                       className='position-relative' placeholder=""/>
-                                                <img className='position-absolute' style={{top: "11px", right: "51px"}}
-                                                     src={Images.search_gray} alt=""/>
-                                                <img className='ms-3' src={Images.Close_gray} alt=""/>
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Battery Customer">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "40px"}}
-                                                       className='position-relative' placeholder=""/>
-                                                <img className='position-absolute' style={{top: "11px", right: "51px"}}
-                                                     src={Images.search_gray} alt=""/>
-                                                <img className='ms-3' src={Images.Close_gray} alt=""/>
-                                            </div>
-                                        </Form.Item>
-                                    </Form>
-
-                                    <h4 className='t_44 fs_16 fw_600 mt-4'>
-                                        Limit Bilgileri
-                                    </h4>
-                                    <div className="Line_E2"></div>
+                    <OtherInfo activeKey={activeTab === '2'}/>
 
 
-                                    <Form layout="Horizontal" className='mt-4'>
-                                        <Form.Item label="Kredi Limit">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "44px"}}/>
-                                            </div>
-                                        </Form.Item>
-                                        <Form.Item label="Risk Limit">
-                                            <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "44px"}}/>
-                                            </div>
-                                        </Form.Item>
-                                    </Form>
-
-                                    <div className='d-flex'>
-
-                                        <h4 className='t_44 fs_16 fw_600 mt-4'>
-                                            Odeme şekli
-                                        </h4>
-
-                                        <h4 className='t_44 fs_16 fw_600 mt-4' style={{marginLeft: "560px"}}>
-                                            Sipariş Kilitle
-                                        </h4>
-                                    </div>
-                                    <div className="Line_E2"></div>
-                                    <div className='d-flex'>
-
-                                        <div>
-                                            <Form layout="Vertical" className='mt-4'>
-                                                <Form.Item>
-                                                    <Radio/>
-                                                    <span className='fs_14 fw_400 t_44'>Pesin</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Radio/>
-                                                    <span className='fs_14 fw_400 t_44'>Vadeli</span>
-                                                </Form.Item>
-
-                                            </Form>
-                                        </div>
-
-                                        <div style={{marginLeft: "560px"}}>
-                                            <Form layout="Vertical" className='mt-4'>
-                                                <Form.Item>
-                                                    <Radio/>
-                                                    <span className='fs_14 fw_400 t_44'>0</span>
-                                                </Form.Item>
-
-                                                <Form.Item>
-                                                    <div className='d-flex align-items-center justify-content-center'>
-
-                                                        <Radio/>
-                                                        <span className='fs_14 fw_400 t_44'>1.Seviye</span>
-                                                        <div
-                                                            className='Comment d-flex align-items-center justify-content-center ms-2'>
-                                                            Mesaj
-                                                        </div>
-                                                    </div>
-                                                </Form.Item>
-
-                                                <Form.Item>
-                                                    <div className='d-flex align-items-center justify-content-center'>
-
-                                                        <Radio/>
-                                                        <span className='fs_14 fw_400 t_44'>2.Seviye</span>
-                                                        <div
-                                                            className='Comment d-flex align-items-center justify-content-center ms-2'>
-                                                            Mesaj
-                                                        </div>
-                                                    </div>
-                                                </Form.Item>
-                                            </Form>
-                                        </div>
-                                    </div>
-
-
-                                    <h4 className='t_44 fs_16 fw_600 mt-4'>
-                                        Status
-                                    </h4>
-                                    <div className="Line_E2"></div>
-
-                                    <div className='d-flex'>
-
-                                        <div>
-                                            <Form layout="Vertical" className='mt-4'>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>B2B</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Aktif</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Kampaniya</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>İade Yapabilsin</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Yedek Parca</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Yag</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Aku</span>
-                                                </Form.Item>
-
-
-                                            </Form>
-                                        </div>
-
-                                        <div style={{marginLeft: "509px"}}>
-                                            <Form layout="Vertical" className='mt-4'>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span
-                                                        className='fs_14 fw_400 t_44 ms-2'>Sanalpos Direct Odeme</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Muşteri Kilitli</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Sepette Seçme işlemi</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Genel</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>WH Baku</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>WH Gence</span>
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Checkbox/>
-                                                    <span className='fs_14 fw_400 t_44 ms-2'>Depo Transfer</span>
-                                                </Form.Item>
-                                            </Form>
-                                        </div>
-                                    </div>
-                                </Form>
-                            </Card>
-
-                        </Col>
-                    </Row>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aktiv/Pasif üreticilər" key="5">
 
@@ -910,9 +691,6 @@ const Clients = () => {
                     <ModalDiscountManufacturer handleClose={handleCloseDiscountManufacturer} show={showDiscountManufacturer}
                                                           discountData={additionalManufacturer} changeDatas={manufacturerListManufacturer}
                                                           type={modalDiscountTypeManufacturer}/>
-
-
-
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aktiv/Pasif ürünler" key="6">
                     {/* <Row gutter={16}>
@@ -986,41 +764,9 @@ const Clients = () => {
 
                     <Row gutter={16} className="mt-4">
                         <Col span={24}>
-                            <Licence/>
-
-
+                            <Licence activeKey={activeTab === '7'}/>
                         </Col>
                     </ Row>
-                </TabPane>
-                <TabPane disabled={tabDisable} tab="Lisans Mobil" key="8">
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Button type="default" className="button-margin bg_none add_button">
-                                <img src={Images.add_circle_blue} alt="add"/>
-                                Yeni
-                            </Button>
-                            <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit"/>
-                                Degistir
-                            </Button>
-                        </Col>
-                        <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                    className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
-                        </Col>
-                    </Row>
-
-
-                    <Row gutter={16} className="mt-4">
-                        <Col span={24}>
-                            <Licence_mobil/>
-                        </Col>
-                    </Row>
-
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Login" key="9">
                     <div>
@@ -1048,7 +794,7 @@ const Clients = () => {
 
                         <div className='mt-3'>
 
-                            {/*<Login/>*/}
+                            <Login activeKey={activeTab === '9'}/>
                         </div>
                     </div>
                 </TabPane>
@@ -1231,7 +977,7 @@ const Clients = () => {
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button"
-                                    onClick={handleNewFotoClick}>
+                                    onClick={addUser}>
                                 <img src={Images.add_circle_blue} alt="add"/>
                                 Yeni
                             </Button>
@@ -1251,7 +997,10 @@ const Clients = () => {
                     </Row>
                     <div className="mt-4"></div>
 
-                    <Users/>
+                    <Users showModalUsers={handleShowModalUsers} activeKey={activeTab === '13'}/>
+
+                    <ClientUsers clientUserData={additionalClient} show={showUsers} handleClose={handleCloseUsers}
+                                 type={modalUsersType} changeDatas={changeDataUsers}/>
 
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Oil Satis isk" key="14">
@@ -1304,8 +1053,6 @@ const Clients = () => {
                     <ModalDiscountOil handleClose={handleCloseDiscountOil} show={showDiscountOil}
                                       discountData={additionalDiscountOil} changeDatas={setChangeDataOil}
                                       type={modalDiscountTypeOil} editData={editDataDiscountOil}/>
-
-
                 </TabPane>
             </Tabs>
         </div>

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {Checkbox, Pagination, Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
+import {AdminApi} from "../../../../../api/admin.api";
 import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import {useAuth} from "../../../../../AuthContext";
 
-const Users = ({showModalUsers, activeKey}) => {
+const ChildUser = ({}) => {
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
@@ -20,13 +20,15 @@ const Users = ({showModalUsers, activeKey}) => {
 
     useEffect(() => {
         createData();
-        console.log('users')
-    }, [current, pageSize, activeKey]);
+    }, [current, pageSize]);
+/*    useEffect(() => {
+        createData();
+    }, [id, changeDatas, activeKey]);*/
 
     const createData = () => {
         if (id) {
             let data = {
-                customerIdHash: '3LlDuXpKEl0=',
+                customerIdHash: id,
                 pagingWithoutFilterRequest: {
                     page: current - 1,
                     pageSize: pageSize,
@@ -51,12 +53,14 @@ const Users = ({showModalUsers, activeKey}) => {
 
     const columns = [
         {
-            title: 'Adı',
-            width: 77,
-            dataIndex: 'name',
-            key: 'name',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
+            title: '',
+            width: 0,
+            dataIndex: 'checkbox',
+            key: 'checkbox',
+            render: () =>
+                <div className="age-column">
+                    <Checkbox />
+                </div>,
         },
         {
             title: 'Kodu',
@@ -67,30 +71,77 @@ const Users = ({showModalUsers, activeKey}) => {
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Mail',
+            title: 'Unvani',
             width: 77,
-            dataIndex: 'email',
-            key: 'email',
+            dataIndex: 'location',
+            key: 'location',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'B2B',
+            title: 'Password',
             width: 77,
-            dataIndex: 'hasB2B',
-            key: 'hasB2B',
+            dataIndex: 'password',
+            key: 'password',
+            sorter: true,
+            render: (text) => <div className="age-column">{text}</div>,
+        },
+        {
+            title: 'Tel 1/Tel 2',
+            width: 77,
+            dataIndex: 'tel_1_tel_2',
+            key: 'tel_1_tel_2',
+            sorter: true,
+            render: (text) => <div className="age-column">{text}</div>,
+        },
+        {
+            title: 'GSM',
+            width: 77,
+            dataIndex: 'gsm',
+            key: 'gsm',
+            sorter: true,
+            render: (text) => <div className="age-column">{text}</div>,
+        },
+        {
+            title: 'Mail',
+            width: 77,
+            dataIndex: 'mail',
+            key: 'mail',
+            sorter: true,
+            render: (text) => <div className="age-column">{text}</div>,
+        },
+        {
+            title: 'Kosul Kodu',
+            width: 77,
+            dataIndex: 'condition_code',
+            key: 'condition_code',
+            sorter: true,
+            render: (text) => <div className="age-column">{text}</div>,
+        },
+        ,
+        {
+            title: 'Admin',
+            width: 77,
+            dataIndex: 'admin',
+            key: 'admin',
             sorter: true,
             render: () =>
                 <div className="age-column">
-                    <Checkbox disabled/>
+                    <Checkbox />
+                </div>,
+        },
+        {
+            title: 'B2B',
+            width: 77,
+            dataIndex: 'b2b',
+            key: 'b2b',
+            sorter: true,
+            render: () =>
+                <div className="age-column">
+                    <Checkbox />
                 </div>,
         },
     ];
-
-
-    const handleRowClick = (record) => {
-        showModalUsers(record);
-    };
 
     return (
         <>
@@ -100,13 +151,10 @@ const Users = ({showModalUsers, activeKey}) => {
                 dataSource={data.data}
                 pagination={false}
                 className="mb-3"
-                onRow={(record) => ({
-                    onClick: () => handleRowClick(record),
-                })}
             />
             <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data.count}/>
         </>
     );
 };
 
-export default Users;
+export default ChildUser;

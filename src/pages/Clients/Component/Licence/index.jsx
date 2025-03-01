@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Checkbox, Table } from 'antd';
+import {Checkbox, Form, Table} from 'antd';
+import {AdminApi} from "../../../../api/admin.api";
+import {useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
 
 
-const Licence = () => {
+const Licence = ({activeKey}) => {
+    /*/admin/v1/UserLicense/Add  Add user license*/
     const [data, setData] = useState([]);
+    let { id } = useParams();
+    const [form] = Form.useForm();
+    const { openNotification } = useAuth()
 
     const rowClassName = (record, index) => {
         if (index % 2 === 0) return 'custom_bg';
@@ -11,22 +18,27 @@ const Licence = () => {
     };
 
     const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                Terminal_no: `test${i + 1}`,
-                Registration_date: `test`,
-                ip: `test`,
-            });
+        if (id) {
+            let data = {
+                customerIdHash: id,
+                pagingRequest: {
+                    page: 0,
+                    pageSize: 10,
+                    filters: []
+                }
+            }
+
+            AdminApi.getLicenseHistoryByCustomerId(data).then(res => {
+                console.log(res, 'aaa')
+            }).catch((err) => {
+                openNotification('Xəta baş verdi' , '-'  , true )
+            })
         }
-        setData(arr);
     };
 
     useEffect(() => {
         createData();
-    }, []);
+    }, [activeKey]);
 
 
 

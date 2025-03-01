@@ -1,32 +1,46 @@
 import { useEffect, useState } from 'react';
 import { Checkbox, Table } from 'antd';
+import {useParams} from "react-router-dom";
+import {useAuth} from "../../../../AuthContext";
+import {AdminApi} from "../../../../api/admin.api";
 
-const Login = () => {
+const Login = ({changeDatas, activeKey}) => {
+    let { id } = useParams();
+    const { openNotification } = useAuth()
     const [data, setData] = useState([]);
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setdefaultPageSize] = useState(10);
 
+    useEffect(() => {
+        createData();
+    }, [id, changeDatas, activeKey]);
+
+    const createData = () => {
+        if (id) {
+            let data = {
+                //customerIdHash: '3LlDuXpKEl0=',
+
+                customerCode: 'УТ0001530',
+                pagingRequest: {
+                    page: current - 1,
+                    pageSize: pageSize,
+                    filters: []
+                }
+            }
+            AdminApi.GetLoginHistoryByCustomerCode(data).then(res => {
+                console.log(res)
+                if (res.data) {
+                    setData(res);
+                }
+            }).catch((err) => {
+                openNotification('Xəta baş verdi' , '-'  , true )
+            })
+        }
+    };
     const rowClassName = (record, index) => {
         if (index % 2 === 0) return 'custom_bg';
         return '';
     };
-
-    const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            const status = i % 2 === 0 ? 'Succes' : 'Deaktiv';
-            arr.push({
-                key: i + 1,
-                status: status,
-                Contents: `test`,
-                date: `test@gmail.com`,
-            });
-        }
-        setData(arr);
-    };
-
-    useEffect(() => {
-        createData();
-    }, []);
 
     const columns = [
         {

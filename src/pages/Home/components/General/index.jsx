@@ -1008,7 +1008,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                             </>
                                         )}
                                     </Form.List>
-
                                 </div>
 
                                 <h4 className='t_44 fs_16 fw_600'>

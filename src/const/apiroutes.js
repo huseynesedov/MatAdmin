@@ -84,6 +84,7 @@ export const apiRoutes = {
     // Admnin-Customer
     customer: {
         add: '/admin/v1/Customer/Add',
+        getCustomerAdditionalInfo: '/admin/v1/Customer/GetCustomerAdditionalInfo',
         addcustomermanufacturers: '/admin/v1/Customer/AddCustomerManufacturers',
         addcustomerproducts: '/admin/v1/Customer/AddCustomerProducts',
         addmanufactureradditionaldiscount: '/admin/v1/Customer/AddManufacturerAdditionalDiscount',
@@ -113,7 +114,11 @@ export const apiRoutes = {
         updateUserListByCustomerId: '/admin/v1/Customer/GetUserListByCustomerId',
         updateProductAdditionalDiscountsByCustomerId: '/admin/v1/Customer/GetProductAdditionalDiscountsByCustomerId',
         updateGetAdminProductOilTypeList: '/admin/v1/Customer/GetAdminProductOilTypeList',
+        getLoginHistoryByCustomerCode: '/admin/v1/LogTransaction/GetLoginHistoryByCustomerCode',
+        getProductTransactionsByCustomerId: '/admin/v1/LogTransaction/GetProductTransactionsByCustomerId',
+        getLicenseHistoryByCustomerId: 'admin/v1/LicenseHistory/GetLicenseHistoryByCustomerId',
     },
+
 
 
 
@@ -194,13 +199,15 @@ export const apiRoutes = {
         GetSalesmanCustomerById: '/admin/v1/User/Delete',
         getSalesmanListForOrderDetail: '/admin/v1/User/GetById',
         updateUserPasswordById: '/admin/v1/User/GetForUpdateById',
-        
+
     },
 
 
     // Admin-user
     user: {
         addCustomerUser: '/admin/v1/User/AddCustomerUser',
+        addCustomerAddUser: '/admin/v1/Customer/AddUser',
+        addCustomerUpdateUser: '/admin/v1/Customer/UpdateUser',
         addSalesmanUser: '/admin/v1/User/AddSalesmanUser',
         deleteUser: '/admin/v1/User/Delete',
         getUserById: '/admin/v1/User/GetById',
@@ -239,5 +246,11 @@ export const apiRoutes = {
     },
     storage: {
         storageGetList: '/catalog/v1/Storage/GetList',
+    },
+
+    /*Salesman*/
+
+    salesman: {
+        salesmanGetTableAsync: '/admin/v1/Salesman/GetTableAsync',
     },
 };
