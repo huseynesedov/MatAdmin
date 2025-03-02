@@ -346,8 +346,8 @@ const Home = () => {
                     </TabPane>
 
                     <TabPane disabled={tabDisable} tab="Eşdeğer Ürünler" key="3">
-                        <Row gutter={16} className="mt-4">
-                            <Col span={24}>
+                        <Row className="mt-4">
+                            <Col>
                                 <Equivalent activeKey={activeTab === '3'} showData={isShowProduct} />
                             </Col>
                         </Row>

@@ -625,7 +625,7 @@ const Clients = () => {
                                 <Form layout="Horizontal">
                                     <Form.Item label="Plasiyer">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "44px"}}
+                                            <Input style={{maxWidth: "240px",width: "100%", height: "44px"}}
                                                    className="position-relative"/>
                                             <img src={Images.Search_blue} className='position-absolute'
                                                  style={{right: "10px", top: "10px"}}/>
@@ -638,18 +638,18 @@ const Clients = () => {
                                 <Form layout="Horizontal">
                                     <Form.Item label="Satis Kosulu">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}} placeholder="0.00"/>
+                                            <Input style={{maxWidth: "240px",width: "100%", height: "40px"}} placeholder="0.00"/>
                                         </div>
                                     </Form.Item>
                                     <Form.Item label="Kullanici Sayisi">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}} placeholder="777777"/>
+                                            <Input style={{maxWidth: "240px",width: "100%", height: "40px"}} placeholder="777777"/>
 
                                         </div>
                                     </Form.Item>
                                     <Form.Item label="Kullanici Sayisi Android">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}}
+                                            <Input style={{maxWidth: "240px",width: "100%", height: "40px"}}
                                                    className='position-relative' placeholder="" disabled/>
                                             <img className='position-absolute' style={{top: "16px", right: "12px"}}
                                                  src={Images.Down2_gray} alt=""/>
@@ -657,7 +657,7 @@ const Clients = () => {
                                     </Form.Item>
                                     <Form.Item label="Kullanici Sayisi Ios">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}}
+                                            <Input style={{maxWidth: "240px",width: "100%", height: "40px"}}
                                                    className='position-relative' placeholder="" disabled/>
                                             <img className='position-absolute' style={{top: "16px", right: "12px"}}
                                                  src={Images.Down2_gray} alt=""/>
@@ -665,7 +665,7 @@ const Clients = () => {
                                     </Form.Item>
                                     <Form.Item label="Cari Haraket Sifre">
                                         <div className='d-flex justify-content-end'>
-                                            <Input style={{width: "240px", height: "40px"}}
+                                            <Input style={{maxWidth: "240px",width: "100%", height: "40px"}}
                                                    className='position-relative' placeholder="" disabled/>
                                             <img className='position-absolute' style={{top: "16px", right: "12px"}}
                                                  src={Images.Down2_gray} alt=""/>
@@ -684,7 +684,7 @@ const Clients = () => {
                                         </Form.Item>
                                         <Form.Item label="SparePart Customer">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "40px"}}
+                                                <Input style={{maxWidth: "240px",width: "100%", height: "40px"}}
                                                        className='position-relative' placeholder=""/>
                                                 <img className='position-absolute' style={{top: "11px", right: "51px"}}
                                                      src={Images.search_gray} alt=""/>
@@ -693,7 +693,7 @@ const Clients = () => {
                                         </Form.Item>
                                         <Form.Item label="Oil Customer">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "40px"}}
+                                                <Input style={{maxWidth: "240px",width: "100%", height: "40px"}}
                                                        className='position-relative' placeholder=""/>
                                                 <img className='position-absolute' style={{top: "11px", right: "51px"}}
                                                      src={Images.search_gray} alt=""/>
@@ -702,7 +702,7 @@ const Clients = () => {
                                         </Form.Item>
                                         <Form.Item label="Battery Customer">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "40px"}}
+                                                <Input style={{maxWidth: "240px",width: "100%", height: "40px"}}
                                                        className='position-relative' placeholder=""/>
                                                 <img className='position-absolute' style={{top: "11px", right: "51px"}}
                                                      src={Images.search_gray} alt=""/>
@@ -720,12 +720,12 @@ const Clients = () => {
                                     <Form layout="Horizontal" className='mt-4'>
                                         <Form.Item label="Kredi Limit">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "44px"}}/>
+                                                <Input style={{maxWidth: "240px",width: "100%", height: "44px"}}/>
                                             </div>
                                         </Form.Item>
                                         <Form.Item label="Risk Limit">
                                             <div className='d-flex justify-content-end'>
-                                                <Input style={{width: "240px", height: "44px"}}/>
+                                                <Input style={{maxWidth: "240px",width: "100%", height: "44px"}}/>
                                             </div>
                                         </Form.Item>
                                     </Form>

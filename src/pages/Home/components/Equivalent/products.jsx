@@ -88,6 +88,7 @@ const Equivalent = ({ activeKey, showData }) => {
             key: 'seller',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
         {
             title: 'Kodu',
@@ -96,6 +97,7 @@ const Equivalent = ({ activeKey, showData }) => {
             key: 'code',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
         {
             title: 'Adi',
@@ -104,6 +106,7 @@ const Equivalent = ({ activeKey, showData }) => {
             key: 'name',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
         {
             title: 'Birim',
@@ -112,6 +115,7 @@ const Equivalent = ({ activeKey, showData }) => {
             key: 'unit',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
         {
             title: 'Satis Fiyati',
@@ -120,6 +124,7 @@ const Equivalent = ({ activeKey, showData }) => {
             key: 'sale_price',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
         {
             title: 'Xarıcı Valyuta Mubadıla',
@@ -128,6 +133,7 @@ const Equivalent = ({ activeKey, showData }) => {
             key: 'foregin_selling_rate',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
         {
             title: 'Id',
@@ -136,6 +142,7 @@ const Equivalent = ({ activeKey, showData }) => {
             key: 'id',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
         {
             title: 'Eşdeger İd',
@@ -144,6 +151,7 @@ const Equivalent = ({ activeKey, showData }) => {
             key: 'equivalent_id',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         }
     ];
 
@@ -155,6 +163,8 @@ const Equivalent = ({ activeKey, showData }) => {
                     columns={columns}
                     dataSource={data}
                     rowSelection={rowSelection}
+                    pagination={{ pageSize: 10 }}
+                    scroll={{ x: 800 }}
                 />
             </Spin>
         </>
