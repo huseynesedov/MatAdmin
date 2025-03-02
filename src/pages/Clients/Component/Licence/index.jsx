@@ -24,7 +24,13 @@ const Licence = ({activeKey}) => {
                 pagingRequest: {
                     page: 0,
                     pageSize: 10,
-                    filters: []
+                    filters: [{
+                        value: "Web",
+                        fieldName: "deviceType",
+                        equalityType: "Equal",
+
+                    }]
+
                 }
             }
 
