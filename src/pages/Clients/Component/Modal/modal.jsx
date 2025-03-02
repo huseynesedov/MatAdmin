@@ -28,7 +28,7 @@ const SearchModal = ({ show, handleClose, handleClear, formData, handleInputChan
                             <Form.Item label="Kodu">
                                 <div className='d-flex'>
                                     <Input
-                                        style={{ width: "240px", height: "40px" }}
+                                        style={{ maxWidth: "240px",width: "100%", height: "40px" }}
                                         placeholder="123544"
                                         name="kodu"
                                         value={formData.kodu}
@@ -39,7 +39,7 @@ const SearchModal = ({ show, handleClose, handleClear, formData, handleInputChan
                             <Form.Item label="Koşul Kodu">
                                 <div className='d-flex'>
                                     <Input
-                                        style={{ width: "240px", height: "40px" }}
+                                        style={{ maxWidth: "240px",width: "100%", height: "40px" }}
                                         className='position-relative'
                                         placeholder="123544"
                                         name="kosulKodu"
@@ -56,7 +56,7 @@ const SearchModal = ({ show, handleClose, handleClear, formData, handleInputChan
                             <Form.Item label="Unvani">
                                 <div className='d-flex'>
                                     <Input
-                                        style={{ width: "240px", height: "40px" }}
+                                        style={{ maxWidth: "240px",width: "100%", height: "40px" }}
                                         placeholder="123544"
                                         name="genel"
                                         value={formData.genel}

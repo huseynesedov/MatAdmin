@@ -10,10 +10,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-    const [logged, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
     const [loginLoading, setLoginLoading] = useState(false);
     const navigate = useNavigate();
+    const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+
     const storedLogged = JSON.parse(localStorage.getItem("loggedIns"))
     const openNotification = (message, description, error) => {
         if (error) {
@@ -73,6 +74,20 @@ export const AuthProvider = ({ children }) => {
         navigate("/login");
     };
 
+
+    useEffect(() => {
+        const handleResize = () => {
+            setCollapsed(window.innerWidth < 768);
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    const toggleSidebar = () => {
+        setCollapsed((prev) => !prev);
+    };
+
+
     return (
         <AuthContext.Provider
             value={{
@@ -80,7 +95,9 @@ export const AuthProvider = ({ children }) => {
                 loginLoading,
                 AdminLogin,
                 logout,
-                openNotification
+                openNotification,
+                collapsed, 
+                toggleSidebar
             }}
         >
             {children}

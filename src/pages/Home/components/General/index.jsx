@@ -765,6 +765,8 @@ const General = ({ isSetData, handleShowModal2 }) => {
         console.log(prices, 'prices prices ')
         console.log('Failed:', errorInfo);
     };
+
+    
     return (
         <>
             <Spin spinning={loading}>
@@ -800,8 +802,8 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                 className="button-margin delete_red" style={{width: "auto !important"}}></Button>
                         </Col>
                     </Row>
-                    <Row gutter={16}>
-                        <Col span={12}>
+                    <div className='row flex-columnn'>
+                        <div class="col">
                             <Card className="info-card" title="Üretici Bilgileri">
                                 <Form.Item name="code" label="Code"
                                     rules={[{
@@ -810,7 +812,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <Input className='position-relative'
                                         disabled={isDisabled}
-                                        style={{ width: "240px", float: 'right' }}
+                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
                                         placeholder="12356789" />
                                 </Form.Item>
 
@@ -821,7 +823,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <Input className='position-relative'
                                         disabled={isDisabled}
-                                        style={{ width: "240px", float: 'right' }}
+                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
                                         placeholder="name" />
                                 </Form.Item>
 
@@ -836,7 +838,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         onChange={manufacturerIdHash}
                                         disabled={isDisabled}
                                         showSearch
-                                        style={{ width: "240px", float: 'right' }}
+                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
                                         filterOption={(input, option) =>
                                             (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                         }
@@ -850,7 +852,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <Input
                                         disabled={isDisabled}
-                                        style={{ width: "240px", float: 'right' }} placeholder="12356789" />
+                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
                                 </Form.Item>
 
                                 <Form.Item label="Birim"
@@ -859,7 +861,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         message: 'Zəhmət olmasa məlumat doldurun.'
                                     }]}>
                                     <Select
-                                        style={{ width: "240px", float: 'right' }}
+                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
                                         placeholder="Bir birim seçin"
                                         optionFilterProp="label"
                                         disabled={isDisabled}
@@ -898,17 +900,17 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                 </Form.Item>
                                 {/*<Form.Item label="Grup 1">
                                     <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "240px"}} placeholder="12356789"/>
+                                        <Input style={{maxWidth: "240px",width: "100%"}} placeholder="12356789"/>
                                     </div>
                                 </Form.Item>
                                 <Form.Item label="Grup 2">
                                     <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "240px"}} placeholder="12356789"/>
+                                        <Input style={{maxWidth: "240px",width: "100%"}} placeholder="12356789"/>
                                     </div>
                                 </Form.Item>
                                 <Form.Item label="Grup 3">
                                     <div className='d-flex justify-content-end'>
-                                        <Input style={{width: "240px"}} placeholder="12356789"/>
+                                        <Input style={{maxWidth: "240px",width: "100%"}} placeholder="12356789"/>
                                     </div>
                                 </Form.Item>*/}
                                 <h4 className='t_44 fs_16 fw_600'>
@@ -927,7 +929,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                                         <Form.Item
                                                             {...restField}
                                                             name={[name, 'shelfIdHash']}
-                                                            style={{ width: "240px" }}
+                                                            style={{ maxWidth: "240px",width: "100%" }}
                                                             fieldKey={[fieldKey, 'shelfIdHash']}
                                                             label="Adres"
                                                             rules={[{
@@ -1018,7 +1020,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                 <div className="mt-3">
                                     <Form.Item label="Marka">
                                         <Select
-                                            style={{ width: "240px", float: "right" }}
+                                            style={{ maxWidth: "240px",width: "100%", float: "right" }}
                                             placeholder="Bir marka seçin"
                                             optionFilterProp="label"
                                             disabled={isDisabled}
@@ -1036,7 +1038,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
 
                                     <Form.Item label="Model">
                                         <Select
-                                            style={{ width: "240px", float: "right" }}
+                                            style={{ maxWidth: "240px",width: "100%", float: "right" }}
                                             placeholder="Bir model seçin"
                                             optionFilterProp="label"
                                             disabled={isDisabled}
@@ -1058,7 +1060,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     <div className='d-flex justify-content-end'>
                                         <Input
                                             disabled={isDisabled}
-                                            style={{width: "240px"}}
+                                            style={{maxWidth: "240px",width: "100%"}}
                                             placeholder="12356789"/>
                                     </div>
                                 </Form.Item>*/}
@@ -1069,7 +1071,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         message: 'Zəhmət olmasa məlumat doldurun.'
                                     }]}>
                                     <Select
-                                        style={{ width: "240px", float: 'right' }}
+                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
                                         disabled={isDisabled}
                                         optionFilterProp="label"
                                         onChange={onChangeTermIdHash}
@@ -1086,7 +1088,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <InputNumber min={0}
                                         disabled={isDisabled}
-                                        style={{ width: "240px", float: 'right' }} placeholder="12356789" />
+                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
                                 </Form.Item>
                                 <Form.Item name="vatRate" label="KDV"
                                     rules={[{
@@ -1095,7 +1097,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <InputNumber min={0}
                                         disabled={isDisabled}
-                                        style={{ width: "240px", float: 'right' }} placeholder="12356789" />
+                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
                                 </Form.Item>
 
                                 <h4 className='t_44 mt-4 fs_16 fw_600'>
@@ -1111,7 +1113,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         }]}>
                                         <InputNumber min={0}
                                             disabled={isDisabled}
-                                            style={{ width: "240px", float: 'right' }} placeholder="12356789" />
+                                            style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
                                     </Form.Item>
                                     <Form.Item name="oemCode" label="Oem Code"
                                         rules={[{
@@ -1120,7 +1122,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         }]}>
                                         <Input
                                             disabled={isDisabled}
-                                            style={{ width: "240px", float: 'right' }} placeholder="12356789" />
+                                            style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
                                     </Form.Item>
 
                                     <div className="d-flex align-items-center">
@@ -1143,8 +1145,8 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                 </div>
 
                             </Card>
-                        </Col>
-                        <Col span={12}>
+                        </div>
+                        <div class="col">
                             <Card className="info-card" title="Fiyat Bilgileri">
                                 <Form layout="horizontal">
                                     {renderPriceList(salesPrices, setSalesPrices, 'Satış Fiyatı')}
@@ -1168,9 +1170,8 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         disabled={isDisabled} rows={3} />
                                 </Form.Item>
                             </Card>
-                        </Col>
-
-                    </Row>
+                        </div>
+                    </div>
                 </Form>
             </Spin>
         </>

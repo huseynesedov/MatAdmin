@@ -102,7 +102,7 @@ const ModalDiscount = ({ show, handleClose, handleClear, discountData, type, edi
                                             name={item.valueHash}
                                         >
                                             <Input
-                                                style={{ width: "240px", height: "40px" }}
+                                                style={{ maxWidth: "240px",width: "100%", height: "40px" }}
                                                 placeholder={`Enter value for ${item.displayText}`}
                                                 onChange={(e) =>
                                                     handleInputChange(item.valueHash, e.target.value)
@@ -116,7 +116,7 @@ const ModalDiscount = ({ show, handleClose, handleClear, discountData, type, edi
                                     <Form.Item label="Vaxt" name="termDay">
                                         <InputNumber
                                             min={0}
-                                            style={{ width: "240px", height: "40px" }}
+                                            style={{ maxWidth: "240px",width: "100%", height: "40px" }}
                                             className='position-relative'
                                         />
                                     </Form.Item>

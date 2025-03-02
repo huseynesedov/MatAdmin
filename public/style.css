@@ -63,7 +63,9 @@ a{
     --bs-modal-width: auto !important;
 }
 .modal-sl{
-    width: 857px !important;
+    max-width: 915px !important;
+    width: 100% !important;
+    padding: 23px;
 }
 
 
@@ -509,8 +511,12 @@ a{
     }
 }
 
-.main {
-    width: calc(100% - 300px);
+/* .main {
+    width: calc(100% - 126px);
+} */
+
+.main{
+    width: 100%;
 }
 .ant-form-item-explain-error {
     float: right !important;

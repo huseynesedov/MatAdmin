@@ -121,13 +121,13 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                             <Form.Item label="Müştəri" name="customerName">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}}
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}}
                                 />
                             </Form.Item>
                             <Form.Item label="Müştəri code" name="customerCode">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}}/>
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}}/>
                             </Form.Item>
                         </Card>
 
@@ -135,18 +135,18 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                             <Form.Item label="Address" name="address">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}}
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}}
                                 />
                             </Form.Item>
                             <Form.Item label="Il" name="cityName">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}}/>
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}}/>
                             </Form.Item>
                             <Form.Item label="Ilce" name="districtName">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}}
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}}
                                 />
                             </Form.Item>
                         </Card>
@@ -156,23 +156,23 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                             <Form.Item label="Vergi Idaresi" name="taxOffice">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}}/>
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}}/>
                             </Form.Item>
                             <Form.Item label="Vergi Numarasi" name="tpin">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}}/>
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}}/>
                             </Form.Item>
                             <Form.Item label="Branch" name="storageCode">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}} className='position-relative'/>
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}} className='position-relative'/>
                             </Form.Item>
 
                             <Form.Item label="1C Doviz" name="currencyType">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{width: "240px", float: "right"}} className='position-relative'/>
+                                    style={{maxWidth: "240px",width: "100%", float: "right"}} className='position-relative'/>
                             </Form.Item>
                             <h4 className='t_44 fs_16 fw_600 mt-5'>
                                 Iletisim Bilgileri
@@ -183,22 +183,22 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                                 <Form.Item label="Tel 1 - Tel 2" name="phoneNumber">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{width: "240px", float: "right"}} className='ms-3'/>
+                                        style={{maxWidth: "240px",width: "100%", float: "right"}} className='ms-3'/>
                                 </Form.Item>
                                 <Form.Item label="GSM 1 - GSM 2" name="mobileNumber">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{width: "240px", float: "right"}} className='ms-3'/>
+                                        style={{maxWidth: "240px",width: "100%", float: "right"}} className='ms-3'/>
                                 </Form.Item>
                                 <Form.Item label="Faks" name="fax">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{width: "240px", float: "right"}}/>
+                                        style={{maxWidth: "240px",width: "100%", float: "right"}}/>
                                 </Form.Item>
                                 <Form.Item label="E- Posta" name="email">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{width: "240px", float: "right"}}/>
+                                        style={{maxWidth: "240px",width: "100%", float: "right"}}/>
                                 </Form.Item>
                             </div>
 
@@ -211,7 +211,7 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                                 <Form.Item label="B2B Kodu" name="customerCode">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{width: "240px", float: "right"}}/>
+                                        style={{maxWidth: "240px",width: "100%", float: "right"}}/>
                                 </Form.Item>
 
 

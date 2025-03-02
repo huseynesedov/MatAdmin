@@ -656,9 +656,7 @@ const Clients = () => {
                         </Col>
                     </Row>
 
-
                     <OtherInfo activeKey={activeTab === '2'}/>
-
 
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aktiv/Pasif üreticilər" key="5">
@@ -670,9 +668,9 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
 
-                            <Active  showModalDiscount={handleShowModalDiscountManufacturer}
-                                     coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
-                                     className="mt-4" activeKey={activeTab === '5'}/>
+                            <Active showModalDiscount={handleShowModalDiscountManufacturer}
+                                    coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
+                                    className="mt-4" activeKey={activeTab === '5'}/>
                         </Col>
 
                         <Col span={11}>
@@ -681,16 +679,18 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
 
-                            <Passive  showModalDiscount={handleShowModalDiscountManufacturer}
-                                      coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
-                                      className="mt-4" activeKey={activeTab === '5'}/>
+                            <Passive showModalDiscount={handleShowModalDiscountManufacturer}
+                                     coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
+                                     className="mt-4" activeKey={activeTab === '5'}/>
                         </Col>
 
                     </Row>
 
-                    <ModalDiscountManufacturer handleClose={handleCloseDiscountManufacturer} show={showDiscountManufacturer}
-                                                          discountData={additionalManufacturer} changeDatas={manufacturerListManufacturer}
-                                                          type={modalDiscountTypeManufacturer}/>
+                    <ModalDiscountManufacturer handleClose={handleCloseDiscountManufacturer}
+                                               show={showDiscountManufacturer}
+                                               discountData={additionalManufacturer}
+                                               changeDatas={manufacturerListManufacturer}
+                                               type={modalDiscountTypeManufacturer}/>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aktiv/Pasif ürünler" key="6">
                     {/* <Row gutter={16}>

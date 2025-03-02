@@ -3,19 +3,15 @@ import { Modal } from 'react-bootstrap';
 import { Button, Typography, Checkbox, Card, Form, Input, Table, Col, Row, Select, Pagination } from 'antd';
 import Images from '../../../../assets/images/js/Images';
 import { SearchContext } from '../../../../searchprovider';
-import { AdminApi } from "../../../../api/admin.api";
 import SanufacturerModal from './manufacturerModal';
-import { CatalogApi } from "../../../../api/catalog.api";
-import { ProductApi } from "../../../../api/product.api";
 import { useNavigate } from "react-router-dom";
 
 
 const { Title } = Typography;
 
-const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, productData, searchPageSize}) => {
+const SearchModal2 = ({ shows, searchData, activeTab, handleClose, searchChange, productData, searchPageSize }) => {
     const [data, setData] = useState([]);
-    const [paymentTermList, setPaymentTermList] = useState([]);
-    const [manufacturerList, setManufacturerList] = useState([]);
+   
     const [showManufacturer, setShowShowManufacturer] = useState(false);
     const { setSelectedItem } = useContext(SearchContext);
     const [current, setCurrent] = useState(1);
@@ -32,47 +28,6 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
         searchPageSize({ current, pageSize, forms })
     }, [current, pageSize]);
 
-
-
-    const manufacturerLists = () => {
-        CatalogApi.GetManufacturerList().then((res) => {
-            console.log(res, 'dataa GetManufacturerList')
-            setManufacturerList(res);
-        })
-    }
-    /*  const paymentTermList = () => {
-          AdminApi.GetPaymentTermList().then((res) => {
-              console.log(res, 'dataa GetPaymentTermList')
-              setManufacturerList(res);
-          })
-      }
-      const productTypeList = () => {
-          CatalogApi.GetProductTypeList().then((res) => {
-              console.log(res, 'dataa GetProductTypeList')
-              setGetProductTypeList(res);
-          })
-      }
-      const shelfAdressesById = () => {
-          ProductApi.GetShelfAdressesById({id: 1}).then((res) => {
-              console.log(res, 'dataa GetProductTypeList')
-              setGetShelfAdresses(res);
-          })
-      }*/
-    const handleChange = (value) => {
-        console.log('Seçilen name:', value);
-    };
-
-
-    const facturersProductCount = () => {
-        AdminApi.GetPaymentTermList().then((res) => {
-            const data = res.map(res => {
-                return { label: res.displayText, value: res.valueHash }
-            })
-            setPaymentTermList(data);
-        }).catch((error) => {
-            console.log(error);
-        })
-    };
 
     const createData = () => {
         let arr = [];
@@ -112,6 +67,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
         setSelectedItem(record); // Tıklanan satırın verisini context'e kaydedin
         handleClose();
     };
+
     const columns = [
         {
             title: '',
@@ -281,9 +237,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
         setCurrent(1)
         searchChange(values);
     };
-    /*const onProduct = (values) => {
-        productData(values);
-    };*/
+
     const handleClears = () => {
         form.resetFields();
     };
@@ -319,7 +273,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
                                 {/* Başlık ve Butonlar */}
                                 <div className='d-flex justify-content-between mb-3'>
                                     <Title level={4}>Arama Kriteri Oluştur</Title>
-                                    <div>
+                                    <div className='d-flex'>
                                         <Button
                                             type="default"
                                             className="Delete_red3 fw_500"
@@ -347,16 +301,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
                                             <Input className='position-relative' placeholder="Kod" />
                                         </Form.Item>
                                     </Col>
-                                   {/* <Col span={8} className="mb-0">
-                                        <Form.Item name="code">
-                                            <Input className='position-relative' placeholder="Ürün Kodu" />
-                                        </Form.Item>
-                                    </Col>*/}
-                                    {/*<Col span={8}>
-                                        <Form.Item name="ShelfCode">
-                                            <Input placeholder="Raf Adresi" />
-                                        </Form.Item>
-                                    </Col>*/}
+
                                     <Col span={8} className="mb-0">
                                         <div className="d-flex">
                                             <Form.Item name="ManufacturerName" className="w-100">
@@ -382,43 +327,12 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
                                         <Form.Item name="PaymentTermName">
                                             <Input placeholder="Koşul Kodu" />
                                         </Form.Item>
-                                        {/* <Select
-                                            placeholder="Bir seçenek seçin"
-                                            showSearch
-                                            optionFilterProp="label"
-                                            style={{
-                                                width: 200,
-                                            }}
-                                            filterSort={(optionA, optionB) =>
-                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                            }
-                                            onChange={handleChange}>
-                                            {paymentTermList.map((item, index) => (
-                                                <option key={index} value={item.value}>
-                                                    {item.label}
-                                                </option>
-                                            ))}
-                                        </Select>*/}
-
 
                                     </Col>
                                 </Row>
 
                             </Form>
-                            {/*
-                            <Select
-                                labelRender={'sss'}
-                                style={{
-                                    width: '100%',
-                                }}
 
-                            >
-                                    {paymentTermList.map((option) => (
-                                                <Option key={option.label} value={option.value}>
-                                                    {option.label}
-                                                </Option>
-                                            ))}
-                            </Select>*/}
 
                         </div>
                     </Card>
@@ -439,28 +353,15 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
                 <hr />
 
                 <Pagination current={current} pageSize={pageSize} onChange={onChange} total={searchData.count} />
-                {/* <div className="d-flex justify-content-end align-items-center">
 
-                    <span className='pagination_number fw_500'>
-                        1-20 of 406
-                    </span>
-                    <div className="ms-2">
-                        <img src={Images.Arrow_left_blue} alt=""/>
-                        <button className='pagination_number ms-2 fw_500'>1</button>
-                        <button className='pagination_number ms-2 fw_500'>2</button>
-                        <button className='pagination_number ms-2 fw_500'>3</button>
-                        <img src={Images.Arrow_right_blue} alt="" className='ms-2'/>
-
-                    </div>
-                </div>*/}
-
-                <SanufacturerModal shows={showManufacturer}
+                <SanufacturerModal
+                    shows={showManufacturer}
                     handleClose={handleCloseManufacturer}
                     productData={data}
-                    checkData={onCheckData} />
+                    checkData={onCheckData}
+                />
             </Modal.Body>
-            <Modal.Footer>
-            </Modal.Footer>
+
         </Modal>
     );
 };

@@ -33,8 +33,8 @@ function AppContent() {
         console.log(logged, 'logged logged logged'); // logged değişkeni her güncellendiğinde çalışır
     }, [logged]);
     return logged ? (
-            <div style={{minHeight: "100vh !important", width: '100%'}} className='d-flex w-100'>
-                <div style={{width: 250}} className="site-layout-background">
+            <div className="d-flex w-100" style={{maxWidth:"1400px"}}>
+                <div>
                     <Sidebar/>
                 </div>
                 <div className='main'>

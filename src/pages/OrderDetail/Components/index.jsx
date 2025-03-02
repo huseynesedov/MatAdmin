@@ -406,6 +406,51 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     const handleInputClick = (e) => {
         e.stopPropagation();
     };
+
+
+
+    const [customerPayment, setCustomerPayment] = useState({});
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (!idHash) return;
+
+        BaseApi.post("/admin/v1/OrderDetail/GetCustomerPaymentInformation", { orderIdHash: idHash })
+            .then((response) => {
+                if (response && response.totalPayment !== undefined && response.currentDebt !== undefined) {
+                    setCustomerPayment(response);
+                } else {
+                    console.log("hata");
+
+                }
+            })
+            .catch((error) => {
+                console.error("API Error:", error.message);
+            });
+    }, [idHash]);
+
+
+    const [customerPayment2, setCustomerPayment2] = useState({});
+
+    useEffect(() => {
+        if (!idHash) return;
+
+        BaseApi.post("/admin/v1/OrderDetail/GetOrderDetailTotalAmount", { orderIdHash: idHash })
+            .then((response) => {
+                if (response) {
+                    setCustomerPayment2(response);
+                } else {
+                    console.log("hata");
+
+                }
+            })
+            .catch((error) => {
+                console.error("API Error:", error.message);
+            });
+    }, [idHash]);
+
+
+
     return (
         <>
             <Table
@@ -426,8 +471,8 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                     onChange={handlePageChange}
                     pageSize={pageSize}
                     onShowSizeChange={handlePageSizeChange}
-                    // showSizeChanger={true}
-                    // pageSizeOptions={['5', '10', '20', '40', '50', '100']}
+                // showSizeChanger={true}
+                // pageSizeOptions={['5', '10', '20', '40', '50', '100']}
                 />
                 <span className="t_016 fs_16 fw_600 ms-2">Toplam {count}</span>
             </div>
@@ -591,7 +636,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                            140 AZN / 50 EUR
+                         {customerPayment2.grandTotal} AZN
                         </span>
                     </div>
                     <div className="d-flex w-100 mt-2 justify-content-between">
@@ -600,7 +645,8 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                            11 AZN / 10 EUR
+                        {customerPayment2.discount} AZN
+
                         </span>
                     </div>
                     <div className="d-flex w-100 mt-2 justify-content-between">
@@ -609,7 +655,8 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                            11 AZN / 10 EUR
+                        {customerPayment2.subTotal} AZN
+
                         </span>
                     </div>
                     <div className="d-flex w-100 mt-2 justify-content-between">
@@ -618,7 +665,8 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                            11 AZN / 10 EUR
+                        {customerPayment2.kdv} AZN
+
                         </span>
                     </div>
                     <div className="d-flex w-100 mt-2 justify-content-between">
@@ -627,7 +675,8 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                            129 AZN / 12 EUR
+                        {customerPayment2.amount} AZN
+
                         </span>
                     </div>
                 </div>
@@ -646,10 +695,10 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                     </div>
                     <div className="RightText d-flex flex-column">
                         <span className='fs_14 fw_600 red'>
-                            21.7690.32 AZN
+                            {customerPayment.totalPayment} AZN
                         </span>
                         <span className='fs_14 fw_600 red mt-4'>
-                            21.7690.32 AZN
+                            {customerPayment.currentDebt} AZN
                         </span>
                     </div>
                 </div>
@@ -703,8 +752,8 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                 <div className="col-sm-6 justify-content-end d-flex" style={{ gap: "20px" }}>
                     <Spin spinning={loadingHovuz}>
                         <span className={`DetailButton hovuz ${isDisabled ? 'disabled' : ''}`}
-                              style={{ cursor: isDisabled ? 'not-allowed' : 'pointer' }}
-                              onClick={!isDisabled ? handleHovuzClick : undefined}
+                            style={{ cursor: isDisabled ? 'not-allowed' : 'pointer' }}
+                            onClick={!isDisabled ? handleHovuzClick : undefined}
                         >
                             <FaSwimmingPool />
                             <span className='ms-2'>

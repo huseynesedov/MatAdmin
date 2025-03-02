@@ -3,41 +3,92 @@
     background-color: #fff;
     border-bottom: 1px solid #f0f0f0;
     padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-.menu {
-
+    .menu {
         border-bottom: none;
     }
 
-.search-input {
+    .search-input {
         width: 200px;
         margin-right: 16px;
     }
 
-.profile {
+    .profile {
         display: flex;
         align-items: center;
         cursor: pointer;
+        padding: 8px;
 
-    .profile-name {
+        .profile-name {
             margin-left: 8px;
             margin-right: 8px;
         }
     }
 }
 
-
 .dashborad {
     background-color: #182390 !important;
     color: #ffff !important;
-    padding: 8px 20px 8px 20px !important;
+    padding: 8px 20px !important;
     width: 208px !important;
     margin-left: 22px !important;
     border-radius: 50px !important;
-    span{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span {
         color: white;
     }
-    svg{
+
+    svg {
         fill: #fff;
+    }
+}
+
+.menu-button {
+    display: none;
+}
+
+/* Tablet ve daha küçük ekranlar için */
+@media (max-width: 768px) {
+    .menu-button {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .search-input {
+        width: 150px; /* Küçük ekranlarda daha dar hale getirme */
+    }
+
+    .profile .profile-name {
+        display: none; /* Mobilde profil ismini gizle */
+    }
+}
+
+/* Mobil ekranlar için */
+@media (max-width: 480px) {
+    .topbar {
+        padding: 0 12px;
+    }
+
+    .search-input {
+        width: 120px; /* Daha küçük ekranlarda daha da daraltma */
+    }
+
+    .profile {
+        padding: 4px;
+    }
+
+    .dashborad {
+        width: 180px !important;
+        padding: 6px 16px !important;
     }
 }
