@@ -42,23 +42,37 @@ const Login = ({changeDatas, activeKey}) => {
         return '';
     };
 
+    /*
+explanation
+:
+"İmza sertifikati düzgün deyil."
+idHash
+:
+"L9ObMXcS5yM="
+isDeleted
+:
+false
+loginDate
+:
+"2025-03-17T20:35:54.335343"
+process
+:
+"Failed"
+source
+:
+"Login"
+userIdHash
+:
+"ivWdO+gl8oU="*/
     const columns = [
-        {
-            title: '',
-            width: 0,
-            dataIndex: 'checkbox',
-            key: 'checkbox',
-            render: () => <div className="age-column">
-                <Checkbox />
-            </div>,
-        },
         {
             title: 'Durum',
             width: 77,
-            dataIndex: 'status',
-            key: 'status',
+            dataIndex: 'process',
+            key: 'process',
             sorter: true,
-            render: (text) => {
+            render: (text) => <div className="age-column">{text}</div>,
+           /* render: (text) => {
                
                 const statusClass = text === 'Succes' ? 'StatusSucces' : 'StatusDeaktiv';
                 return (
@@ -68,21 +82,21 @@ const Login = ({changeDatas, activeKey}) => {
                         </div>
                     </div>
                 );
-            },
+            },*/
         },
         {
             title: 'Icerik',
             width: 77,
-            dataIndex: 'Contents',
-            key: 'Contents',
+            dataIndex: 'explanation',
+            key: 'explanation',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
             title: 'Tarih',
             width: 77,
-            dataIndex: 'date',
-            key: 'date',
+            dataIndex: 'loginDate',
+            key: 'loginDate',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },

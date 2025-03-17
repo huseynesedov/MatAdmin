@@ -741,7 +741,7 @@ const Clients = () => {
                                           type={modalDiscountTypeProduct}/>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Lisans" key="7">
-                    <Row gutter={16}>
+                    {/*<Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
                                 <img src={Images.add_circle_blue} alt="add"/>
@@ -761,7 +761,7 @@ const Clients = () => {
                             <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
                                     className="button-margin bg_none delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
-                    </Row>
+                    </Row>*/}
 
                     <Row gutter={16} className="mt-4">
                         <Col span={24}>
