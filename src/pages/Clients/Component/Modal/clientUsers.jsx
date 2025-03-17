@@ -2,9 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import {Button, Checkbox, Col, Form, Input, InputNumber, Row} from 'antd';
 import {AdminApi} from "../../../../api/admin.api";
+import {useParams} from "react-router-dom";
 
 const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUserData}) => {
     const [form] = Form.useForm();
+    let { id } = useParams();
 
     /*const getDiscount = () => {
         AdminApi.GetDiscountList().then(res => {
@@ -40,6 +42,7 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
 
     const handleSubmit = () => {
         const formData = form.getFieldsValue();
+        console.log(changeDatas, 'changeDatas aa')
         const setData = {
             code: String(formData.code),
             email: formData.email,
@@ -47,8 +50,10 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
             hasB2B: formData.hasB2B,
             name: formData.name,
             passwordHash: formData.passwordHash,
-            ...(type === 1 ? { customerIdHash: changeDatas.customerIdHash } : { idHash: changeDatas.idHash })
+            ...(type === 1 ? { customerIdHash: id } : { idHash: changeDatas.idHash })
         };
+
+        console.log(setData, 'customerIdHash aa')
 
         clientUserData(setData);
         form.resetFields();

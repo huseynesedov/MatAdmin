@@ -19,8 +19,9 @@ const Licence = ({activeKey}) => {
 
     const createData = () => {
         if (id) {
-            let data = {
+          /*  let data = {
                 customerIdHash: id,
+                customerId: 0,
                 pagingRequest: {
                     page: 0,
                     pageSize: 10,
@@ -28,14 +29,14 @@ const Licence = ({activeKey}) => {
                         value: "Web",
                         fieldName: "deviceType",
                         equalityType: "Equal",
-
                     }]
 
                 }
-            }
+            }*/
 
-            AdminApi.getLicenseHistoryByCustomerId(data).then(res => {
+            AdminApi.getLicenseHistoryGetTable(data).then(res => {
                 console.log(res, 'aaa')
+                setData(res)
             }).catch((err) => {
                 openNotification('Xəta baş verdi' , '-'  , true )
             })
@@ -50,7 +51,7 @@ const Licence = ({activeKey}) => {
 
 
     const columns = [
-        {
+        /*{
             title: '',
             width: 0,
             dataIndex: 'checkbox',
@@ -59,28 +60,28 @@ const Licence = ({activeKey}) => {
                 <Checkbox />
             </div>,
 
-        },
+        },*/
         {
-            title: 'Terminal No',
+            title: 'Browser',
             width: 77,
-            dataIndex: 'Terminal_no',
-            key: 'Terminal_no',
+            dataIndex: 'browser',
+            key: 'browser',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Kayit Tarihi',
+            title: 'Cihaz tipi',
             width: 77,
-            dataIndex: 'Registration_date',
-            key: 'Registration_date',
+            dataIndex: 'deviceType',
+            key: 'deviceType',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
             title: 'Ip',
             width: 77,
-            dataIndex: 'ip',
-            key: 'ip',
+            dataIndex: 'ipAddress',
+            key: 'ipAddress',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },

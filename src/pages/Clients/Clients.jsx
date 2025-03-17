@@ -37,6 +37,7 @@ import Passive from "./Component/manufacturerPA/passive";
 import ModalDiscountManufacturer from "./Component/Modal/modalDiscountManufacturer";
 import ClientUsers from "./Component/Modal/clientUsers";
 import OtherInfo from "./Component/OtherInfo";
+import Calls from "./Component/Calls";
 
 const {Title} = Typography;
 const {TabPane} = Tabs;
@@ -822,6 +823,8 @@ const Clients = () => {
                     </Row>
 
 
+                    <Calls activeKey={activeTab === '10'}/>
+
                     <Row gutter={16}>
                         <Col span={24}>
                             <Card className="info-card mt-4 " title="Arama Detaylari">
@@ -944,6 +947,7 @@ const Clients = () => {
                             <Searches className="mt-4"/>
                         </Col>
                     </Row>
+
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Ek Iskonto" key="12">
 

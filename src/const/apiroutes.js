@@ -114,9 +114,11 @@ export const apiRoutes = {
         updateUserListByCustomerId: '/admin/v1/Customer/GetUserListByCustomerId',
         updateProductAdditionalDiscountsByCustomerId: '/admin/v1/Customer/GetProductAdditionalDiscountsByCustomerId',
         updateGetAdminProductOilTypeList: '/admin/v1/Customer/GetAdminProductOilTypeList',
-        getLoginHistoryByCustomerCode: '/admin/v1/LogTransaction/GetLoginHistoryByCustomerCode',
+        getLoginHistoryByCustomerId: '/admin/v1/LicenseHistory/GetLicenseHistoryByCustomerId',
+        getLoginHistoryByCustomerIds: '/admin/v1/LogTransaction/GetLoginHistoryByCustomerId',
         getProductTransactionsByCustomerId: '/admin/v1/LogTransaction/GetProductTransactionsByCustomerId',
-        getLicenseHistoryByCustomerId: 'admin/v1/LicenseHistory/GetLicenseHistoryByCustomerId',
+        getLicenseHistoryByCustomerId: '/admin/v1/LicenseHistory/GetLicenseHistoryByCustomerId',
+        getLicenseHistoryGetTables: '/admin/v1/LicenseHistory/GetTable',
     },
 
 

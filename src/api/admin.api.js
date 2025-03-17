@@ -107,8 +107,12 @@ export const AdminApi = {
         return BaseApi.post(apiRoutes.customer.getCustomerAdditionalInfo, data);
     },
 
-    GetLoginHistoryByCustomerCode(data) {
-        return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerCode, data);
+    GetLoginHistoryByCustomerId(data) {
+        return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerId, data);
+    },
+
+    getLoginHistoryByCustomerIdss(data) {
+        return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerIds, data);
     },
 
     getProductTransactionsByCustomerId(data) {
@@ -121,6 +125,10 @@ export const AdminApi = {
 
     GetSalesmanGetTableAsync() {
         return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, '');
+    },
+
+    getLicenseHistoryGetTable() {
+        return BaseApi.get(apiRoutes.customer.getLicenseHistoryGetTables, '');
     },
 
     /*Search*/

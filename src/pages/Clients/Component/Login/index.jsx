@@ -20,16 +20,16 @@ const Login = ({changeDatas, activeKey}) => {
             let data = {
                 //customerIdHash: '3LlDuXpKEl0=',
 
-                customerCode: 'УТ0001530',
-                pagingRequest: {
-                    page: current - 1,
+                customerIdHash: id,
+                pagingRequest: null
+
+                /*{  page: current - 1,
                     pageSize: pageSize,
-                    filters: []
-                }
+                    filters: []}*/
             }
-            AdminApi.GetLoginHistoryByCustomerCode(data).then(res => {
+            AdminApi.getLoginHistoryByCustomerIdss(data).then(res => {
                 console.log(res)
-                if (res.data) {
+                if (res) {
                     setData(res);
                 }
             }).catch((err) => {

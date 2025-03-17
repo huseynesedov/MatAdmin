@@ -8,12 +8,50 @@ import SanufacturerModal from "../../../Home/components/Modal/manufacturerModal"
 import UserRolesModal from "../Modal/userRolesModal";
 
 const OtherInfo = ({changeDatas, activeKey}) => {
+    /*SAtış təmsilcisində popoda salesman /admin/v1/Salesman/GetTableAsync seciləcək*/
     /*Update zamanı /admin/v1/Customer/UpdateCustomerAdditionalInfo bu apidən istifadə edəcəm*/
     /*webUsageCount: mwsteri gurupu = Kullanici Sayisi*/
     /*androidUsageCount: mwsteri gurupu = android Kullanici Sayisi*/
     /*androidUsageCount: mwsteri gurupu = Ios Kullanici Sayisi*/
     /*Grup Bilgileri də 3 tip customerda userRoles dan məlumatları cəkib hasRole false isə demək user təyin olunmayıb və təyin etmək ücün /admin/v1/Salesman/GetTableAsync bu api vasitəsi ilə popopda userlist cıxarıb secərək təin edəcəm*/
     /*Statuslar ücün rol əlavə olunmalıdır /admin/v1/Role/Add  rol əlavə etdikdə roleTypeIdHash bunun ücün GET/catalog/v1/Role/GetRoleTypeList burdan roleCategoryHash ücün isə bu apidən siyahıdan secməlidir catalog/v1/Role/GetRoleCategories */
+    /*[ role type list
+        {
+            "valueHash": "xFsQPkFTRN0=",
+            "displayText": "User",
+            "select": false
+        },
+        {
+            "valueHash": "3LlDuXpKEl0=",
+            "displayText": "Customer",
+            "select": false
+        },
+        {
+            "valueHash": "a1LJadsYP0o=",
+            "displayText": "Salesman",
+            "select": false
+        }
+    ]*/
+
+    /* "result": [ roles categories
+    {
+      "id": 1,
+      "description": "Page Permissions"
+    },
+    {
+      "id": 2,
+      "description": "Execution Permission"
+    },
+    {
+      "id": 3,
+      "description": "Customer Users Sales Role"
+    },
+    {
+      "id": 4,
+      "description": "Salesman Sales Role"
+    }
+  ],*/
+
 
     /*
     "userRoles": [
@@ -76,7 +114,7 @@ const OtherInfo = ({changeDatas, activeKey}) => {
                 customerIdHash: id,
             }
 
-            AdminApi.getProductTransactionsByCustomerId(data).then(res => {
+            AdminApi.GetCustomerAdditionalInfo(data).then(res => {
                 console.log(res,res.userRoles, 'aaa')
                 if (res) {
                     setData(res);
