@@ -5,6 +5,11 @@ import {useParams} from "react-router-dom";
 import {useAuth} from "../../../../AuthContext";
 
 const Calls = ({showModalUsers, activeKey}) => {
+
+    /*Genel = searchRequest icinde searchText */
+    /*Durum = ilk obj icinde process */
+
+
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
