@@ -141,6 +141,13 @@ export const apiRoutes = {
         getOrderDetail: '/admin/v1/OrderDetail/GetOrderDetail',
     },
 
+    return: {
+        getReturnList: '/admin/v1/ReturnProduct/GetReturnProductCard',
+        undoOrderForOrderDetail: '/admin/v1/Order/UndoOrderForOrderDetail',
+        updateOrderForOrderDetail: '/admin/v1/Order/UpdateOrderForOrderDetail',
+        updateOrderIntoPoolForOrderDetail: '/admin/v1/Order/UpdateOrderIntoPoolForOrderDetail',
+
+    },
 
     // Admnin-Product
     product: {

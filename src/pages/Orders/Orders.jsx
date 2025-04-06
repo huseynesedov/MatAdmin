@@ -21,7 +21,6 @@ const Orders = () => {
     const [count, setCount] = useState(0);
 
 
-    console.log("secilen status", currentPage);
     
     const getOrderStatusList = () => {
         setLoading(true);
