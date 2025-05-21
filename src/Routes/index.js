@@ -83,6 +83,14 @@ const RouteList = () => {
                            </PrivateRoute>
                        }
                    />
+                   <Route
+                       path="/delegates/:id"
+                       element={
+                           <PrivateRoute>
+                               <Delegates />
+                           </PrivateRoute>
+                       }
+                   />
 
                    {/* Fallback */}
                    <Route path="*" element={<Navigate to="/" replace />} />

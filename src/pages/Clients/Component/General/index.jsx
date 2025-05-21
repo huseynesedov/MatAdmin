@@ -111,7 +111,6 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                             </Col>
                             <Col span={12} className="text-right">
                                 {/* <Button type="default" icon={<img src={Images.Search_blue} alt="search" />} className="button-margin Search_blue" onClick={handleShows}></Button>*/}
-
                                 <Button type="default" htmlType="submit" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isDisabled}></Button>
                                 <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red" disabled={!id} onClick={showDeleteConfirm}></Button>
                             </Col>
@@ -227,8 +226,6 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                                     <TextArea rows={6} placeholder="Note"
                                               disabled={isDisabled}/>
                                 </Form.Item>
-
-
                             </div>
 
                         </Card>

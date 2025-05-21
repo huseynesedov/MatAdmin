@@ -116,9 +116,11 @@ export const apiRoutes = {
         updateGetAdminProductOilTypeList: '/admin/v1/Customer/GetAdminProductOilTypeList',
         getLoginHistoryByCustomerId: '/admin/v1/LicenseHistory/GetLicenseHistoryByCustomerId',
         getLoginHistoryByCustomerIds: '/admin/v1/LogTransaction/GetLoginHistoryByCustomerId',
-        getProductTransactionsByCustomerId: '/admin/v1/LogTransaction/GetProductTransactionsByCustomerId',
         getLicenseHistoryByCustomerId: '/admin/v1/LicenseHistory/GetLicenseHistoryByCustomerId',
         getLicenseHistoryGetTables: '/admin/v1/LicenseHistory/GetTable',
+        getLoginHistories: '/admin/v1/LogTransaction/GetLoginHistories',
+        getProductTransactionDetails: '/admin/v1/LogTransaction/GetProductTransactionDetails',
+        getProductTransactions: '/admin/v1/LogTransaction/GetProductTransactions',
     },
 
 
@@ -197,6 +199,7 @@ export const apiRoutes = {
     // Admin-Salesman
     role: {
         getById: '/admin/v1/User/AddCustomerUser',
+        getSalesmanTableAsync: '/admin/v1/Salesman/GetTableAsync',
         getListByNameOrCode: '/admin/v1/User/AddSalesmanUser',
         GetSalesmanCustomerById: '/admin/v1/User/Delete',
         getSalesmanListForOrderDetail: '/admin/v1/User/GetById',
@@ -254,5 +257,10 @@ export const apiRoutes = {
 
     salesman: {
         salesmanGetTableAsync: '/admin/v1/Salesman/GetTableAsync',
+        getSalesmanAdditionalInfo: '/admin/v1/Salesman/GetSalesmanAdditionalInfo',
+        getSalesmanCustomerById: '/admin/v1/Salesman/GetSalesmanCustomerById',
+        getSalesmanModulePageRoles: '/admin/v1/Salesman/GetSalesmanModulePageRoles',
+        updateSalesmanModulePages: '/admin/v1/Salesman/UpdateSalesmanModulePages',
+        updateSalesmanAdditionalInfo: '/admin/v1/Salesman/updateSalesmanAdditionalInfo',
     },
 };

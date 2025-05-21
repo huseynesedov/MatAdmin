@@ -115,8 +115,13 @@ export const AdminApi = {
         return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerIds, data);
     },
 
-    getProductTransactionsByCustomerId(data) {
-        return BaseApi.post(apiRoutes.customer.getProductTransactionsByCustomerId, data);
+    getProductTransactionDetails(data) {
+        return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
+    },
+
+/*/admin/v1/LogTransaction/GetProductTransactionDetails*/
+    getProductTransactionDetails(data) {
+        return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
     },
 
     getLicenseHistoryByCustomerId(data) {
@@ -125,6 +130,10 @@ export const AdminApi = {
 
     GetSalesmanGetTableAsync() {
         return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, '');
+    },
+
+    PostSalesmanGetTableAsync(data) {
+        return BaseApi.post(apiRoutes.salesman.salesmanGetTableAsync, data);
     },
 
     getLicenseHistoryGetTable() {
@@ -316,4 +325,34 @@ export const AdminApi = {
         return BaseApi.put(apiRoutes.user.updateUserPassword, data);
     }
  */
+
+
+    GetSalesmanTableAsync(params) {
+        return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, {...params });
+    },
+
+    GetSalesmanAdditionalInfos(data) {
+        return BaseApi.post(apiRoutes.salesman.getSalesmanAdditionalInfo, data);
+    },
+
+    UpdateSalesmanAdditionalInfo(data) {
+        return BaseApi.post(apiRoutes.salesman.updateSalesmanAdditionalInfo, data);
+    },
+
+    getSalesmanModulePageRole(data) {
+        return BaseApi.post(apiRoutes.salesman.getSalesmanModulePageRoles, data);
+    },
+
+    updateSalesmanModulePage(data) {
+        return BaseApi.post(apiRoutes.salesman.updateSalesmanModulePages, data);
+    },
+
+    GetSalesmanCustomerById(data) {
+        let setData = {
+            page: data.page,
+            pageSize: data.pageSize,
+        }
+        return BaseApi.post(apiRoutes.salesman.getSalesmanCustomerById + `?id=${data.id}`, setData);
+    },
+
 };
