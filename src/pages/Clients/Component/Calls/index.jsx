@@ -38,13 +38,13 @@ const Calls = ({showModalUsers, activeKey}) => {
                 pagingRequest: {
                     page: current - 1,
                     pageSize: pageSize,
-                    /*filters: [
-                       /!* {
+                    filters: [
+                       /* {
                             value: "string",
                             fieldName: "string",
                             equalityType: "string"
-                        },*!/
-                    ]*/
+                        },*/
+                    ]
                 }
             }
 
