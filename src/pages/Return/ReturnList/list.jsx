@@ -3,7 +3,7 @@ import { Pagination, Table, Checkbox, notification, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { BaseApi } from '../../../const/api';
 
-const ReturnList = ({ products, selectedValue, getOrdersByStatus, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
+const ReturnList = ({ products, handlePageChange, currentDataPage, handlePageSizeChange, pageSize, count }) => {
     const [data, setData] = useState([]);
 
     const navigate = useNavigate();
@@ -92,7 +92,7 @@ return (
             })}
             rowKey="idHash"
             bordered
-            locale={{ emptyText: 'Kayıt bulunamadı' }}
+            locale={{ emptyText: 'Geri qaytarılmış məhsul yoxdur !' }}
         />
         <div className="d-flex w-100 justify-content-end align-items-center mt-4">
             <Pagination
@@ -109,7 +109,7 @@ return (
         <hr />
 
 
-       \
+       
 
     </>
 );

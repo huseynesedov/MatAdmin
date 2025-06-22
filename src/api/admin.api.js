@@ -163,6 +163,12 @@ export const AdminApi = {
     },
 
 
+    // !!!!!!!!! ReturnProductDetail !!!!!!!!!
+    GetReturnProductDetail(params) {
+        return BaseApi.post(apiRoutes.return.getReturnProductDetail, { ...params });
+    },
+
+
     // !!!!!!!!! Product !!!!!!!!!
     /*    Add(data) {
             return BaseApi.post(apiRoutes.product.add, data);

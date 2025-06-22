@@ -33,7 +33,9 @@ function AppContent() {
         console.log(logged, 'logged logged logged'); // logged değişkeni her güncellendiğinde çalışır
     }, [logged]);
     return logged ? (
-            <div className="d-flex w-100" style={{maxWidth:"1400px"}}>
+            <div className="d-flex w-100" 
+            style={{maxWidth:"1400px"}}
+            >
                 <div>
                     <Sidebar/>
                 </div>

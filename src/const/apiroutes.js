@@ -146,6 +146,7 @@ export const apiRoutes = {
         undoOrderForOrderDetail: '/admin/v1/Order/UndoOrderForOrderDetail',
         updateOrderForOrderDetail: '/admin/v1/Order/UpdateOrderForOrderDetail',
         updateOrderIntoPoolForOrderDetail: '/admin/v1/Order/UpdateOrderIntoPoolForOrderDetail',
+        getReturnProductDetail: '/admin/v1/ReturnProduct/GetReturnProductCardDetailByCardId',
 
     },
 

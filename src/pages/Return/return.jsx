@@ -66,14 +66,13 @@ const Orders = () => {
       });
     }
     AdminApi.GetReturnList({
-      pagingRequest: {
+     
         page: currentDataPage - 1,
         pageSize,
         filters,
-      }
     })
       .then((res) => {
-        setProducts(res);
+        setProducts(res.data);
         setCount(res.count);
       })
       .catch((error) => {

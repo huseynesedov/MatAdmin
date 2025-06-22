@@ -12,7 +12,7 @@ const Orders = lazy(() => import("../pages/Orders/Orders"));
 const Delegates = lazy(() => import("../pages/Delegates"));
 const Login = lazy(() => import("../pages/Login/login"));
 const Return = lazy(() => import("../pages/Return/return"));
-const ReturnDetail = lazy(() => import("../pages/Return/ReturnList/list"));
+const ReturnDetail = lazy(() => import("../pages/ReturnDetail/return.main"));
 
 const PrivateRoute = ({ children }) => {
     const logged = JSON.parse(localStorage.getItem("loggedIns"))
@@ -97,7 +97,7 @@ const RouteList = () => {
                     path="/ReturnDetail/:idHash"
                     element={
                         <PrivateRoute>
-                            <Return />
+                            <ReturnDetail />
                         </PrivateRoute>
                     }
                 />
