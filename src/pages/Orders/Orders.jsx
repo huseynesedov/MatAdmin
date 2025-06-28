@@ -6,6 +6,9 @@ import OrderList from './Components/OrderList/index';
 import { CatalogApi } from '../../api/catalog.api';
 import { AdminApi } from '../../api/admin.api';
 
+import '../../assets/styles/Home.css'
+import '../../assets/styles/Topbar.css'
+
 const { Title } = Typography;
 
 const Orders = () => {
@@ -21,7 +24,6 @@ const Orders = () => {
     const [count, setCount] = useState(0);
 
 
-    console.log("secilen status", currentPage);
     
     const getOrderStatusList = () => {
         setLoading(true);

@@ -20,6 +20,9 @@ export const CatalogApi = {
     GetOrderStatusList(params) {
         return BaseApi.get("/catalog/v1/Order/GetOrderStatusList", { ...params });
     },
+    GetProductStatusList(params) {
+        return BaseApi.get("/catalog/v1/ReturnProductStatus/GetReturnProductStatusList", { ...params });
+    },
     GetOrderTypeList(params) {
         return BaseApi.get('/catalog/v1/Order/GetOrderTypeList', { ...params });
     },

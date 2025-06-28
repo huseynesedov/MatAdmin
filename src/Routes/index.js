@@ -1,7 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { useAuth } from "../AuthContext";
-import {Layout, Spin} from "antd";
+import { Spin } from "antd";
 
 import "antd/dist/reset.css";
 import OrderDetail from "../pages/OrderDetail";
@@ -12,6 +11,8 @@ const Clients = lazy(() => import("../pages/Clients/Clients"));
 const Orders = lazy(() => import("../pages/Orders/Orders"));
 const Delegates = lazy(() => import("../pages/Delegates"));
 const Login = lazy(() => import("../pages/Login/login"));
+const Return = lazy(() => import("../pages/Return/return"));
+const ReturnDetail = lazy(() => import("../pages/ReturnDetail/return.main"));
 
 const PrivateRoute = ({ children }) => {
     const logged = JSON.parse(localStorage.getItem("loggedIns"))
@@ -21,10 +22,9 @@ const PrivateRoute = ({ children }) => {
 const RouteList = () => {
     return (
         <Suspense fallback={<Spin tip="Yükleniyor..." />}>
-               <Routes>
-                   {/* Public Route */}
-                   <Route path="/login" element={<Login />} />
-
+            <Routes>
+                {/* Public Route */}
+                <Route path="/login" element={<Login />} />
                    {/* Private Routes */}
                    <Route
                        path="/"
@@ -92,9 +92,26 @@ const RouteList = () => {
                        }
                    />
 
-                   {/* Fallback */}
-                   <Route path="*" element={<Navigate to="/" replace />} />
-               </Routes>
+                <Route
+                    path="/Return"
+                    element={
+                        <PrivateRoute>
+                            <Return />
+                        </PrivateRoute>
+                    }
+                />
+                 <Route
+                    path="/ReturnDetail/:idHash"
+                    element={
+                        <PrivateRoute>
+                            <ReturnDetail />
+                        </PrivateRoute>
+                    }
+                />
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
         </Suspense>
     );
 };

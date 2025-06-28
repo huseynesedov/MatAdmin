@@ -39,7 +39,7 @@ const Sidebar = () => {
         { key: "9", icon: Images.Exclamation_blue, label: "Günün Məhsulu" },
         { key: "10", icon: Images.Heart_blue, label: "Sövğüyət" },
         { key: "11", icon: Images.Report_blue, label: "Raporlar" },
-        { key: "12", icon: Images.Return_blue, label: "İade" },
+        { key: "12", icon: Images.Return_blue, label: "İade",link: "/Return", status: "true" },
     ];
 
     return (
