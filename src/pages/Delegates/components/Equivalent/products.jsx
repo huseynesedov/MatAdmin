@@ -1,45 +1,49 @@
-import { useEffect, useState } from 'react';
-import { Table} from 'antd';
+import React, { useEffect, useState } from 'react';
+import {Form, Pagination, Table} from 'antd';
+import {useParams} from "react-router-dom";
+import {AdminApi} from "../../../../api/admin.api";
 
-const Equivalent = () => {
+const Equivalent = ({activeKey}) => {
     const [data, setData] = useState([]);
+    const [current, setCurrent] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [form] = Form.useForm();
+    const [count, setCount] = useState([]);
+    let {id} = useParams();
 
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
-    const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                product_code: `test${i + 1}`,
-                product_name: `test`,
-                seller_code: `test`,
-                seller: 'test',
-                company: 'test',
-                case: 'test',
-                foregin_selling_rate: 'test',
-                raf_address: 'test',
-                photo: 'test',
-                balance_1: 'test',
-                balance_2: 'test',
-                selling_rate: 'test',
-                buy_rate: 'test',
-                code: `code${i + 1}`,
-                name: `name${i + 1}`,
-                sale_price: `price${i + 1}`,
-                id: i + 1,
-                equivalent_id: `equivalent${i + 1}`
-            });
+    useEffect(() => {
+        if (id) {
+            getSalesmanCustomerById();
         }
-        setData(arr);
-    };
+    }, [id, activeKey]);
 
     useEffect(() => {
-        createData();
-    }, []);
+        let forms = form.getFieldsValue()
+        getSalesmanCustomerById();
+    }, [current, pageSize]);
+
+    const getSalesmanCustomerById = () => {
+        const data = {
+            page: current - 1,
+            pageSize: pageSize,
+            id: id,
+        }
+
+        AdminApi.GetSalesmanCustomerById(data).then((res) => {
+            if (res) {
+                setCount(res.count);
+                setData(res.data);
+                console.log(res, 'get data')
+            }
+        })
+        .catch((error) => {
+            // openNotification('Xəta baş verdi', error.response.data.message, true)
+        });
+    }
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
@@ -52,90 +56,61 @@ const Equivalent = () => {
         },
     };
 
-    const onSelectAllChange = (e) => {
-        const checked = e.target.checked;
-        const allRowKeys = checked ? data.map((item) => item.key) : [];
-        setSelectedRowKeys(allRowKeys);
-        setSelectAll(checked);
-    };
 
-    const handleDelete = (key) => {
-        const newData = data.filter((item) => item.key !== key);
-        setData(newData);
+    const onChange = (page, pageSize) => {
+        setCurrent(page);
+        setPageSize(pageSize);
     };
 
     const columns = [
         {
-            title: "",
-            width: 10,
-            dataIndex: 'checkbox',
-            key: 'checkbox',
-            
-        },
-        {
-            title: 'Uretici',
+            title: 'Cari kod',
             width: 77,
-            dataIndex: 'seller',
-            key: 'seller',
+            dataIndex: 'customerCode',
+            key: 'customerCode',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
-        {
-            title: 'Kodu',
+       /* {
+            title: 'Cari ünvan',
             width: 77,
             dataIndex: 'code',
             key: 'code',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
-        },
+        },*/
         {
-            title: 'Adi',
+            title: 'Adress',
             width: 100,
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'companyAddress',
+            key: 'companyAddress',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Birim',
+            title: 'Nişangah',
             width: 100,
-            dataIndex: 'company',
-            key: 'company',
+            dataIndex: 'cityName',
+            key: 'cityName',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Satis Fiyati',
+            title: 'Tel',
             width: 100,
-            dataIndex: 'sale_price',
-            key: 'sale_price',
+            dataIndex: 'companyPhoneNumber',
+            key: 'companyPhoneNumber',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Xarıcı Valyuta Mubadıla',
+            title: 'Email',
             width: 100,
-            dataIndex: 'foregin_selling_rate',
-            key: 'foregin_selling_rate',
+            dataIndex: 'companyEmail',
+            key: 'companyEmail',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
-        {
-            title: 'Id',
-            width: 100,
-            dataIndex: 'id',
-            key: 'id',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        },
-        {
-            title: 'Eşdeger İd',
-            width: 100,
-            dataIndex: 'equivalent_id',
-            key: 'equivalent_id',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        }
     ];
 
     return (
@@ -146,6 +121,7 @@ const Equivalent = () => {
                 dataSource={data}
                 rowSelection={rowSelection}
             />
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count}/>
         </>
     );
 };

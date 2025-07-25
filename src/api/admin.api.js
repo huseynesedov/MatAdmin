@@ -115,8 +115,13 @@ export const AdminApi = {
         return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerIds, data);
     },
 
-    getProductTransactionsByCustomerId(data) {
-        return BaseApi.post(apiRoutes.customer.getProductTransactionsByCustomerId, data);
+    getProductTransactionDetails(data) {
+        return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
+    },
+
+    /*/admin/v1/LogTransaction/GetProductTransactionDetails*/
+    getProductTransactionDetails(data) {
+        return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
     },
 
     getLicenseHistoryByCustomerId(data) {
@@ -125,6 +130,10 @@ export const AdminApi = {
 
     GetSalesmanGetTableAsync() {
         return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, '');
+    },
+
+    PostSalesmanGetTableAsync(data) {
+        return BaseApi.post(apiRoutes.salesman.salesmanGetTableAsync, data);
     },
 
     getLicenseHistoryGetTable() {
@@ -159,14 +168,20 @@ export const AdminApi = {
 
     // !!!!!!!!! OrderDetail !!!!!!!!!
     GetOrderDetail(params) {
-        return BaseApi.post(apiRoutes.orderDetail.getOrderDetail, { ...params});
+        return BaseApi.post(apiRoutes.orderDetail.getOrderDetail, { ...params });
+    },
+
+
+    // !!!!!!!!! ReturnProductDetail !!!!!!!!!
+    GetReturnProductDetail(params) {
+        return BaseApi.post(apiRoutes.return.getReturnProductDetail, { ...params });
     },
 
 
     // !!!!!!!!! Product !!!!!!!!!
-/*    Add(data) {
-        return BaseApi.post(apiRoutes.product.add, data);
-    },*/
+    /*    Add(data) {
+            return BaseApi.post(apiRoutes.product.add, data);
+        },*/
     AddProduct(data) {
         return BaseApi.post(apiRoutes.product.add, data);
     },
@@ -186,13 +201,13 @@ export const AdminApi = {
         return BaseApi.delete(apiRoutes.product.deleteProduct, { ...{ id: userId } });
     },
     DeleteProductVehicleBrand(userId) {
-        return BaseApi.delete(apiRoutes.product.deleteProductVehicleBrand, userId );
+        return BaseApi.delete(apiRoutes.product.deleteProductVehicleBrand, userId);
     },
     GetCurrencyTable(params) {
         return BaseApi.get(apiRoutes.product.getCurrencyTable, { params });
     },
     GetProductFileByProductId(userId) {
-        return BaseApi.get(apiRoutes.photos.getProductFileByProductId, {...userId});
+        return BaseApi.get(apiRoutes.photos.getProductFileByProductId, { ...userId });
     },
     deleteProductPhoto(userId) {
         return BaseApi.delete(`${apiRoutes.photos.deleteByProductFileId}?productFileId=${userId}`);
@@ -207,13 +222,13 @@ export const AdminApi = {
         return BaseApi.get(`${apiRoutes.product.getOemListByGroupId}?type=${params.type}&productGroupId=${params.productGroupId}`);
     },
     GetProductGroupsById(userId) {
-        return BaseApi.get(apiRoutes.product.getProductGroupsById, { id: userId  });
+        return BaseApi.get(apiRoutes.product.getProductGroupsById, { id: userId });
     },
     GetProductPropertyValueTable(params) {
         return BaseApi.get(apiRoutes.product.getProductPropertyValueTable, { ...params });
     },
     GetSearchTable(params) {
-        return BaseApi.post(apiRoutes.product.getSearchTable, {...params});
+        return BaseApi.post(apiRoutes.product.getSearchTable, { ...params });
     },
     GetSearchEquivalentProducts(data) {
         return BaseApi.post(apiRoutes.adminProduct.equivalentProducts, data);
@@ -237,7 +252,10 @@ export const AdminApi = {
         return BaseApi.put(apiRoutes.product.updateProductVehicleBrand, data);
     },
 
-
+    // !!!!!!!!! Return !!!!!!!!!
+    GetReturnList(data) {
+        return BaseApi.post(apiRoutes.return.getReturnList, data);
+    },
     // !!!!!!!!! User !!!!!!!!!
 
     AddCustomerAddUsers(data) {
@@ -249,71 +267,55 @@ export const AdminApi = {
         return BaseApi.put(apiRoutes.user.addCustomerUpdateUser, data);
     },
 
-/*
-    // !!!!!!!!! Role !!!!!!!!!
-    AddRole(data) {
-        return BaseApi.post(apiRoutes.role.add, data);
+    GetSalesmanTableAsync(params) {
+        return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, { ...params });
     },
-    Delete(userId) {
-        return BaseApi.delete(apiRoutes.role.delete, { data: { id: userId } });
+
+    GetSalesmanAdditionalInfos(data) {
+        return BaseApi.post(apiRoutes.salesman.getSalesmanAdditionalInfo, data);
     },
-    GetByIdRole(userId) {
-        return BaseApi.get(apiRoutes.role.getById, { params: { id: userId } });
+
+    UpdateSalesmanAdditionalInfo(data) {
+        return BaseApi.post(apiRoutes.salesman.updateSalesmanAdditionalInfo, data);
     },
-    GetTable(params) {
-        return BaseApi.get(apiRoutes.role.getTable, { params });
+
+    getSalesmanModulePageRole(data) {
+        return BaseApi.post(apiRoutes.salesman.getSalesmanModulePageRoles, data);
     },
-    Update(data) {
-        return BaseApi.put(apiRoutes.role.update, data);
+
+    updateSalesmanModulePage(data) {
+        return BaseApi.post(apiRoutes.salesman.updateSalesmanModulePages, data);
+    },
+
+    GetSalesmanCustomerById(data) {
+        let setData = {
+            page: data.page,
+            pageSize: data.pageSize,
+        }
+        return BaseApi.post(apiRoutes.salesman.getSalesmanCustomerById + `?id=${data.id}`, setData);
+    },
+    // !!!!!!!!! Announcement !!!!!!!!!
+
+    getAnnouncement(data) {
+        return BaseApi.get(apiRoutes.announcement.getTable, data);
+    },
+
+    getAllAnnouncements(params) {
+        return BaseApi.post(apiRoutes.announcementType.getAllAnnocumentTable, { ...params });
     },
 
 
-    // !!!!!!!!! Salesman !!!!!!!!!
-    GetById(userId) {
-        return BaseApi.get(apiRoutes.salesman.getById, { params: { id: userId } });
-    },
-    GetListByNameOrCode(params) {
-        return BaseApi.post(`${apiRoutes.salesman.getListByNameOrCode}?name=${params.name}&code=${params.code}`);
-    },
-    GetSalesmanCustomerById(userId) {
-        return BaseApi.post(apiRoutes.salesman.GetSalesmanCustomerById, { params: { id: userId } });
-    },
-    GetSalesmanListForOrderDetail(data) {
-        return BaseApi.post(apiRoutes.salesman.getSalesmanListForOrderDetail, data);
-    },
-    UpdateUserPasswordById(data) {
-        return BaseApi.put(apiRoutes.salesman.updateUserPasswordById, data);
+    getModuls(data) {
+        return BaseApi.get(apiRoutes.module.getModuleHierarchy, data);
     },
 
+    addAnnocumentModule(params) {
+        return BaseApi.post(apiRoutes.announcementModulePage.addAnnocument, { ...params });
+    },
 
-
-    // !!!!!!!!! User !!!!!!!!!
-    AddCustomerUser(data) {
-        return BaseApi.post(apiRoutes.user.addCustomerUser, data);
-    },
-    AddSalesmanUser(data) {
-        return BaseApi.post(apiRoutes.user.addSalesmanUser, data);
-    },
-    DeleteUser(userId) {
-        return BaseApi.delete(apiRoutes.user.deleteUser, { data: { id: userId } });
-    },
-    GetUserById(userId) {
-        return BaseApi.get(apiRoutes.user.getUserById, { params: { id: userId } });
-    },
-    GetForUpdateById(userId) {
-        return BaseApi.get(apiRoutes.user.getForUpdateById, { params: { id: userId } });
-    },
-    GetUserTable(params) {
-        return BaseApi.get(apiRoutes.user.getUserTable, { params });
-    },
-    GetUserPersonalInformationById(userId) {
-        return BaseApi.get(apiRoutes.user.getUserPersonalInformationById, { id: userId });
-    },
-    UpdateUser(data) {
-        return BaseApi.put(apiRoutes.user.updateUser, data);
-    },
-    UpdateUserPassword(data) {
-        return BaseApi.put(apiRoutes.user.updateUserPassword, data);
+    deleteAnnocument(params) {
+        console.log(params);
+        return BaseApi.delete(apiRoutes.announcementModulePage.deleteAnnocument, { params });
     }
- */
+
 };

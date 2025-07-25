@@ -20,6 +20,9 @@ export const CatalogApi = {
     GetOrderStatusList(params) {
         return BaseApi.get("/catalog/v1/Order/GetOrderStatusList", { ...params });
     },
+    GetProductStatusList(params) {
+        return BaseApi.get("/catalog/v1/ReturnProductStatus/GetReturnProductStatusList", { ...params });
+    },
     GetOrderTypeList(params) {
         return BaseApi.get('/catalog/v1/Order/GetOrderTypeList', { ...params });
     },
@@ -67,6 +70,8 @@ export const CatalogApi = {
     ProductTest(params) {
         return BaseApi.get(apiRoutes.catalog.productTest, { ...params });
     },
+
+    
     // VehicleBrand
     GetVehicleBrandListAsync(params) {
         return BaseApi.get(apiRoutes.vehicleBrand.getListAsync, { ...params });

@@ -8,8 +8,6 @@ import OrderList from './Components';
 import Title from 'antd/es/typography/Title';
 import { FaSearch } from "react-icons/fa";
 
-import '../../assets/styles/orderdetail.css'; // Custom styles
-
 import { FaChevronDown } from "react-icons/fa";
 
 const OrderDetail = () => {
@@ -54,7 +52,7 @@ const OrderDetail = () => {
         let filters = [];
 
         AdminApi.GetOrderDetail({
-            orderIdHash: idHash,
+            returnProductCardIdHash: idHash,
             pagingRequest: {
                 page,
                 pageSize,

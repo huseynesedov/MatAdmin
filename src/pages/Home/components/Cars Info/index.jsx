@@ -5,13 +5,14 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../../../../AuthContext";
 
 const Cars_info = ({ activeKey }) => {
+
     const [loading, setLoading] = useState(false); // Loading durumu
     const [data, setData] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     let { id } = useParams();
 
-    const { openNotification } = useAuth()
+    const { openNotification, logout } = useAuth()
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
@@ -38,11 +39,14 @@ const Cars_info = ({ activeKey }) => {
                 }
             })
             setData(data);
-        }).catch((err) => {
-            openNotification('Xəta baş verdi', err.response.data.message, true)
-        }).finally(() => {
-            setLoading(false);
-        });
+        })
+            .catch((err) => {
+                logout();
+                openNotification('Xəta baş verdi', err.response.data.message, true)
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }
 
     const columns = [

@@ -132,30 +132,7 @@ const OtherInfo = ({changeDatas, activeKey}) => {
                         webUsageCount: res.userLicense.webUsageCount,
                         iosUsageCount: res.userLicense.iosUsageCount,
                     })
-                    /*androidUsageCount
-:
-0
-customerIdHash
-:
-"zU2j9avT5ls="
-idHash
-:
-"zU2j9avT5ls="
-iosUsageCount
-:
-0
-isDeleted
-:
-false
-salesmanIdHash
-:
-null
-userTypeId
-:
-0
-webUsageCount
-:
-0*/
+                    
                 }
             }).catch((err) => {
                 openNotification('Xəta baş verdi' , '-'  , true )

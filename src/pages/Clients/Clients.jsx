@@ -1,30 +1,26 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, Checkbox, Radio, notification,} from 'antd';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, Checkbox, Radio, notification, } from 'antd';
+import { useAuth } from '../../AuthContext';
 
 
 import SearchModal from './Component/Modal/modal';
 import SearchModal2 from './Component/Modal/modal2';
 
-import Description_active from './Component/Description/active';
-import Description_passif from './Component/Description/passif';
 
 import './../../assets/styles/Clients.scss';
 
 import Images from '../../assets/images/js/Images';
 
-import {SearchContext} from '../../searchprovider';
-import Customers from './Component/Connected Customers';
 import Product_passive from './Component/Passive Product/passive';
 import Product_active from './Component/Passive Product/active';
 import Licence from './Component/Licence';
-import Licence_mobil from './Component/Licence Mobil';
 import Login from './Component/Login';
 import Searches from './Component/Searches';
 import Discount from './Component/Additional discount/discount';
 import Producer from './Component/Additional discount/producer';
 import Users from './Component/Users';
-import {AdminApi} from "../../api/admin.api";
-import {useNavigate, useParams} from "react-router-dom";
+import { AdminApi } from "../../api/admin.api";
+import { useNavigate, useParams } from "react-router-dom";
 import General from "./Component/General";
 import ModalDiscount from "./Component/Modal/modalDiscount";
 import ProducerOil from "./Component/AdditionalOil/producerOil";
@@ -39,10 +35,11 @@ import ClientUsers from "./Component/Modal/clientUsers";
 import OtherInfo from "./Component/OtherInfo";
 import Calls from "./Component/Calls";
 
-const {Title} = Typography;
-const {TabPane} = Tabs;
+const { Title } = Typography;
+const { TabPane } = Tabs;
 
 const Clients = () => {
+    const { logout } = useAuth();
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [showDiscount, setShowDiscount] = useState(false);
@@ -70,7 +67,7 @@ const Clients = () => {
     const [modalUsersType, setModalUsersType] = useState();
     const [editDataDiscount, setEditDataDiscount] = useState();
     const [editDataDiscountOil, setEditDataDiscountOil] = useState();
-    let {id} = useParams();
+    let { id } = useParams();
     const [formData, setFormData] = useState({
         kodu: '',
         uretici: '',
@@ -117,8 +114,8 @@ const Clients = () => {
     const handleCloseDiscountManufacturer = () => setShowDiscountManufacturer(false);
 
     const handleInputChangee = (e) => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleClear = () => {
@@ -303,9 +300,10 @@ const Clients = () => {
 
     const onProductDatas = (values) => {
         let data
-        AdminApi.customerGetById({id: values}).then((res) => {
+        AdminApi.customerGetById({ id: values }).then((res) => {
             data = res
         }).catch((err) => {
+            logout()
             openNotification('Xəta baş verdi', err.response.data.message, true)
         }).finally(r => {
             setShowProduct(data);
@@ -320,7 +318,7 @@ const Clients = () => {
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
 
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setInputs({
             ...inputs,
             [name]: value,
@@ -545,32 +543,32 @@ const Clients = () => {
             <Card className="search-card">
                 <Title level={4}>Ürün Bilgileri</Title>
                 <Form name="filter_form" layout="vertical" onFinish={onInitialSearch}
-                      autoComplete="off">
+                    autoComplete="off">
                     <div className="d-flex w-100 justify-content-between">
 
                         <Row className="w-100">
                             <Col span={12} md={6} className="p-2">
                                 <Form.Item label="Kodu"
-                                           name="code"
-                                           rules={[
-                                               {
-                                                   required: false,
-                                               },
-                                           ]} className="w-100">
+                                    name="code"
+                                    rules={[
+                                        {
+                                            required: false,
+                                        },
+                                    ]} className="w-100">
                                     {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
                                  src={Images.Search_blue} alt="search"/>*/}
-                                    <Input className='position-relative' placeholder="123544"/>
+                                    <Input className='position-relative' placeholder="123544" />
                                 </Form.Item>
                             </Col>
                             <Col span={12} md={6} className="p-2">
                                 <Form.Item label="Ünvan"
-                                           name="customerName"
-                                           rules={[
-                                               {
-                                                   required: false,
-                                               },
-                                           ]} className="w-100">
-                                    <Input className='position-relative' placeholder="123544"/>
+                                    name="customerName"
+                                    rules={[
+                                        {
+                                            required: false,
+                                        },
+                                    ]} className="w-100">
+                                    <Input className='position-relative' placeholder="123544" />
                                     {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
                                  src={Images.Search_blue} alt="search"/>*/}
                                 </Form.Item>
@@ -590,9 +588,9 @@ const Clients = () => {
 
                     <Form.Item>
                         <Button type="default" className="Delete_red"
-                                icon={<img src={Images.delete_red} alt="delete"/>}>Temizle</Button>
-                        <Button type="default" htmlType="submit" style={{marginLeft: '8px'}} className="Bin_Blue"
-                                icon={<img src={Images.Search_blue} alt="search"/>}>Ara</Button>
+                            icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
+                        <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue"
+                            icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
                     </Form.Item>
                 </Form>
             </Card>
@@ -631,33 +629,33 @@ const Clients = () => {
                         handleClose={handleClose2}
                         handleClear={handleClear}
                     />
-                    <Divider/>
+                    <Divider />
                     <General isSetData={isShowProduct} handleShowModal2={handleShowModal2} activeKey={activeTab === '1'}
-                             isDisableds={isDisabled} handleEditClickk={handleEditClick}/>
+                        isDisableds={isDisabled} handleEditClickk={handleEditClick} />
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Diger Bilgileri" key="2">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button">
-                                <img src={Images.add_circle_blue} alt="add"/>
+                                <img src={Images.add_circle_blue} alt="add" />
                                 Yeni
                             </Button>
                             <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit"/>
+                                <img src={Images.edit_green} alt="edit" />
                                 Degistir
                             </Button>
                         </Col>
                         <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                    className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                    className="button-margin Save_green"></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                className="button-margin Save_green"></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
                     </Row>
 
-                    <OtherInfo activeKey={activeTab === '2'}/>
+                    <OtherInfo activeKey={activeTab === '2'} />
 
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aktiv/Pasif üreticilər" key="5">
@@ -670,8 +668,8 @@ const Clients = () => {
                             <div className="mt-4"></div>
 
                             <Active showModalDiscount={handleShowModalDiscountManufacturer}
-                                    coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
-                                    className="mt-4" activeKey={activeTab === '5'}/>
+                                coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
+                                className="mt-4" activeKey={activeTab === '5'} />
                         </Col>
 
                         <Col span={11}>
@@ -681,17 +679,17 @@ const Clients = () => {
                             <div className="mt-4"></div>
 
                             <Passive showModalDiscount={handleShowModalDiscountManufacturer}
-                                     coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
-                                     className="mt-4" activeKey={activeTab === '5'}/>
+                                coolBackList={setManufacturerListManufacturer} changeDatas={changeDataManufacturer}
+                                className="mt-4" activeKey={activeTab === '5'} />
                         </Col>
 
                     </Row>
 
                     <ModalDiscountManufacturer handleClose={handleCloseDiscountManufacturer}
-                                               show={showDiscountManufacturer}
-                                               discountData={additionalManufacturer}
-                                               changeDatas={manufacturerListManufacturer}
-                                               type={modalDiscountTypeManufacturer}/>
+                        show={showDiscountManufacturer}
+                        discountData={additionalManufacturer}
+                        changeDatas={manufacturerListManufacturer}
+                        type={modalDiscountTypeManufacturer} />
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aktiv/Pasif ürünler" key="6">
                     {/* <Row gutter={16}>
@@ -720,8 +718,8 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
                             <Product_active showModalDiscount={handleShowModalDiscountProduct}
-                                            coolBackList={setManufacturerListProduct} changeDatas={changeDataProduct}
-                                            className="mt-4" activeKey={activeTab === '6'}/>
+                                coolBackList={setManufacturerListProduct} changeDatas={changeDataProduct}
+                                className="mt-4" activeKey={activeTab === '6'} />
                         </Col>
 
                         <Col span={11}>
@@ -730,15 +728,15 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
                             <Product_passive showModalDiscount={handleShowModalDiscountProduct}
-                                             coolBackList={setManufacturerListProduct} changeDatas={changeDataProduct}
-                                             className="mt-4" activeKey={activeTab === '6'}/>
+                                coolBackList={setManufacturerListProduct} changeDatas={changeDataProduct}
+                                className="mt-4" activeKey={activeTab === '6'} />
                         </Col>
 
                     </Row>
 
                     <ModalDiscountProduct handleClose={handleCloseDiscountProduct} show={showDiscountProduct}
-                                          discountData={additionalProduct} changeDatas={manufacturerListProduct}
-                                          type={modalDiscountTypeProduct}/>
+                        discountData={additionalProduct} changeDatas={manufacturerListProduct}
+                        type={modalDiscountTypeProduct} />
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Lisans" key="7">
                     {/*<Row gutter={16}>
@@ -765,7 +763,7 @@ const Clients = () => {
 
                     <Row gutter={16} className="mt-4">
                         <Col span={24}>
-                            <Licence activeKey={activeTab === '7'}/>
+                            <Licence activeKey={activeTab === '7'} />
                         </Col>
                     </ Row>
                 </TabPane>
@@ -773,12 +771,12 @@ const Clients = () => {
                     <div>
                         <div className='mt-3'>
 
-                            <Login activeKey={activeTab === '9'}/>
+                            <Login activeKey={activeTab === '9'} />
                         </div>
                     </div>
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Aramalar" key="10">
-                    <Row gutter={16}>
+                    {/* <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button"
                                     onClick={handleNewFotoClick}>
@@ -798,88 +796,88 @@ const Clients = () => {
                             <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
                                     className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
-                    </Row>
+                    </Row>*/}
 
 
-                    <Calls activeKey={activeTab === '10'}/>
+                    <Calls activeKey={activeTab === '10'} />
 
                     <Row gutter={16}>
                         <Col span={24}>
                             <Card className="info-card mt-4 " title="Arama Detaylari">
                                 <Form layout="inline">
                                     <Form.Item>
-                                        <div style={{display: 'flex', flexDirection: 'column'}}>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <label>Tarih</label>
                                             <Input className="position-relative mt-2"
-                                                   style={{width: '240px', height: "40px"}} placeholder="2021-06-08"/>
+                                                style={{ width: '240px', height: "40px" }} placeholder="2021-06-08" />
                                             <img src={Images.Down_gray} className="position-absolute"
-                                                 style={{right: '10px', top: '33px'}}/>
+                                                style={{ right: '10px', top: '33px' }} />
                                         </div>
                                     </Form.Item>
                                     <Form.Item>
-                                        <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
                                             <label>Durum</label>
                                             <Input className="position-relative mt-2"
-                                                   style={{width: '240px', height: "40px"}} placeholder="Success"/>
+                                                style={{ width: '240px', height: "40px" }} placeholder="Success" />
                                             <img src={Images.Down_gray} className="position-absolute"
-                                                 style={{right: '10px', top: '33px'}}/>
+                                                style={{ right: '10px', top: '33px' }} />
                                         </div>
                                     </Form.Item>
                                     <Form.Item>
-                                        <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
                                             <label>Genel</label>
                                             <Input className="position-relative mt-2"
-                                                   style={{width: '240px', height: "40px"}}/>
+                                                style={{ width: '240px', height: "40px" }} />
                                             <img src={Images.Down_gray} className="position-absolute"
-                                                 style={{right: '10px', top: '33px'}}/>
+                                                style={{ right: '10px', top: '33px' }} />
                                         </div>
                                     </Form.Item>
                                     <Form.Item>
-                                        <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
                                             <label>Üretici</label>
                                             <Input className="position-relative mt-2"
-                                                   style={{width: '240px', height: "40px"}} placeholder="*"/>
+                                                style={{ width: '240px', height: "40px" }} placeholder="*" />
                                             <img src={Images.Down_gray} className="position-absolute"
-                                                 style={{right: '10px', top: '33px'}}/>
+                                                style={{ right: '10px', top: '33px' }} />
                                         </div>
                                     </Form.Item>
                                 </Form>
                                 <div className="mt-3">
                                     <Form layout="inline">
                                         <Form.Item>
-                                            <div style={{display: 'flex', flexDirection: 'column'}}>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
                                                 <label>Ana Grup</label>
                                                 <Input className="position-relative mt-2"
-                                                       style={{width: '240px', height: "40px"}} placeholder="12345"/>
+                                                    style={{ width: '240px', height: "40px" }} placeholder="12345" />
                                                 <img src={Images.Down_gray} className="position-absolute"
-                                                     style={{right: '10px', top: '33px'}}/>
+                                                    style={{ right: '10px', top: '33px' }} />
                                             </div>
                                         </Form.Item>
                                         <Form.Item>
-                                            <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
                                                 <label>Alt Grup 1</label>
                                                 <Input className="position-relative mt-2"
-                                                       style={{width: '240px', height: "40px"}} placeholder="12345"/>
+                                                    style={{ width: '240px', height: "40px" }} placeholder="12345" />
                                                 <img src={Images.Down_gray} className="position-absolute"
-                                                     style={{right: '10px', top: '33px'}}/>
+                                                    style={{ right: '10px', top: '33px' }} />
                                             </div>
                                         </Form.Item>
                                         <Form.Item>
-                                            <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
                                                 <label>Alt Grup 2</label>
                                                 <Input className="position-relative mt-2"
-                                                       style={{width: '240px', height: "40px"}} placeholder="12345"/>
+                                                    style={{ width: '240px', height: "40px" }} placeholder="12345" />
                                                 <img src={Images.Down_gray} className="position-absolute"
-                                                     style={{right: '10px', top: '33px'}}/>
+                                                    style={{ right: '10px', top: '33px' }} />
                                             </div>
                                         </Form.Item>
                                         <Form.Item>
-                                            <div style={{display: 'flex', flexDirection: 'column'}} className='ms-4'>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }} className='ms-4'>
                                                 <label>Arac Marka</label>
                                                 <Input className="position-relative mt-2"
-                                                       style={{width: '240px', height: "40px"}} placeholder="*"/>
+                                                    style={{ width: '240px', height: "40px" }} placeholder="*" />
                                                 <img src={Images.Down_gray} className="position-absolute"
-                                                     style={{right: '10px', top: '33px'}}/>
+                                                    style={{ right: '10px', top: '33px' }} />
                                             </div>
                                         </Form.Item>
                                     </Form>
@@ -887,31 +885,31 @@ const Clients = () => {
                                 <div className="mt-3">
                                     <Form layout="inline">
                                         <Form.Item>
-                                            <div style={{display: 'flex', flexDirection: 'column'}}>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
                                                 <label>Arac Model</label>
                                                 <Input className="position-relative mt-2"
-                                                       style={{width: '240px', height: "40px"}} placeholder="12345"/>
+                                                    style={{ width: '240px', height: "40px" }} placeholder="12345" />
                                                 <img src={Images.Down_gray} className="position-absolute"
-                                                     style={{right: '10px', top: '33px'}}/>
+                                                    style={{ right: '10px', top: '33px' }} />
                                             </div>
                                         </Form.Item>
                                         <div className='mt-4 d-flex'>
 
                                             <Form.Item>
-                                                <div style={{flexDirection: 'column'}} className='ms-4'>
-                                                    <Checkbox/>
+                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
+                                                    <Checkbox />
                                                     <label className='ms-2'>Kampanya</label>
                                                 </div>
                                             </Form.Item>
                                             <Form.Item>
-                                                <div style={{flexDirection: 'column'}} className='ms-4'>
-                                                    <Checkbox/>
+                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
+                                                    <Checkbox />
                                                     <label className='ms-2'>Yeni urun</label>
                                                 </div>
                                             </Form.Item>
                                             <Form.Item>
-                                                <div style={{flexDirection: 'column'}} className='ms-4'>
-                                                    <Checkbox/>
+                                                <div style={{ flexDirection: 'column' }} className='ms-4'>
+                                                    <Checkbox />
                                                     <label className='ms-2'>Bugun Gelen</label>
                                                 </div>
                                             </Form.Item>
@@ -922,7 +920,7 @@ const Clients = () => {
 
                             </Card>
 
-                            <Searches className="mt-4"/>
+                            <Searches className="mt-4" />
                         </Col>
                     </Row>
 
@@ -936,7 +934,7 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
                             <Producer showModalDiscount={handleShowModalDiscount} coolBackList={setManufacturerList}
-                                      changeDatas={changeData} className="mt-4" activeKey={activeTab === '12'}/>
+                                changeDatas={changeData} className="mt-4" activeKey={activeTab === '12'} />
                         </Col>
 
                         <Col span={12}>
@@ -946,43 +944,43 @@ const Clients = () => {
                             <div className="mt-4"></div>
 
                             <Discount showModalDiscount={handleShowModalDiscount} changeDatas={changeData}
-                                      editData={editDataDiscounts} className="mt-4" activeKey={activeTab === '12'}/>
+                                editData={editDataDiscounts} className="mt-4" activeKey={activeTab === '12'} />
 
                         </Col>
 
                     </Row>
                     <ModalDiscount handleClose={handleCloseDiscount} show={showDiscount}
-                                   discountData={additionalDiscount} changeDatas={changeData} type={modalDiscountType}
-                                   editData={editDataDiscount}/>
+                        discountData={additionalDiscount} changeDatas={changeData} type={modalDiscountType}
+                        editData={editDataDiscount} />
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Kullanicilar" key="13">
                     <Row gutter={16}>
                         <Col span={12}>
                             <Button type="default" className="button-margin bg_none add_button"
-                                    onClick={addUser}>
-                                <img src={Images.add_circle_blue} alt="add"/>
+                                onClick={addUser}>
+                                <img src={Images.add_circle_blue} alt="add" />
                                 Yeni
                             </Button>
                             <Button type="default" className="button-margin bg_none edit_button">
-                                <img src={Images.edit_green} alt="edit"/>
+                                <img src={Images.edit_green} alt="edit" />
                                 Degistir
                             </Button>
                         </Col>
                         <Col span={12} className="text-right">
-                            <Button type="default" icon={<img src={Images.Search_blue} alt="search"/>}
-                                    className="button-margin Search_blue" onClick={handleShow}></Button>
-                            <Button type="default" icon={<img src={Images.Save_green} alt="save"/>}
-                                    className="button-margin Save_green" disabled={isSaveDisabled}></Button>
-                            <Button type="default" icon={<img src={Images.delete_red} alt="delete"/>}
-                                    className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                className="button-margin Search_blue" onClick={handleShow}></Button>
+                            <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                className="button-margin Save_green" disabled={isSaveDisabled}></Button>
+                            <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                className="button-margin delete_red" disabled={isDeleteDisabled}></Button>
                         </Col>
                     </Row>
                     <div className="mt-4"></div>
 
-                    <Users showModalUsers={handleShowModalUsers} activeKey={activeTab === '13'}/>
+                    <Users showModalUsers={handleShowModalUsers} activeKey={activeTab === '13'} />
 
                     <ClientUsers clientUserData={additionalClient} show={showUsers} handleClose={handleCloseUsers}
-                                 type={modalUsersType} changeDatas={changeDataUsers}/>
+                        type={modalUsersType} changeDatas={changeDataUsers} />
 
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Oil Satis isk" key="14">
@@ -1015,8 +1013,8 @@ const Clients = () => {
                             </span>
                             <div className="mt-4"></div>
                             <ProducerOil showModalDiscount={handleShowModalDiscountOil}
-                                         coolBackList={setManufacturerListOil} changeDatas={changeDataOil}
-                                         className="mt-4" activeKey={activeTab === '14'}/>
+                                coolBackList={setManufacturerListOil} changeDatas={changeDataOil}
+                                className="mt-4" activeKey={activeTab === '14'} />
                         </Col>
 
                         <Col span={12}>
@@ -1026,15 +1024,15 @@ const Clients = () => {
                             <div className="mt-4"></div>
 
                             <DiscountOil showModalDiscount={handleShowModalDiscountOil} changeDatas={changeDataOil}
-                                         editData={editDataDiscountsOil} className="mt-4"
-                                         activeKey={activeTab === '14'}/>
+                                editData={editDataDiscountsOil} className="mt-4"
+                                activeKey={activeTab === '14'} />
 
                         </Col>
 
                     </Row>
                     <ModalDiscountOil handleClose={handleCloseDiscountOil} show={showDiscountOil}
-                                      discountData={additionalDiscountOil} changeDatas={setChangeDataOil}
-                                      type={modalDiscountTypeOil} editData={editDataDiscountOil}/>
+                        discountData={additionalDiscountOil} changeDatas={setChangeDataOil}
+                        type={modalDiscountTypeOil} editData={editDataDiscountOil} />
                 </TabPane>
             </Tabs>
         </div>

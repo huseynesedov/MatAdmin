@@ -32,14 +32,14 @@ const Sidebar = () => {
         { key: "2", icon: Images.Family_blue, label: "Müştərilər", link: "/Clients", status: "true" },
         { key: "3", icon: Images.BoardList_blue, label: "Sifarişlər", link: "/Orders", status: "true" },
         { key: "4", icon: Images.User_blue, label: "Nümayəndələr", link: "/Delegates", status: "true" },
+        { key: "8", icon: Images.Notifications_blue, label: "Duyurular və Xəbərlər",link: "/news", status: "true"  },
+        { key: "12", icon: Images.Return_blue, label: "İade",link: "/Return", status: "true" },
         { key: "5", icon: Images.List_blue, label: "Məhsul Qrupları" },
         { key: "6", icon: Images.Rule_blue, label: "Satış şərtləri" },
         { key: "7", icon: Images.Message_blue, label: "Mesajlar" },
-        { key: "8", icon: Images.Notifications_blue, label: "Duyurular və Xəbərlər" },
         { key: "9", icon: Images.Exclamation_blue, label: "Günün Məhsulu" },
         { key: "10", icon: Images.Heart_blue, label: "Sövğüyət" },
         { key: "11", icon: Images.Report_blue, label: "Raporlar" },
-        { key: "12", icon: Images.Return_blue, label: "İade" },
     ];
 
     return (
