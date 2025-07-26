@@ -15,18 +15,16 @@ import {
 } from "antd";
 import {PlusOutlined, VerticalAlignTopOutlined} from "@ant-design/icons";
 
+
 import SearchModal from "./components/Modal/modal";
 import SearchModal2 from "./components/Modal/modal2";
 import Equivalent from "./components/Equivalent/products";
 
 import "./../../assets/styles/Home.scss";
 import Images from "../../assets/images/js/Images";
-import {SearchContext} from "../../searchprovider";
-import TextArea from "antd/es/input/TextArea";
-import Undergraduate from "./Component/Undergraduate";
-import UndergraduateMode from "./Component/Undergraduate Moderator";
-import {useNavigate, useParams} from "react-router-dom";
-import {AdminApi} from "../../api/admin.api";
+import { SearchContext } from "../../searchprovider";
+import { useNavigate, useParams } from "react-router-dom";
+import { AdminApi } from "../../api/admin.api";
 import General from "./components/General";
 import RolePermissionManager from "./components/RolePermissionManager";
 import PermissionSettings from "./components/PermissionSettings";
@@ -45,7 +43,7 @@ const Delegates = () => {
     const [activeTab, setActiveTab] = useState(null);
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
-    let {id} = useParams();
+    let { id } = useParams();
     const [formData, setFormData] = useState({
         kodu: "",
         uretici: "",
@@ -61,8 +59,8 @@ const Delegates = () => {
     const handleClose2 = () => setShow2(false);
 
     const handleInputChangee = (e) => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleClear = () => {
@@ -152,7 +150,7 @@ const Delegates = () => {
     const [isDisabled, setIsDisabled] = useState(false);
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
-    const {selectedItem} = useContext(SearchContext);
+    const { selectedItem } = useContext(SearchContext);
     const openNotification = (message, description, error) => {
         if (error) {
             notification.error({
@@ -205,7 +203,7 @@ const Delegates = () => {
     const onSalesmanDatas = (values) => {
         let data
         /*xFsQPkFTRN0=*/
-        AdminApi.GetSalesmanAdditionalInfos({salesmanIdHash: values}).then((res) => {
+        AdminApi.GetSalesmanAdditionalInfos({ salesmanIdHash: values }).then((res) => {
             data = res
         }).catch((err) => {
             openNotification('Xəta baş verdi', err.response.data.message, true)
@@ -228,7 +226,7 @@ const Delegates = () => {
     }, [id]);
 
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setInputs({
             ...inputs,
             [name]: value,
@@ -248,8 +246,7 @@ const Delegates = () => {
     };
 
     const [fileList, setFileList] = useState([]);
-
-    const handleChange = ({fileList}) => {
+    const handleChange = ({ fileList }) => {
         setFileList(fileList);
     };
 
@@ -306,7 +303,6 @@ const Delegates = () => {
         fetchPermissions();
     }, [id]);
     const handlePermissionsChange = async (e) => {
-        console.log( e, 'handlePermissionsChange')
 
         let data = {
             ...e,
@@ -321,7 +317,7 @@ const Delegates = () => {
 
             let data
             if (id) {
-                AdminApi.getSalesmanModulePageRole({salesmanIdHash: id}).then(res => {
+                AdminApi.getSalesmanModulePageRole({ salesmanIdHash: id }).then(res => {
                     console.log(res, 'customerGetById')
                     if (res) {
                         data = res;
@@ -360,32 +356,32 @@ const Delegates = () => {
             <Card className="search-card">
                 <Title level={4}>Ürün Bilgileri</Title>
                 <Form name="filter_form" layout="vertical" onFinish={onInitialSearch}
-                      autoComplete="off">
+                    autoComplete="off">
                     <div className="d-flex w-100 justify-content-between">
 
                         <Row className="w-100">
                             <Col span={12} md={6} className="p-2">
                                 <Form.Item label="Kodu"
-                                           name="code"
-                                           rules={[
-                                               {
-                                                   required: false,
-                                               },
-                                           ]} className="w-100">
+                                    name="code"
+                                    rules={[
+                                        {
+                                            required: false,
+                                        },
+                                    ]} className="w-100">
                                     {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
                                  src={Images.Search_blue} alt="search"/>*/}
-                                    <Input className='position-relative' placeholder="123544"/>
+                                    <Input className='position-relative' placeholder="123544" />
                                 </Form.Item>
                             </Col>
                             <Col span={12} md={6} className="p-2">
                                 <Form.Item label="Ünvan"
-                                           name="customerName"
-                                           rules={[
-                                               {
-                                                   required: false,
-                                               },
-                                           ]} className="w-100">
-                                    <Input className='position-relative' placeholder="123544"/>
+                                    name="customerName"
+                                    rules={[
+                                        {
+                                            required: false,
+                                        },
+                                    ]} className="w-100">
+                                    <Input className='position-relative' placeholder="123544" />
                                     {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
                                  src={Images.Search_blue} alt="search"/>*/}
                                 </Form.Item>
@@ -395,9 +391,9 @@ const Delegates = () => {
 
                     <Form.Item>
                         <Button type="default" className="Delete_red"
-                                icon={<img src={Images.delete_red} alt="delete"/>}>Temizle</Button>
-                        <Button type="default" htmlType="submit" style={{marginLeft: '8px'}} className="Bin_Blue"
-                                icon={<img src={Images.Search_blue} alt="search"/>}>Ara</Button>
+                            icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
+                        <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue"
+                            icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
                     </Form.Item>
                 </Form>
 
@@ -433,48 +429,48 @@ const Delegates = () => {
                                 type="default"
                                 className="button-margin bg_none add_button"
                             >
-                                <img src={Images.add_circle_blue} alt="add"/>
+                                <img src={Images.add_circle_blue} alt="add" />
                                 Yeni
                             </Button>
                             <Button
                                 type="default"
                                 className="button-margin bg_none edit_button"
                             >
-                                <img src={Images.edit_green} alt="edit"/>
+                                <img src={Images.edit_green} alt="edit" />
                                 Degistir
                             </Button>
                         </Col>
                         <Col span={12} className="text-right">
                             <Button
                                 type="default"
-                                icon={<img src={Images.Search_blue} alt="search"/>}
+                                icon={<img src={Images.Search_blue} alt="search" />}
                                 className="button-margin Search_blue"
                                 onClick={handleShow}
                             ></Button>
                             <Button
                                 type="default"
-                                icon={<img src={Images.Save_green} alt="save"/>}
+                                icon={<img src={Images.Save_green} alt="save" />}
                                 className="button-margin Save_green"
                                 disabled={isSaveDisabled}
                             ></Button>
                             <Button
                                 type="default"
-                                icon={<img src={Images.delete_red} alt="delete"/>}
+                                icon={<img src={Images.delete_red} alt="delete" />}
                                 className="button-margin delete_red"
                                 disabled={isDeleteDisabled}
                             ></Button>
                         </Col>
                     </Row>
 
-                    <RolePermissionManager permission={dataPermission}/>
+                    <RolePermissionManager permission={dataPermission} />
 
-                    <PermissionSettings modules={moduleData} onChange={handlePermissionsChange}/>
+                    <PermissionSettings modules={moduleData} onChange={handlePermissionsChange} />
 
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Bagli Musteriler" key="3">
                     <Row gutter={16} className="mt-4">
                         <Col span={24}>
-                            <Equivalent activeKey={activeTab === '3'}/>
+                            <Equivalent activeKey={activeTab === '3'} />
                         </Col>
                     </Row>
                 </TabPane>

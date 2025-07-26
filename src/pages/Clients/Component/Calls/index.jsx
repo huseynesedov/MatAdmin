@@ -53,7 +53,8 @@ const Calls = ({showModalUsers, activeKey}) => {
                     setData(res, 'ssss');
                     setSelectedRowKeys([]);
                 }
-            }).catch((err) => {
+            })
+            .catch((err) => {
                 openNotification('Xəta baş verdi', '-', true)
             })
         }

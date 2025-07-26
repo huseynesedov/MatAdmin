@@ -14,7 +14,7 @@ const Qem = ({ activeKey }) => {
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
     const [oemType, setOemType] = useState();
-    const { openNotification } = useAuth()
+    const { openNotification, logout } = useAuth()
     const [vehicleBrand, setVehicleBrand] = useState([]);
     const [groupList, setGroupList] = useState([]);
     let { id } = useParams();
@@ -71,6 +71,7 @@ const Qem = ({ activeKey }) => {
             })
             setGroupList(data)
         }).catch((err) => {
+            logout();
             openNotification('Xəta baş verdi', err.response.data.message, true)
         }).finally(() => {
             setLoading(false);
@@ -120,6 +121,7 @@ const Qem = ({ activeKey }) => {
             })
             setData(mapData)
         }).catch((err) => {
+            logout();
             openNotification('Xəta baş verdi', err.response.data.message, true)
         }).finally(() => {
             setLoading(false);
@@ -146,6 +148,7 @@ const Qem = ({ activeKey }) => {
             getOemsByTypeLists(oemType[0].valueHash)
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
+            logout();
             openNotification('Xəta baş verdi', err.response.data.message, true)
         }).finally(() => {
             setLoading(false);
@@ -208,7 +211,7 @@ const Qem = ({ activeKey }) => {
                 form.resetFields();
             })
             .catch((error) => {
-                console.error('Hata:', error);
+                // console.error('Hata:', error);
             }).finally(() => {
                 setLoading(false);
             });

@@ -1,18 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {Checkbox, Table, Modal} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
-import {ExclamationCircleFilled} from "@ant-design/icons";
+import React, { useEffect, useState } from 'react';
+import { Checkbox, Table, Modal } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../../../AuthContext";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import Images from "../../../../assets/images/js/Images";
 
 const { confirm } = Modal;
 
 const Equivalent = (activeKey) => {
     const [data, setData] = useState([]);
-    let {id} = useParams();
+    let { id } = useParams();
 
-    const {openNotification} = useAuth()
+    const { openNotification, logout } = useAuth()
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
@@ -23,7 +23,7 @@ const Equivalent = (activeKey) => {
 
 
     const getData = () => {
-        AdminApi.GetProductFileByProductId({ProductId: id}).then(res => {
+        AdminApi.GetProductFileByProductId({ ProductId: id }).then(res => {
             console.log(res, 'photo list')
             let data = res.map(da => {
                 return {
@@ -35,6 +35,7 @@ const Equivalent = (activeKey) => {
             })
             setData(data)
         }).catch((err) => {
+            logout();
             openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     }
@@ -65,7 +66,8 @@ const Equivalent = (activeKey) => {
             getData();
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            logout();
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
         console.log(id, 'sss')
     };
@@ -76,7 +78,7 @@ const Equivalent = (activeKey) => {
             width: 10,
             dataIndex: 'checkbox',
             key: 'checkbox',
-            render: () => <Checkbox/>,
+            render: () => <Checkbox />,
         },
         {
             title: 'Resim',
@@ -86,7 +88,7 @@ const Equivalent = (activeKey) => {
             sorter: true,
             render: (text) => <div className="age-column">
                 <div className='d-flex align-items-center foto_page'>
-                    <img src={text} alt=""/>
+                    <img src={text} alt="" />
                 </div>
             </div>,
         },

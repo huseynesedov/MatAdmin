@@ -9,7 +9,7 @@ const Equivalent = ({ activeKey, showData }) => {
     const [loading, setLoading] = useState(false);
     let { id } = useParams();
 
-    const { openNotification } = useAuth()
+    const { openNotification, logout } = useAuth()
 
     const navigate = useNavigate();
 
@@ -45,9 +45,12 @@ const Equivalent = ({ activeKey, showData }) => {
                 }
             })
             setData(data)
-        }).catch((err) => {
+        })
+        .catch((err) => {
+            logout();
             openNotification('Xəta baş verdi', err.response.data.message, true)
-        }).finally(() => {
+        })
+        .finally(() => {
             setLoading(false);
         });
     };

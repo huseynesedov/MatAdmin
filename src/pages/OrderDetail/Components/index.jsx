@@ -50,41 +50,6 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     const [data, setData] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
 
-    useEffect(() => {
-        if (Array.isArray(products) && products.length > 0) {
-            const formattedData = products.map((item, index) => {
-                const formatNumber = (value) => {
-                    return typeof value === 'number' ? value.toLocaleString() : '-';
-                };
-                return {
-                    key: index + 1,
-                    idHash: item.productIdHash || '-',
-                    code: item.productCode || '-',
-                    name: item.productName || '-',
-                    shippedQuantity: item.shippedQuantity,
-                    manufacturer: item.productManufacturerName || '-',
-                    amount: item.quantity || '-',
-                    br_Price: item.unitDiscountedPrice || '-',
-                    WH_Baku: formatNumber(item?.productStorages?.[0]?.quantity) || '-',
-                    WH_Gunesli: formatNumber(item?.productStorages?.[1]?.quantity) || '-',
-                    WH_Gence: formatNumber(item?.productStorages?.[2]?.quantity) || '-',
-                    isk1_id: item?.discounts?.[0]?.discountIdHash || '-',
-                    isk2_id: item?.discounts?.[1]?.discountIdHash || '-',
-                    isk3_id: item?.discounts?.[2]?.discountIdHash || '-',
-                    isk4_id: item?.discounts?.[3]?.discountIdHash || '-',
-                    isk1: formatNumber(item?.discounts?.[0]?.value) || '-',
-                    isk2: formatNumber(item?.discounts?.[1]?.value) || '-',
-                    isk3: formatNumber(item?.discounts?.[2]?.value) || '-',
-                    isk4: formatNumber(item?.discounts?.[3]?.value) || '-',
-                    net_price: formatNumber(item.totalDiscountedPrice) || '-',
-                    net_amount: formatNumber(item.totalDiscountedPrice) || '-',
-                };
-            });
-            setData(formattedData);
-        } else {
-            setData([]);
-        }
-    }, [products]);
 
 
     const handleRowCheckboxChange = (rowKey) => {

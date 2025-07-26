@@ -15,12 +15,14 @@ import General from "./components/General";
 
 import './../../assets/styles/Home.scss';
 import Images from '../../assets/images/js/Images';
+import { useAuth } from '../../AuthContext';
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const Home = () => {
     let { id } = useParams();
+    const { logout } = useAuth();
     const [loading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
@@ -81,13 +83,16 @@ const Home = () => {
         let data
         AdminApi.GetById({ id: values }).then((res) => {
             data = res
-        }).catch((err) => {
-            openNotification('Xəta baş verdi', err.response.data.message, true)
-        }).finally(r => {
-            setShowProduct(data);
-            setLoading(false);
-            console.log(data, '')
         })
+            .catch((err) => {
+                logout();
+                openNotification('Xəta baş verdi', err.response.data.message, true)
+            })
+            .finally(r => {
+                setShowProduct(data);
+                setLoading(false);
+                console.log(data, '')
+            })
     };
 
     const handleShow = () => setShow(true);
@@ -139,7 +144,7 @@ const Home = () => {
 
     const [showAlert, setShowAlert] = useState(false);
 
-   
+
 
 
 
@@ -285,208 +290,217 @@ const Home = () => {
     };
 
     return (
-        <Spin spinning={loading} >
-            <div className="home">
-                <Card className="search-card">
-                    <Title level={4}>Ürün Bilgileri</Title>
-                    <Form name="filter_form" layout="vertical" onFinish={onInitialSearch}
-                        autoComplete="off">
-                        <div className="d-flex w-100 justify-content-between">
+        <>
 
-                            <Row className="w-100">
-                                <Col span={12} md={6} className="p-2">
-                                    <Form.Item label="Kodu"
-                                        name="code"
-                                        rules={[
-                                            {
-                                                required: false,
-                                            },
-                                        ]} className="w-100">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12} md={6} className="p-2">
-                                    <Form.Item label="Adı"
-                                        name="name"
-                                        rules={[
-                                            {
-                                                required: false,
-                                            },
-                                        ]} className="w-100">
-                                        <Input />
+            {loading ? (
+                <div className="spin-overlay">
+                    <Spin size="large" />
+                </div>
+            ) : (
+                <div className="home">
+                    <Card className="search-card">
+                        <Title level={4}>Ürün Bilgileri</Title>
+                        <Form name="filter_form" layout="vertical" onFinish={onInitialSearch}
+                            autoComplete="off">
+                            <div className="d-flex w-100 justify-content-between">
 
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </div>
-                        <Form.Item>
-                            <Button type="default" className="Delete_red"
-                                icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
-                            <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue"
-                                icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
-                        </Form.Item>
-                    </Form>
-                </Card>
-                <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
-                    <TabPane disabled={tabDisable} tab="Genel" key="1">
-                        <SearchModal2
-                            shows={show2}
-                            searchData={isSearchTables}
-                            activeTab={activeTab}
-                            searchChange={onSearchData}
-                            searchPageSize={onPageSize}
-                            productData={onProductData}
-                            handleClose={handleClose2}
-                            handleClear={handleClear}
-                        />
-                        <Divider />
+                                <Row className="w-100">
+                                    <Col span={12} md={6} className="p-2">
+                                        <Form.Item label="Kodu"
+                                            name="code"
+                                            rules={[
+                                                {
+                                                    required: false,
+                                                },
+                                            ]} className="w-100">
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12} md={6} className="p-2">
+                                        <Form.Item label="Adı"
+                                            name="name"
+                                            rules={[
+                                                {
+                                                    required: false,
+                                                },
+                                            ]} className="w-100">
+                                            <Input />
 
-                        <General isSetData={isShowProduct} handleShowModal2={handleShowModal2} />
-
-                    </TabPane>
-
-                    <TabPane disabled={tabDisable} tab="Eşdeğer Ürünler" key="3">
-                        <Row className="mt-4">
-                            <Col>
-                                <Equivalent activeKey={activeTab === '3'} showData={isShowProduct} />
-                            </Col>
-                        </Row>
-                    </TabPane>
-
-                    <TabPane disabled={tabDisable} tab="Oem No" key="6">
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit" />
-                                    Degistir
-                                </Button>
-                                <Button type="default" className="button-margin bg_none print_button"
-                                    onClick={handlePrintClick}>
-                                    <img src={Images.Printer_orange} alt="edit" />
-                                    Yazdir
-                                </Button>
-                                <Button type="default" className="button-margin add_button bg_none eye_button">
-
-                                    <img src={Images.Eye_gray} alt="edit" />
-                                    Gosder
-                                </Button>
-
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Export_dark} alt="search" />}
-                                    className="button-margin bg_none export_dark"></Button>
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
-                                    className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
-                                    className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
-                                    className="button-margin bg_none delete_red"
-                                    disabled={isDeleteDisabled}></Button>
-                            </Col>
-                        </Row>
-
-                        <Row gutter={16} className="mt-4">
-                            <Col span={24}>
-                                <Card className="info-card mt-3" title="Qem No">
-                                    <Qem activeKey={activeTab} />
-                                </Card>
-                            </Col>
-                        </ Row>
-                    </TabPane>
-                    <TabPane disabled={tabDisable} tab="Rakip Kodlar" key="7">
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none edit_button">
-                                    <img src={Images.edit_green} alt="edit" />
-                                    Degistir
-                                </Button>
-                                <Button type="default" className="button-margin bg_none print_button"
-                                    onClick={handlePrintClick}>
-                                    <img src={Images.Printer_orange} alt="edit" />
-                                    Yazdir
-                                </Button>
-                                <Button type="default" className="button-margin add_button bg_none eye_button">
-
-                                    <img src={Images.Eye_gray} alt="edit" />
-                                    Gosder
-                                </Button>
-
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Export_dark} alt="search" />}
-                                    className="button-margin bg_none export_dark"></Button>
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
-                                    className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
-                                <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
-                                    className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
-                                <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
-                                    className="button-margin bg_none delete_red"
-                                    disabled={isDeleteDisabled}></Button>
-                            </Col>
-                        </Row>
-
-                        <Row gutter={16} className="mt-4">
-                            <Col span={24}>
-                                <Card className="info-card mt-3" title="Qem No">
-                                    <Qem activeKey={activeTab} />
-                                </Card>
-                            </Col>
-                        </ Row>
-                    </TabPane>
-                    <TabPane disabled={tabDisable} tab="Araç Bilgileri" key="8">
-                        <Row gutter={16} className="mt-4">
-                            <Col span={24}>
-                                <Cars_info activeKey={activeTab === '8'} />
-                            </Col>
-                        </Row>
-                    </TabPane>
-                    <TabPane disabled={tabDisable}
-                        onClick={() => {
-                            setIsNewFoto(false);
-                        }}
-                        tab="Resim" key="9">
-
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Button type="default" className="button-margin bg_none add_button"
-                                    onClick={handleNewFotoClick}>
-                                    <img src={Images.add_circle_blue} alt="add" />
-                                    Yeni
-                                </Button>
-                                {isNewFoto && (
-                                    <Button type="default" onClick={() => {
-                                        setIsNewFoto(false);
-                                    }} className="button-margin bg_none edit_button">
-                                        ←
-                                    </Button>
-                                )}
-
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
-                                    className="button-margin Search_blue" onClick={handleShow}></Button>
-                            </Col>
-                        </Row>
-
-                        {isNewFoto ?
-                            <div>
-                                <Row gutter={16} className="mt-4">
-                                    <Col span={24}>
-                                        <PhotoUpload handleShow={handleNewPhotoPropClick} isSaveDisabled={isSaveDisabled}
-                                            isDeleteDisabled={isDeleteDisabled} />
+                                        </Form.Item>
                                     </Col>
                                 </Row>
-                            </div> :
-                            <div>
-                                <div className='mt-3'>
-                                    <Foto activeKey={activeTab === '9'} />
-                                </div>
                             </div>
-                        }
-                    </TabPane>
-                </Tabs>
-            </div>
-        </Spin >
+                            <Form.Item>
+                                <Button type="default" className="Delete_red"
+                                    icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
+                                <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue"
+                                    icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
+                            </Form.Item>
+                        </Form>
+                    </Card>
+                    <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
+                        <TabPane disabled={tabDisable} tab="Genel" key="1">
+                            <SearchModal2
+                                shows={show2}
+                                searchData={isSearchTables}
+                                activeTab={activeTab}
+                                searchChange={onSearchData}
+                                searchPageSize={onPageSize}
+                                productData={onProductData}
+                                handleClose={handleClose2}
+                                handleClear={handleClear}
+                            />
+                            <Divider />
+
+                            <General isSetData={isShowProduct} handleShowModal2={handleShowModal2} />
+
+                        </TabPane>
+
+                        <TabPane disabled={tabDisable} tab="Eşdeğer Ürünler" key="3">
+                            <Row className="mt-4">
+                                <Col>
+                                    <Equivalent activeKey={activeTab === '3'} showData={isShowProduct} />
+                                </Col>
+                            </Row>
+                        </TabPane>
+
+                        <TabPane disabled={tabDisable} tab="Oem No" key="6">
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Button type="default" className="button-margin bg_none edit_button">
+                                        <img src={Images.edit_green} alt="edit" />
+                                        Degistir
+                                    </Button>
+                                    <Button type="default" className="button-margin bg_none print_button"
+                                        onClick={handlePrintClick}>
+                                        <img src={Images.Printer_orange} alt="edit" />
+                                        Yazdir
+                                    </Button>
+                                    <Button type="default" className="button-margin add_button bg_none eye_button">
+
+                                        <img src={Images.Eye_gray} alt="edit" />
+                                        Gosder
+                                    </Button>
+
+                                </Col>
+                                <Col span={12} className="text-right">
+                                    <Button type="default" icon={<img src={Images.Export_dark} alt="search" />}
+                                        className="button-margin bg_none export_dark"></Button>
+                                    <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                        className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                                    <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                        className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                                    <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                        className="button-margin bg_none delete_red"
+                                        disabled={isDeleteDisabled}></Button>
+                                </Col>
+                            </Row>
+
+                            <Row gutter={16} className="mt-4">
+                                <Col span={24}>
+                                    <Card className="info-card mt-3" title="Qem No">
+                                        <Qem activeKey={activeTab} />
+                                    </Card>
+                                </Col>
+                            </ Row>
+                        </TabPane>
+                        <TabPane disabled={tabDisable} tab="Rakip Kodlar" key="7">
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Button type="default" className="button-margin bg_none edit_button">
+                                        <img src={Images.edit_green} alt="edit" />
+                                        Degistir
+                                    </Button>
+                                    <Button type="default" className="button-margin bg_none print_button"
+                                        onClick={handlePrintClick}>
+                                        <img src={Images.Printer_orange} alt="edit" />
+                                        Yazdir
+                                    </Button>
+                                    <Button type="default" className="button-margin add_button bg_none eye_button">
+
+                                        <img src={Images.Eye_gray} alt="edit" />
+                                        Gosder
+                                    </Button>
+
+                                </Col>
+                                <Col span={12} className="text-right">
+                                    <Button type="default" icon={<img src={Images.Export_dark} alt="search" />}
+                                        className="button-margin bg_none export_dark"></Button>
+                                    <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                        className="button-margin bg_none Search_blue" onClick={handleShow}></Button>
+                                    <Button type="default" icon={<img src={Images.Save_green} alt="save" />}
+                                        className="button-margin bg_none Save_green" disabled={isSaveDisabled}></Button>
+                                    <Button type="default" icon={<img src={Images.delete_red} alt="delete" />}
+                                        className="button-margin bg_none delete_red"
+                                        disabled={isDeleteDisabled}></Button>
+                                </Col>
+                            </Row>
+
+                            <Row gutter={16} className="mt-4">
+                                <Col span={24}>
+                                    <Card className="info-card mt-3" title="Qem No">
+                                        <Qem activeKey={activeTab} />
+                                    </Card>
+                                </Col>
+                            </ Row>
+                        </TabPane>
+                        <TabPane disabled={tabDisable} tab="Araç Bilgileri" key="8">
+                            <Row gutter={16} className="mt-4">
+                                <Col span={24}>
+                                    <Cars_info activeKey={activeTab === '8'} />
+                                </Col>
+                            </Row>
+                        </TabPane>
+                        <TabPane disabled={tabDisable}
+                            onClick={() => {
+                                setIsNewFoto(false);
+                            }}
+                            tab="Resim" key="9">
+
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Button type="default" className="button-margin bg_none add_button"
+                                        onClick={handleNewFotoClick}>
+                                        <img src={Images.add_circle_blue} alt="add" />
+                                        Yeni
+                                    </Button>
+                                    {isNewFoto && (
+                                        <Button type="default" onClick={() => {
+                                            setIsNewFoto(false);
+                                        }} className="button-margin bg_none edit_button">
+                                            ←
+                                        </Button>
+                                    )}
+
+                                </Col>
+                                <Col span={12} className="text-right">
+                                    <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
+                                        className="button-margin Search_blue" onClick={handleShow}></Button>
+                                </Col>
+                            </Row>
+
+                            {isNewFoto ?
+                                <div>
+                                    <Row gutter={16} className="mt-4">
+                                        <Col span={24}>
+                                            <PhotoUpload handleShow={handleNewPhotoPropClick} isSaveDisabled={isSaveDisabled}
+                                                isDeleteDisabled={isDeleteDisabled} />
+                                        </Col>
+                                    </Row>
+                                </div> :
+                                <div>
+                                    <div className='mt-3'>
+                                        <Foto activeKey={activeTab === '9'} />
+                                    </div>
+                                </div>
+                            }
+                        </TabPane>
+                    </Tabs>
+                </div>
+            )}
+        </>
+
+
     );
 };
 

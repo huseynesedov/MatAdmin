@@ -128,7 +128,7 @@ export const apiRoutes = {
 
 
 
-// Admnin-Order
+    // Admnin-Order
     order: {
         getOrderList: '/admin/v1/Order/GetOrderList',
         undoOrderForOrderDetail: '/admin/v1/Order/UndoOrderForOrderDetail',
@@ -171,7 +171,7 @@ export const apiRoutes = {
         updateOem: '/admin/v1/Product/UpdateOem',
         updateProduct: '/admin/v1/Product/UpdateProduct',
         updateProductVehicleBrand: '/admin/v1/Product/UpdateProductVehicleBrand',
-        
+
     },
 
     adminProduct: {
@@ -189,7 +189,7 @@ export const apiRoutes = {
     },
 
 
-// Admin-role
+    // Admin-role
     role: {
         add: '/admin/v1/User/AddCustomerUser',
         delete: '/admin/v1/User/AddSalesmanUser',
@@ -261,7 +261,7 @@ export const apiRoutes = {
         storageGetList: '/catalog/v1/Storage/GetList',
     },
 
-    /*Salesman*/
+    // Salesman
 
     salesman: {
         salesmanGetTableAsync: '/admin/v1/Salesman/GetTableAsync',
@@ -270,5 +270,30 @@ export const apiRoutes = {
         getSalesmanModulePageRoles: '/admin/v1/Salesman/GetSalesmanModulePageRoles',
         updateSalesmanModulePages: '/admin/v1/Salesman/UpdateSalesmanModulePages',
         updateSalesmanAdditionalInfo: '/admin/v1/Salesman/updateSalesmanAdditionalInfo',
+
+    },
+
+
+
+
+    // Duyuru
+
+    announcement: {
+        getTable: '/admin/v1/Announcement/GetTable',
+    },
+    announcementType: {
+        getTable: '/admin/v1/AnnouncementType/GetTable',
+    },
+    announcementType: {
+        getById: '/admin/v1/Announcement/GetById',
+        getAllAnnocumentTable: '/admin/v1/AnnouncementModulePage/GetAnnouncements',
+    },
+    announcementModulePage: {
+        addAnnocument: '/admin/v1/AnnouncementModulePage/Add',
+        deleteAnnocument: '/admin/v1/AnnouncementModulePage/Delete',
+    },
+
+    module: {
+        getModuleHierarchy: '/catalog/v1/Module/GetModuleHierarchy',
     },
 };

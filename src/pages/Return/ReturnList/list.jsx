@@ -18,7 +18,6 @@ const ReturnList = ({ products, handlePageChange, currentDataPage, handlePageSiz
                 totalAmount: item.totalAmount || '-',
                 usertype: item.totalAmount || '-',
                 status: item.status || '-',
-                
             }));
             setData(formattedData);
 
@@ -27,15 +26,13 @@ const ReturnList = ({ products, handlePageChange, currentDataPage, handlePageSiz
 
 
 
-   
-
     const handleRowClick = (record) => {
         navigate(`/ReturnDetail/${record.idHash}`);
     };
 
     const createUniqueFilters = (data, key) => [...new Set(data.map(item => item[key]))].map(value => ({ text: value, value }));
     const columns = [
-       
+
         {
             title: 'No',
             dataIndex: 'no',
@@ -74,45 +71,52 @@ const ReturnList = ({ products, handlePageChange, currentDataPage, handlePageSiz
     ];
 
     const rowClassName = (record, index) => (index % 2 === 0 ? 'custom_bg' : '');
-    
-return (
-    <>
-        <Table
-            columns={columns}
-            rowClassName={rowClassName}
-            dataSource={data}
-            pagination={false}
-            scroll={{ x: 2600 }}
-            onRow={(record) => ({
-                onClick: (e) => {
-                    if (e.target.tagName !== 'INPUT') {
-                        handleRowClick(record);
-                    }
-                },
-            })}
-            rowKey="idHash"
-            bordered
-            locale={{ emptyText: 'Geri qaytarılmış məhsul yoxdur !' }}
-        />
-        <div className="d-flex w-100 justify-content-end align-items-center mt-4">
-            <Pagination
-                current={currentDataPage}
-                total={count}
-                onChange={handlePageChange}
-                pageSize={pageSize}
-                onShowSizeChange={handlePageSizeChange}
-                showSizeChanger={true}
-                pageSizeOptions={['5', '10', '20', '40', '50', '100']}
-            />
-            <span className="t_016 fs_16 fw_600 ms-2">Toplam {count}</span>
-        </div>
-        <hr />
 
 
-       
+    return (
+        <>
+            <div style={{ overflowX: 'auto' }}>
 
-    </>
-);
+
+                <Table
+                    columns={columns}
+                    rowClassName={rowClassName}
+                    dataSource={data}
+                    pagination={false}
+                    scroll={{ x: 1000 }}
+                    onRow={(record) => ({
+                        onClick: (e) => {
+                            if (e.target.tagName !== 'INPUT') {
+                                handleRowClick(record);
+                            }
+                        },
+                    })}
+                    rowKey="idHash"
+                    bordered
+                    locale={{ emptyText: 'Geri qaytarılmış məhsul yoxdur !' }}
+                />
+
+            </div>
+
+            <div className="d-flex w-100 justify-content-end align-items-center mt-4">
+                <Pagination
+                    current={currentDataPage}
+                    total={count}
+                    onChange={handlePageChange}
+                    pageSize={pageSize}
+                    onShowSizeChange={handlePageSizeChange}
+                    showSizeChanger={true}
+                    pageSizeOptions={['5', '10', '20', '40', '50', '100']}
+                />
+                <span className="t_016 fs_16 fw_600 ms-2">Toplam {count}</span>
+            </div>
+            <hr />
+
+
+
+
+        </>
+    );
 };
 
 export default ReturnList;

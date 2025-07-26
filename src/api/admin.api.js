@@ -119,7 +119,8 @@ export const AdminApi = {
         return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
     },
 
-/*/admin/v1/LogTransaction/GetProductTransactionDetails*/
+    /*/admin/v1/LogTransaction/GetProductTransactionDetails*/
+
     getProductTransactionDetails(data) {
         return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
     },
@@ -267,77 +268,8 @@ export const AdminApi = {
         return BaseApi.put(apiRoutes.user.addCustomerUpdateUser, data);
     },
 
-/*
-    // !!!!!!!!! Role !!!!!!!!!
-    AddRole(data) {
-        return BaseApi.post(apiRoutes.role.add, data);
-    },
-    Delete(userId) {
-        return BaseApi.delete(apiRoutes.role.delete, { data: { id: userId } });
-    },
-    GetByIdRole(userId) {
-        return BaseApi.get(apiRoutes.role.getById, { params: { id: userId } });
-    },
-    GetTable(params) {
-        return BaseApi.get(apiRoutes.role.getTable, { params });
-    },
-    Update(data) {
-        return BaseApi.put(apiRoutes.role.update, data);
-    },
-
-
-    // !!!!!!!!! Salesman !!!!!!!!!
-    GetById(userId) {
-        return BaseApi.get(apiRoutes.salesman.getById, { params: { id: userId } });
-    },
-    GetListByNameOrCode(params) {
-        return BaseApi.post(`${apiRoutes.salesman.getListByNameOrCode}?name=${params.name}&code=${params.code}`);
-    },
-    GetSalesmanCustomerById(userId) {
-        return BaseApi.post(apiRoutes.salesman.GetSalesmanCustomerById, { params: { id: userId } });
-    },
-    GetSalesmanListForOrderDetail(data) {
-        return BaseApi.post(apiRoutes.salesman.getSalesmanListForOrderDetail, data);
-    },
-    UpdateUserPasswordById(data) {
-        return BaseApi.put(apiRoutes.salesman.updateUserPasswordById, data);
-    },
-
-
-
-    // !!!!!!!!! User !!!!!!!!!
-    AddCustomerUser(data) {
-        return BaseApi.post(apiRoutes.user.addCustomerUser, data);
-    },
-    AddSalesmanUser(data) {
-        return BaseApi.post(apiRoutes.user.addSalesmanUser, data);
-    },
-    DeleteUser(userId) {
-        return BaseApi.delete(apiRoutes.user.deleteUser, { data: { id: userId } });
-    },
-    GetUserById(userId) {
-        return BaseApi.get(apiRoutes.user.getUserById, { params: { id: userId } });
-    },
-    GetForUpdateById(userId) {
-        return BaseApi.get(apiRoutes.user.getForUpdateById, { params: { id: userId } });
-    },
-    GetUserTable(params) {
-        return BaseApi.get(apiRoutes.user.getUserTable, { params });
-    },
-    GetUserPersonalInformationById(userId) {
-        return BaseApi.get(apiRoutes.user.getUserPersonalInformationById, { id: userId });
-    },
-    UpdateUser(data) {
-        return BaseApi.put(apiRoutes.user.updateUser, data);
-    },
-    UpdateUserPassword(data) {
-        return BaseApi.put(apiRoutes.user.updateUserPassword, data);
-    }
- */
-
-
     GetSalesmanTableAsync(params) {
-        return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, {...params });
+        return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, { ...params });
     },
 
     GetSalesmanAdditionalInfos(data) {
@@ -363,72 +295,30 @@ export const AdminApi = {
         }
         return BaseApi.post(apiRoutes.salesman.getSalesmanCustomerById + `?id=${data.id}`, setData);
     },
+    // !!!!!!!!! Announcement !!!!!!!!!
 
-    /*
-        // !!!!!!!!! Role !!!!!!!!!
-        AddRole(data) {
-            return BaseApi.post(apiRoutes.role.add, data);
-        },
-        Delete(userId) {
-            return BaseApi.delete(apiRoutes.role.delete, { data: { id: userId } });
-        },
-        GetByIdRole(userId) {
-            return BaseApi.get(apiRoutes.role.getById, { params: { id: userId } });
-        },
-        GetTable(params) {
-            return BaseApi.get(apiRoutes.role.getTable, { params });
-        },
-        Update(data) {
-            return BaseApi.put(apiRoutes.role.update, data);
-        },
-    
-    
-        // !!!!!!!!! Salesman !!!!!!!!!
-        GetById(userId) {
-            return BaseApi.get(apiRoutes.salesman.getById, { params: { id: userId } });
-        },
-        GetListByNameOrCode(params) {
-            return BaseApi.post(`${apiRoutes.salesman.getListByNameOrCode}?name=${params.name}&code=${params.code}`);
-        },
-        GetSalesmanCustomerById(userId) {
-            return BaseApi.post(apiRoutes.salesman.GetSalesmanCustomerById, { params: { id: userId } });
-        },
-        GetSalesmanListForOrderDetail(data) {
-            return BaseApi.post(apiRoutes.salesman.getSalesmanListForOrderDetail, data);
-        },
-        UpdateUserPasswordById(data) {
-            return BaseApi.put(apiRoutes.salesman.updateUserPasswordById, data);
-        },
-    
-    
-    
-        // !!!!!!!!! User !!!!!!!!!
-        AddCustomerUser(data) {
-            return BaseApi.post(apiRoutes.user.addCustomerUser, data);
-        },
-        AddSalesmanUser(data) {
-            return BaseApi.post(apiRoutes.user.addSalesmanUser, data);
-        },
-        DeleteUser(userId) {
-            return BaseApi.delete(apiRoutes.user.deleteUser, { data: { id: userId } });
-        },
-        GetUserById(userId) {
-            return BaseApi.get(apiRoutes.user.getUserById, { params: { id: userId } });
-        },
-        GetForUpdateById(userId) {
-            return BaseApi.get(apiRoutes.user.getForUpdateById, { params: { id: userId } });
-        },
-        GetUserTable(params) {
-            return BaseApi.get(apiRoutes.user.getUserTable, { params });
-        },
-        GetUserPersonalInformationById(userId) {
-            return BaseApi.get(apiRoutes.user.getUserPersonalInformationById, { id: userId });
-        },
-        UpdateUser(data) {
-            return BaseApi.put(apiRoutes.user.updateUser, data);
-        },
-        UpdateUserPassword(data) {
-            return BaseApi.put(apiRoutes.user.updateUserPassword, data);
-        }
-     */
+    getAnnouncement(data) {
+        return BaseApi.get(apiRoutes.announcement.getTable, data);
+    },
+
+    getAllAnnouncements(params) {
+        return BaseApi.post(apiRoutes.announcementType.getAllAnnocumentTable, { ...params });
+    },
+
+
+    getModuls(data) {
+        return BaseApi.get(apiRoutes.module.getModuleHierarchy, data);
+    },
+
+    addAnnocumentModule(params) {
+        return BaseApi.post(apiRoutes.announcementModulePage.addAnnocument, { ...params });
+    },
+
+    deleteAnnocument(params) {
+        console.log(params);
+        return BaseApi.delete(apiRoutes.announcementModulePage.deleteAnnocument, { params });
+    }
+
+
+
 };

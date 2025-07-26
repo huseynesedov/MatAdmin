@@ -70,6 +70,8 @@ export const CatalogApi = {
     ProductTest(params) {
         return BaseApi.get(apiRoutes.catalog.productTest, { ...params });
     },
+
+    
     // VehicleBrand
     GetVehicleBrandListAsync(params) {
         return BaseApi.get(apiRoutes.vehicleBrand.getListAsync, { ...params });

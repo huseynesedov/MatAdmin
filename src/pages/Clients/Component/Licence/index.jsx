@@ -37,7 +37,8 @@ const Licence = ({activeKey}) => {
             AdminApi.getLicenseHistoryGetTable(data).then(res => {
                 console.log(res, 'aaa')
                 setData(res)
-            }).catch((err) => {
+            })
+            .catch((err) => {
                 openNotification('Xəta baş verdi' , '-'  , true )
             })
         }

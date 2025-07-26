@@ -66,10 +66,9 @@ const Orders = () => {
       });
     }
     AdminApi.GetReturnList({
-     
-        page: currentDataPage - 1,
-        pageSize,
-        filters,
+      page: currentDataPage - 1,
+      pageSize,
+      filters,
     })
       .then((res) => {
         setProducts(res.data);
@@ -96,72 +95,88 @@ const Orders = () => {
   }, [fromDate, toDate, orderStatus, currentDataPage]);
 
   return (
-    <div className="home">
-      <Spin spinning={loading}>
-        <Card className="search-card">
-          <Title level={4}>Arama Detaylari</Title>
-          <Form layout="vertical" className="product-search-form" key={orderStatus}>
 
-            <Form.Item label="Tarih Araligi">
-              <Space direction="inline">
-                <DatePicker
-                  value={fromDate}
-                  onChange={setFromDate}
-                  format="DD/MM/YYYY"
-                  style={{ width: '240px', height: '40px' }}
-                />
-                <DatePicker
-                  value={toDate}
-                  onChange={setToDate}
-                  format="DD/MM/YYYY"
-                  style={{ width: '240px', height: '40px' }}
-                />
-              </Space>
-            </Form.Item>
-            <Form.Item>
-              <Radio.Group
-                className="d-flex flex-wrap width-500"
-                onChange={(e) => setOrderStatus(e.target.value)}
-                defaultValue={orderStatus}
-              >
-                <Radio value="all">Tümü</Radio>
-                {orderStatusList.map((d) => (
-                  <Radio key={d.displayText} value={d.displayText}>
-                    {d.displayText}
-                  </Radio>
-                ))}
-              </Radio.Group>
-            </Form.Item>
-          </Form>
-          <Form layout="inline" className="product-form">
-            <Form.Item>
-              <Button
-                type="default"
-                className="Delete_red3"
-                icon={<img src={Images.delete_red} alt="delete" />}
-                onClick={handleReset}
-              >
-                Temizle
-              </Button>
+    <>
+      {loading ? (
+        <div className="spin-overlay">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <div className="home">
+          <Card className="search-card">
+            <Title level={4}>Arama Detaylari</Title>
+            <Form layout="vertical" className="product-search-form" key={orderStatus}>
 
-            </Form.Item>
-          </Form>
-        </Card>
-        <Card>
-          <Title level={5}>Siparisler</Title>
-          <hr />
-          <ReturnList
-            pageSize={pageSize}
-            count={count}
-            orderStatusList={orderStatusList}
-            getOrdersByStatus={fetchOrders}
-            products={products}
-            handlePageChange={setCurrentDataPage}
-            currentDataPage={currentDataPage}
-          />
-        </Card>
-      </Spin>
-    </div>
+              <Form.Item label="Tarih Araligi">
+                <Space direction="inline">
+                  <DatePicker
+                    value={fromDate}
+                    onChange={setFromDate}
+                    format="DD/MM/YYYY"
+                    style={{ width: '240px', height: '40px' }}
+                  />
+                  <DatePicker
+                    value={toDate}
+                    onChange={setToDate}
+                    format="DD/MM/YYYY"
+                    style={{ width: '240px', height: '40px' }}
+                  />
+                </Space>
+              </Form.Item>
+              <Form.Item>
+                <Radio.Group
+                  className="d-flex flex-wrap width-500"
+                  onChange={(e) => setOrderStatus(e.target.value)}
+                  defaultValue={orderStatus}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '12px',        // her buton arasında boşluk
+                    width: '100%',      // full genişlik
+                  }}
+                >
+                  <Radio value="all">Tümü</Radio>
+                  {orderStatusList.map((d) => (
+                    <Radio key={d.displayText} value={d.displayText}>
+                      {d.displayText}
+                    </Radio>
+                  ))}
+                </Radio.Group>
+              </Form.Item>
+            </Form>
+            <Form layout="inline" className="product-form">
+              <Form.Item>
+                <Button
+                  type="default"
+                  className="Delete_red3"
+                  icon={<img src={Images.delete_red} alt="delete" />}
+                  onClick={handleReset}
+                >
+                  Temizle
+                </Button>
+
+              </Form.Item>
+            </Form>
+          </Card>
+          <Card>
+            <Title level={5}>Siparisler</Title>
+            <hr />
+            <ReturnList
+              pageSize={pageSize}
+              count={count}
+              orderStatusList={orderStatusList}
+              getOrdersByStatus={fetchOrders}
+              products={products}
+              handlePageChange={setCurrentDataPage}
+              currentDataPage={currentDataPage}
+            />
+          </Card>
+        </div>
+      )}
+
+    </>
+
+
   );
 };
 

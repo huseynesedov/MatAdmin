@@ -33,7 +33,8 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => 
                 if(res.data) {
                     setData(res);
                 }
-            }).catch((err) => {
+            })
+            .catch((err) => {
                 openNotification('Xəta baş verdi' , '-'  , true )
             })
         }

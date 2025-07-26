@@ -64,9 +64,11 @@ const PhotoUpload = ({ handleShow }) => {
             console.log(res, 'payload res payload')
             openNotification('Uğurlu əməliyyat..', `-`, false)
             handleShow(false)
-        }).catch(err => {
+        })
+        .catch(err => {
             openNotification('Xəta baş verdi', '-', true)
-        }).finally(() => {
+        })
+        .finally(() => {
             setLoading(false);
         });
 

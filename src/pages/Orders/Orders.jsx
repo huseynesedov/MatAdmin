@@ -24,7 +24,6 @@ const Orders = () => {
     const [count, setCount] = useState(0);
 
 
-    
     const getOrderStatusList = () => {
         setLoading(true);
         CatalogApi.GetOrderStatusList()
@@ -145,100 +144,116 @@ const Orders = () => {
 
 
     return (
-        <div className="home">
-            <Spin spinning={loading}>
-                <Card className="search-card">
-                    <Title level={4}>Arama Detaylari</Title>
-                    <Form layout="vertical" className="product-search-form">
-                        <div className="d-flex">
-                            <Form.Item label="Tarih Araligi">
-                                <Space direction="inline">
-                                    <DatePicker
-                                        disabledDate={disableFromDate}
-                                        value={fromDate}
-                                        onChange={(value) => {
-                                            setFromDate(value);
+
+        <>
+            {loading ? (
+                <div className="spin-overlay">
+                    <Spin size="large" />
+                </div>
+            ) : (
+                <div className="home">
+                    <Card className="search-card">
+                        <Title level={4}>Arama Detaylari</Title>
+                        <Form layout="vertical" className="product-search-form">
+                            <div className="d-flex">
+                                <Form.Item label="Tarih Araligi">
+                                    <Space direction="inline">
+                                        <DatePicker
+                                            disabledDate={disableFromDate}
+                                            value={fromDate}
+                                            onChange={(value) => {
+                                                setFromDate(value);
+                                            }}
+                                            format="DD/MM/YYYY"
+                                            style={{ width: '240px', height: '40px' }}
+                                        />
+                                        <DatePicker
+                                            disabledDate={disableToDate}
+                                            value={toDate}
+                                            onChange={(value) => {
+                                                setToDate(value);
+                                            }}
+                                            format="DD/MM/YYYY"
+                                            style={{ width: '240px', height: '40px' }}
+                                        />
+                                    </Space>
+                                </Form.Item>
+                            </div>
+                            <div className="d-flex align-items-start m-11">
+                                <Form.Item>
+                                    <Radio.Group
+                                        onChange={(e) => handlePageClick(e.target.value)}
+                                        defaultValue="xFsQPkFTRN0="
+                                        style={{
+                                            display: 'flex',
+                                            flexWrap: 'wrap',
+                                            gap: '12px',        // her buton arasında boşluk
+                                            width: '100%',      // full genişlik
                                         }}
-                                        format="DD/MM/YYYY"
-                                        style={{ width: '240px', height: '40px' }}
-                                    />
-                                    <DatePicker
-                                        disabledDate={disableToDate}
-                                        value={toDate}
-                                        onChange={(value) => {
-                                            setToDate(value);
-                                        }}
-                                        format="DD/MM/YYYY"
-                                        style={{ width: '240px', height: '40px' }}
-                                    />
-                                </Space>
-                            </Form.Item>
-                        </div>
-                        <div className="d-flex align-items-start m-11">
+                                    >
+                                        <Radio value="all">Tümü</Radio>
+                                        {orderStatusList.map((d) => (
+                                            <Radio key={d.valueHash} value={d.valueHash}>
+                                                {d.displayText}
+                                            </Radio>
+                                        ))}
+                                    </Radio.Group>
+
+                                </Form.Item>
+                            </div>
+                        </Form>
+                        <Form layout="inline" className="product-form">
                             <Form.Item>
-                                <Radio.Group
-                                    className="d-flex flex-wrap width-500"
-                                    onChange={(e) => handlePageClick(e.target.value)}
-                                    defaultValue="xFsQPkFTRN0="
+                                <Button
+                                    type="default"
+                                    className="Delete_red3"
+                                    icon={<img src={Images.delete_red} alt="delete" />}
+                                    onClick={clearFilter}
                                 >
-                                    <Radio value="all">Tümü</Radio>
-                                    {orderStatusList.map((d) => (
-                                        <Radio key={d.valueHash} value={d.valueHash}>
-                                            {d.displayText}
-                                        </Radio>
-                                    ))}
-                                </Radio.Group>
+                                    Temizle
+                                </Button>
+                                <Button
+                                    type="default"
+                                    style={{ marginLeft: '8px' }}
+                                    className="Bin_Blue3"
+                                    icon={<img src={Images.Search_blue} alt="search" />}
+                                    onClick={handleSearchClick}
+                                >
+                                    Ara
+                                </Button>
+                                <Button
+                                    type="default"
+                                    style={{ marginLeft: '8px' }}
+                                    className="Save_green3"
+                                    icon={<img src={Images.refresh_green} alt="refresh" />}
+                                    onClick={() => getOrdersByStatus("all", 0, false)}
+                                >
+                                    Yenile
+                                </Button>
                             </Form.Item>
-                        </div>
-                    </Form>
-                    <Form layout="inline" className="product-form">
-                        <Form.Item>
-                            <Button
-                                type="default"
-                                className="Delete_red3"
-                                icon={<img src={Images.delete_red} alt="delete" />}
-                                onClick={clearFilter}
-                            >
-                                Temizle
-                            </Button>
-                            <Button
-                                type="default"
-                                style={{ marginLeft: '8px' }}
-                                className="Bin_Blue3"
-                                icon={<img src={Images.Search_blue} alt="search" />}
-                                onClick={handleSearchClick}
-                            >
-                                Ara
-                            </Button>
-                            <Button
-                                type="default"
-                                style={{ marginLeft: '8px' }}
-                                className="Save_green3"
-                                icon={<img src={Images.refresh_green} alt="refresh" />}
-                                onClick={() => getOrdersByStatus("all", 0, false)}
-                            >
-                                Yenile
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Card>
-                <Card>
-                    <Title level={5}>Siparisler</Title>
-                    <hr />
-                    <OrderList
-                        pageSize={pageSize}
-                        count={count}
-                        orderStatusList={orderStatusList}
-                        currentPage={currentPage}
-                        getOrdersByStatus={getOrdersByStatus}
-                        products={products}
-                        handlePageChange={handlePageChange}
-                        currentDataPage={currentDataPage}
-                        handlePageSizeChange={handlePageSizeChange}
-                    />
-                </Card>
-            </Spin>
-        </div>
+                        </Form>
+                    </Card>
+                    <Card>
+                        <Title level={5}>Siparisler</Title>
+                        <hr />
+                        <OrderList
+                            pageSize={pageSize}
+                            count={count}
+                            orderStatusList={orderStatusList}
+                            currentPage={currentPage}
+                            getOrdersByStatus={getOrdersByStatus}
+                            products={products}
+                            handlePageChange={handlePageChange}
+                            currentDataPage={currentDataPage}
+                            handlePageSizeChange={handlePageSizeChange}
+                        />
+                    </Card>
+                </div>
+            )}
+
+        </>
+
+
     );
 };
 

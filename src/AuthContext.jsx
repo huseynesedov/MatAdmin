@@ -12,10 +12,14 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [loginLoading, setLoginLoading] = useState(false);
-    const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+    const navigate = useNavigate();
 
-    const storedLogged = JSON.parse(localStorage.getItem("loggedIns"))
+    const [logged, setLogged] = useState(() => {
+        return JSON.parse(localStorage.getItem("loggedIns")) || false;
+    });
+
+
     const openNotification = (message, description, error) => {
         if (error) {
             notification.error({
@@ -37,56 +41,38 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
         AccountApi.AdminLogin({ userCode, passwordHash })
             .then((res) => {
-                localStorage.setItem("loggedIn", true);
-                localStorage.setItem("loggedIns", true);
                 localStorage.setItem("token", res.accessToken);
                 localStorage.setItem("refreshToken", res.refreshToken);
+                localStorage.setItem("loggedIns", true);
+
+                setLogged(true);
                 notification.success({
                     message: "Giriş Başarılı!",
                     description: "Hoş Geldiniz!",
                 });
+
+                navigate("/");
             })
             .catch((error) => {
                 localStorage.setItem("loggedIns", false);
-                console.log('acatch false')
+                setLogged(false);
                 notification.error({
                     message: "Hata Oluştu",
                     description: error.response?.data?.message || "Bilinmeyen bir hata oluştu.",
                 });
+
             })
             .finally(() => {
                 setLoginLoading(false);
             });
     };
-
-    useEffect(() => {
-        if (!storedLogged) localStorage.setItem("loggedIns", false);
-        setLoading(false);
-    }, [storedLogged]);
-
-
     const logout = () => {
         localStorage.setItem("loggedIns", false);
-        localStorage.removeItem("loggedIns");
-        localStorage.removeItem("loggedIn");
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
+        setLogged(false);
         navigate("/login");
     };
-
-
-    useEffect(() => {
-        const handleResize = () => {
-            setCollapsed(window.innerWidth < 768);
-        };
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    const toggleSidebar = () => {
-        setCollapsed((prev) => !prev);
-    };
-
 
     return (
         <AuthContext.Provider
@@ -96,8 +82,10 @@ export const AuthProvider = ({ children }) => {
                 AdminLogin,
                 logout,
                 openNotification,
-                collapsed, 
-                toggleSidebar
+                collapsed,
+                logged,
+                setLogged,
+                // toggleSidebar
             }}
         >
             {children}

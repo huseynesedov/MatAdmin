@@ -74,7 +74,8 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
             console.log(res,'UpdateCustomerDeleteId')
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false);
             navigate(`/`)
-        }).catch((err) => {
+        })
+        .catch((err) => {
             openNotification('Xəta baş verdi' , err.response.data.message  , true )
         })
     }

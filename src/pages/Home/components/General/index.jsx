@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Checkbox, Col, Form, Input, InputNumber, Modal, Row, Select, Space,Spin } from 'antd';
+import { Button, Card, Checkbox, Col, Form, Input, InputNumber, Modal, Row, Select, Space, Spin } from 'antd';
 
 import Images from '../../../../assets/images/js/Images';
 import { ExclamationCircleFilled, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
@@ -15,7 +15,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
     const [loading, setLoading] = useState(false); // Loading durumu
     let { id } = useParams();
     const navigate = useNavigate();
-    const { openNotification } = useAuth()
+    const { openNotification, logout } = useAuth()
     const [form] = Form.useForm();
     const [isDisabled, setIsDisabled] = useState(true);
     const [productPropertys, setProductProperty] = useState([]);
@@ -67,9 +67,12 @@ const General = ({ isSetData, handleShowModal2 }) => {
 
 
     const getBrand = () => {
-        setLoading(true); // İşlem başlamadan önce loading true
+        setLoading(true);
         CatalogApi.GetVehicleBrand()
             .then(res => {
+                if (!res || !Array.isArray(res)) {
+                    throw new Error("API'den beklenen formatta veri gelmedi");
+                }
                 const data = res.map(item => {
                     if (id) {
                         return { label: item.displayText, value: item.valueHash, productVehicleBrandIdHash: '' };
@@ -79,10 +82,15 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 });
                 setVehicleBrand(data);
             })
+            .catch(err => {
+                const message = err.response?.data?.message || err.message || "Xəta baş verdi";
+                openNotification('Xəta baş verdi', message, true);
+            })
             .finally(() => {
-                setLoading(false); // İşlem tamamlandığında loading false
+                setLoading(false);
             });
     };
+
 
     useEffect(() => {
         if (checkVehicleBrand.length > 0) onChangeBrand(checkVehicleBrand)
@@ -102,6 +110,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 setVehicleModel(data);
             })
             .catch((err) => {
+                logout();
                 openNotification(
                     "Xəta baş verdi",
                     err.response?.data?.message || "Bilinmeyen hata",
@@ -294,6 +303,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 setProductTypeList(data);
             })
             .catch((err) => {
+                logout();
                 openNotification(
                     "Xəta baş verdi",
                     err.response?.data?.message || "Bilinmeyen hata",
@@ -316,6 +326,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 setProductProperty(data);
             })
             .catch((err) => {
+                logout();
                 openNotification(
                     "Xəta baş verdi",
                     err.response?.data?.message || "Bilinmeyen hata",
@@ -339,6 +350,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 setCurrencyList(data);
             })
             .catch((err) => {
+                logout();
                 openNotification(
                     "Xəta baş verdi",
                     err.response?.data?.message || "Bilinmeyen hata",
@@ -362,6 +374,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 setShelfList(data);
             })
             .catch((err) => {
+                logout();
                 openNotification(
                     "Xəta baş verdi",
                     err.response?.data?.message || "Bilinmeyen hata",
@@ -520,6 +533,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
             AdminApi.UpdateProduct(data).then(res => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yeniləndi`, false)
             }).catch((err) => {
+                logout();
                 openNotification('Xəta baş verdi', '-', true)
             }).finally(() => {
                 setLoading(false);
@@ -540,6 +554,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yaradıldı`, false)
                 if (res) navigate(`/home/${res.idHash}`)
             }).catch((err) => {
+                logout();
                 openNotification('Xəta baş verdi', '-', true)
             }).finally(() => {
                 setLoading(false);
@@ -552,17 +567,28 @@ const General = ({ isSetData, handleShowModal2 }) => {
 
     const facturersProductCount = () => {
         setLoading(true);
-        AdminApi.GetPaymentTermList().then((res) => {
-            const data = res.map(res => {
-                return { label: res.displayText, value: res.valueHash }
+        AdminApi.GetPaymentTermList()
+            .then((res) => {
+                if (!res || !Array.isArray(res)) {
+                    throw new Error("Beklenen formatta veri gelmedi");
+                }
+                const data = res.map(item => ({
+                    label: item.displayText,
+                    value: item.valueHash
+                }));
+                setPaymentTermList(data);
             })
-            setPaymentTermList(data);
-        }).catch((err) => {
-            openNotification('Xəta baş verdi', err.response.data.message, true)
-        }).finally(() => {
-            setLoading(false);
-        })
+            .catch((err) => {
+                logout();
+                const message = err.response?.data?.message || "Xəta baş verdi";
+                openNotification('Xəta baş verdi', message, true);
+                console.error('API çağrısı hatası:', err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
+
 
     useEffect(() => {
         form.setFieldsValue({
@@ -661,14 +687,24 @@ const General = ({ isSetData, handleShowModal2 }) => {
     const [manufacturerList, setManufacturerList] = useState([]);
 
     const manufacturerLists = () => {
-        CatalogApi.GetManufacturerList().then((res) => {
-
-            const data = res.map(res => {
-                return { label: res.displayText, value: res.valueHash }
+        CatalogApi.GetManufacturerList()
+            .then(res => {
+                if (!res || !Array.isArray(res)) {
+                    throw new Error("API'den beklenen formatta veri gelmedi");
+                }
+                const data = res.map(item => ({
+                    label: item.displayText,
+                    value: item.valueHash
+                }));
+                setManufacturerList(data);
             })
-            setManufacturerList(data);
-        })
+            .catch(err => {
+                const message = err.response?.data?.message || err.message || "Xəta baş verdi";
+                openNotification("Xəta baş verdi", message, true);
+                console.error("GetManufacturerList hatası:", err);
+            });
     }
+
 
 
     const manufacturerIdHash = (value) => {
@@ -729,6 +765,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
             navigate(`/`)
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
+            logout();
             openNotification('Xəta baş verdi', err.response.data.message, true)
         }).finally(() => {
             setLoading(false);
@@ -766,7 +803,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
         console.log('Failed:', errorInfo);
     };
 
-    
+
     return (
         <>
             <Spin spinning={loading}>
@@ -799,7 +836,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                             ></Button>
                             <Button onClick={showDeleteConfirm} disabled={!id} type="default"
                                 icon={<img src={Images.delete_red} alt="delete" />}
-                                className="button-margin delete_red" style={{width: "auto !important"}}></Button>
+                                className="button-margin delete_red" style={{ width: "auto !important" }}></Button>
                         </Col>
                     </Row>
                     <div className='row flex-columnn'>
@@ -812,7 +849,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <Input className='position-relative'
                                         disabled={isDisabled}
-                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
+                                        style={{ maxWidth: "240px", width: "100%", float: 'right' }}
                                         placeholder="12356789" />
                                 </Form.Item>
 
@@ -823,7 +860,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <Input className='position-relative'
                                         disabled={isDisabled}
-                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
+                                        style={{ maxWidth: "240px", width: "100%", float: 'right' }}
                                         placeholder="name" />
                                 </Form.Item>
 
@@ -838,7 +875,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         onChange={manufacturerIdHash}
                                         disabled={isDisabled}
                                         showSearch
-                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
+                                        style={{ maxWidth: "240px", width: "100%", float: 'right' }}
                                         filterOption={(input, option) =>
                                             (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                         }
@@ -852,7 +889,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <Input
                                         disabled={isDisabled}
-                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
+                                        style={{ maxWidth: "240px", width: "100%", float: 'right' }} placeholder="12356789" />
                                 </Form.Item>
 
                                 <Form.Item label="Birim"
@@ -861,7 +898,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         message: 'Zəhmət olmasa məlumat doldurun.'
                                     }]}>
                                     <Select
-                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
+                                        style={{ maxWidth: "240px", width: "100%", float: 'right' }}
                                         placeholder="Bir birim seçin"
                                         optionFilterProp="label"
                                         disabled={isDisabled}
@@ -929,7 +966,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                                         <Form.Item
                                                             {...restField}
                                                             name={[name, 'shelfIdHash']}
-                                                            style={{ maxWidth: "240px",width: "100%" }}
+                                                            style={{ maxWidth: "240px", width: "100%" }}
                                                             fieldKey={[fieldKey, 'shelfIdHash']}
                                                             label="Adres"
                                                             rules={[{
@@ -1020,7 +1057,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                 <div className="mt-3">
                                     <Form.Item label="Marka">
                                         <Select
-                                            style={{ maxWidth: "240px",width: "100%", float: "right" }}
+                                            style={{ maxWidth: "240px", width: "100%", float: "right" }}
                                             placeholder="Bir marka seçin"
                                             optionFilterProp="label"
                                             disabled={isDisabled}
@@ -1038,7 +1075,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
 
                                     <Form.Item label="Model">
                                         <Select
-                                            style={{ maxWidth: "240px",width: "100%", float: "right" }}
+                                            style={{ maxWidth: "240px", width: "100%", float: "right" }}
                                             placeholder="Bir model seçin"
                                             optionFilterProp="label"
                                             disabled={isDisabled}
@@ -1071,7 +1108,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         message: 'Zəhmət olmasa məlumat doldurun.'
                                     }]}>
                                     <Select
-                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }}
+                                        style={{ maxWidth: "240px", width: "100%", float: 'right' }}
                                         disabled={isDisabled}
                                         optionFilterProp="label"
                                         onChange={onChangeTermIdHash}
@@ -1088,7 +1125,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <InputNumber min={0}
                                         disabled={isDisabled}
-                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
+                                        style={{ maxWidth: "240px", width: "100%", float: 'right' }} placeholder="12356789" />
                                 </Form.Item>
                                 <Form.Item name="vatRate" label="KDV"
                                     rules={[{
@@ -1097,7 +1134,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                     }]}>
                                     <InputNumber min={0}
                                         disabled={isDisabled}
-                                        style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
+                                        style={{ maxWidth: "240px", width: "100%", float: 'right' }} placeholder="12356789" />
                                 </Form.Item>
 
                                 <h4 className='t_44 mt-4 fs_16 fw_600'>
@@ -1113,7 +1150,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         }]}>
                                         <InputNumber min={0}
                                             disabled={isDisabled}
-                                            style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
+                                            style={{ maxWidth: "240px", width: "100%", float: 'right' }} placeholder="12356789" />
                                     </Form.Item>
                                     <Form.Item name="oemCode" label="Oem Code"
                                         rules={[{
@@ -1122,7 +1159,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         }]}>
                                         <Input
                                             disabled={isDisabled}
-                                            style={{ maxWidth: "240px",width: "100%", float: 'right' }} placeholder="12356789" />
+                                            style={{ maxWidth: "240px", width: "100%", float: 'right' }} placeholder="12356789" />
                                     </Form.Item>
 
                                     <div className="d-flex align-items-center">
