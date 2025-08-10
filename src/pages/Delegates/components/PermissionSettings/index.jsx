@@ -70,9 +70,7 @@ const PermissionSettings = ({ modules, onChange }: any) => {
 
         const updatedPermission = {
             uniqueKey, // sadəcə lokalda istifadə üçün
-            modulePageRightId: newData[moduleIndex]
-                .subModules[subIndex]
-                .salesmanModulePages[pageIndex].id,
+            modulePageRightId: perm.modulePageRightId,
             salesmanRoleTypeId: perm.id,
             hasPermission: perm.hasPermission
         };
