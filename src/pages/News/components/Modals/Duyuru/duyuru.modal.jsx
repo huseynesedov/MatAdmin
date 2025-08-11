@@ -113,9 +113,9 @@ const DuyuruModal = ({ open, selectedAnnouncement, onClose,getOrdersByStatus }) 
                     videoLink: "",
                     status,
                     file: {
-                        name: fileName,
+                        name: "",
                         description: "",
-                        content: base64Content,
+                        content: "",
                     },
                 };
 
@@ -237,7 +237,7 @@ const DuyuruModal = ({ open, selectedAnnouncement, onClose,getOrdersByStatus }) 
 
                         </Form.Item>
 
-                        <Form.Item
+                        {/* <Form.Item
                             label="Şəkil yüklə"
                             name="image"
                             valuePropName="fileList"
@@ -278,7 +278,7 @@ const DuyuruModal = ({ open, selectedAnnouncement, onClose,getOrdersByStatus }) 
                                     style={{ marginTop: 10, maxHeight: 200 }}
                                 />
                             )}
-                        </Form.Item>
+                        </Form.Item> */}
                     </Col>
                 </Row>
             </Form>
