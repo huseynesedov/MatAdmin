@@ -291,6 +291,9 @@ export const apiRoutes = {
     announcementModulePage: {
         addAnnocument: '/admin/v1/AnnouncementModulePage/Add',
         deleteAnnocument: '/admin/v1/AnnouncementModulePage/Delete',
+        getByIdAnnocument: '/admin/v1/AnnouncementModulePage/GetById',
+        uptadeAnnocument: '/admin/v1/AnnouncementModulePage/Update',
+        changePriority: '/admin/v1/AnnouncementModulePage/changePriority',
     },
 
     module: {

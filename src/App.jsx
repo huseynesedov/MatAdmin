@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BrowserRouter as Router, useNavigate } from "react-router-dom";
 
 import "antd/dist/reset.css";
@@ -11,8 +11,8 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import { AccountApi } from "./api/account.api";
 
 function AppContent() {
-    const { logged, setLogged, logout } = useAuth();
- const navigate = useNavigate();
+    const { logged, setLogged, logout, openNotification } = useAuth();
+    const navigate = useNavigate();
 
     // Giriş kontrolü
     useEffect(() => {
@@ -33,7 +33,7 @@ function AppContent() {
     }, [navigate]);
 
 
-
+    const intervalRef = useRef(null);
     // Token decode fonksiyonu
     const decodeJwt = (token) => {
         try {
@@ -48,18 +48,24 @@ function AppContent() {
 
 
 
-    // Token yenileme işlemi
+    let refreshInterval = null;
     const updateToken = () => {
-        const loggedIns = localStorage.getItem("loggedIns");
-        if (loggedIns !== "true") return;
+        if (localStorage.getItem("loggedIns") !== "true") {
+            return;
+        }
 
-        const token = localStorage.getItem("token");
-        const decoded = decodeJwt(token);
-        if (!decoded) return;
+        let t = localStorage.getItem("token");
+        let dec = decodeJwt(t);
+        if (!dec) return;
 
-        const timeout = (decoded.exp - decoded.iat - 120) * 100;
+        let timeout = (dec?.exp - dec?.iat - 120) * 100;
 
-        const interval = setInterval(() => {
+
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+
+        refreshInterval = setInterval(() => {
             if (localStorage.getItem("loggedIns") === "true") {
                 AccountApi.RefreshToken({
                     refreshToken: localStorage.getItem("refreshToken"),
@@ -70,19 +76,27 @@ function AppContent() {
                     })
                     .catch(() => {
                         logout();
-                        clearInterval(interval);
+                        openNotification('Yenidən giriş tələb olunur !', true)
+                        clearInterval(refreshInterval);
                     });
             } else {
-                clearInterval(interval);
+                clearInterval(refreshInterval);
             }
         }, timeout);
     };
 
-    // Refresh işlemini başlatan useEffect
+
+
     useEffect(() => {
-        if (!logged) {
+        if (logged) {
             updateToken();
         }
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
     }, [logged]);
 
     if (!logged) {
@@ -90,7 +104,7 @@ function AppContent() {
     }
 
     return (
-        <div className="d-flex w-100" 
+        <div className="d-flex w-100"
         // style={{ maxWidth: "1400px" }}
         >
             <div>

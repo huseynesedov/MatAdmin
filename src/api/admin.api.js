@@ -315,8 +315,19 @@ export const AdminApi = {
     },
 
     deleteAnnocument(params) {
-        console.log(params);
         return BaseApi.delete(apiRoutes.announcementModulePage.deleteAnnocument, { params });
+    },
+
+    getByIdAnnocument(data) {
+        return BaseApi.post(apiRoutes.announcementModulePage.getByIdAnnocument, data);
+    },
+
+    uptadeAnnocument(params) {
+        return BaseApi.put(apiRoutes.announcementModulePage.uptadeAnnocument, { ...params });
+    },
+
+    changePriority(params) {
+        return BaseApi.put(apiRoutes.announcementModulePage.changePriority, { ...params });
     }
 
 

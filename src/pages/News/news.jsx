@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Form, Input, Modal, Row, Select, Typography } from 'antd'
+import { Button, Card, Col, Form, message, Modal, Row, Select, TreeSelect, Typography } from 'antd'
 import "./../../assets/styles/Home.css";
 
-import { ClearOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, UnorderedListOutlined } from '@ant-design/icons'
+import { ClearOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, } from '@ant-design/icons'
 import { AdminApi } from '../../api/admin.api';
 import SearchList from './components/searchList';
-import VideoModal from './components/Modals/Video/video.modal';
-import DuyuruModal from './components/Modals/Duyuru/duyuru.modal';
-import PictureModal from './components/Modals/Pictures/picture.modal';
+import CreateAndUptade from './components/Modals/createanduptade/createanduptade.modal';
 import { useAuth } from '../../AuthContext';
-
-
-
 
 const { Title } = Typography;
 
 const News = () => {
     const [form] = Form.useForm();
-    const [loading, setLoading] = useState(false);
     const { logout } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [loadingTable, setLoadingTable] = useState(false);
 
     const [announcementType, setAnnouncementType] = useState([]);
     const [announcementTypeDisabled, setAnnouncementTypeDisabled] = useState(true);
     const [selectedAnnouncementId, setSelectedAnnouncementId] = useState(null);
+    const [selectedAnnouncementData, setSelectedAnnouncementData] = useState(null);
 
     const [selectedValue, setSelectedValue] = useState("0");
 
@@ -58,9 +55,9 @@ const News = () => {
         form.setFieldsValue({ announcementType: value });
 
         const selectedItem = announcementType.find(item => item.value === value);
-
         setSelectedAnnouncementName(selectedItem?.name || null);
-        setSelectedAnnouncementId(selectedItem?.value); // <-- id'yi state'e kaydet
+        setSelectedAnnouncementId(selectedItem?.value);
+        setSelectedRow(null);
         getOrdersByStatus(1);
     };
 
@@ -70,7 +67,7 @@ const News = () => {
     const handleListingTypeChange = (value) => {
         setSelectedValue(value);
         form.setFieldsValue({ listingType: value });
-
+        setSelectedRow(null);
         const currentValues = form.getFieldsValue();
         if (currentValues.announcementType) {
             getOrdersByStatus(1);
@@ -87,32 +84,82 @@ const News = () => {
         setSelectedValue("0");
         setProducts([]);
         setSelectedAnnouncementName(null);
+        setSelectedAnnouncementId(null);
+        setSelectedModule(null);
         setSelectedRow(null);
         setClearTrigger(prev => !prev);
     };
 
 
+    const [selectedModule, setSelectedModule] = useState(null);
+
+    const [modules, setModules] = useState([]);
+
+
+    const getModule = () => {
+        setLoading(true);
+        AdminApi.getModuls()
+            .then((response) => {
+                if (Array.isArray(response)) {
+                    const treeData = response.map(topModule => ({
+                        title: topModule.topModuleName,
+                        value: `top-${topModule.topModuleIdHash}`, // seçilə bilməz
+                        selectable: false,
+                        children: (topModule.subModules ?? []).map(subModule => ({
+                            title: subModule.name,
+                            value: `sub-${subModule.idHash}`, // seçilə bilməz
+                            selectable: false,
+                            children: (subModule.modulePages ?? []).map(modulePage => ({
+                                title: modulePage.name,
+                                value: modulePage.idHash, // YALNIZ BUNLAR SEÇİLƏ BİLİR
+                                selectable: true
+                            }))
+                        }))
+                    }));
+                    setModules(treeData);
+                }
+            }).catch((error) => {
+                const status = error?.response?.data?.status;
+                if (status === 2017) {
+                    logout();
+                }
+            })
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        getModule();
+    }, []);
+
+
+
     const [products, setProducts] = useState([]);
     const [count, setCount] = useState(0);
 
-
+    // 2 filter
     const getOrdersByStatus = (page = 1) => {
         const currentValues = form.getFieldsValue();
 
-        if (!currentValues.announcementType) {
-            console.log("Duyuru tipi seçilmediği için istek atılmadı.");
+        if (!currentValues.announcementType || !currentValues.treeSelect) {
+            message.info('Səhifə seçin !');
             return;
         }
 
-        setLoading(true);
+        setLoadingTable(true);
 
-        const filters = [];
+        const filters = [
+            {
+                equalityType: 'Equal',
+                fieldName: 'announcementIdHash',
+                value: currentValues.announcementType,
+            },
+            {
+                equalityType: 'Equal',
+                fieldName: 'modulePageIdHash',
+                value: currentValues.treeSelect,
+            },
+        ];
 
-        filters.push({
-            equalityType: 'Equal',
-            fieldName: 'announcementIdHash',
-            value: currentValues.announcementType,
-        });
         if (currentValues.listingType !== "0") {
             filters.push({
                 equalityType: 'Equal',
@@ -120,7 +167,6 @@ const News = () => {
                 value: Number(currentValues.listingType),
             });
         }
-
 
         AdminApi.getAllAnnouncements({
             page: page - 1,
@@ -130,6 +176,7 @@ const News = () => {
             .then((res) => {
                 setProducts(res.data);
                 setCount(res.count);
+                setSelectedRow(null);
             })
             .catch((error) => {
                 const status = error?.response?.data?.status;
@@ -138,11 +185,9 @@ const News = () => {
                 }
             })
             .finally(() => {
-                setLoading(false);
+                setLoadingTable(false);
             });
     };
-
-
 
 
     useEffect(() => {
@@ -152,61 +197,55 @@ const News = () => {
 
     // Modals
     const [selectedAnnouncementName, setSelectedAnnouncementName] = useState(null);
-    const [isDuyuruModalOpen, setIsDuyuruModalOpen] = useState(false);
-    const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-    const [isPictureModalOpen, setIsPictureModalOpen] = useState(false);
+    const [isCreateAndUptade, setIsCreateAndUptade] = useState(false);
 
-
-
-    const MODAL_MAP = {
-        "$Duyurular": () => setIsDuyuruModalOpen(true),
-        "$Videos": () => setIsVideoModalOpen(true),
-        "$Pictures": () => setIsPictureModalOpen(true),
-    };
 
     const handleNewClick = () => {
-        if (!selectedAnnouncementName) {
-            Modal.warning({
-                // title: "Uyarı",
-                content: "Zəhmət olmasa bir tip seçin",
-            });
+        if (!setSelectedModule) {
+            message.warning('Zəhmət olmasa bir tip seçin');
             return;
         }
-
-        const openModal = MODAL_MAP[selectedAnnouncementName];
-
-        if (openModal) {
-            openModal();
-        } else {
-            Modal.info({
-                title: "Bilinmeyen Tip",
-                content: `Modal tanımlanmamış: ${selectedAnnouncementName}`,
-            });
-        }
+        setIsCreateAndUptade(true);
     };
+
+
 
     // Sill
     const [selectedRow, setSelectedRow] = useState(null);
 
-    console.log("secilen deyer:", selectedRow);
 
     const deleteRow = () => {
-        console.log('selectedRow:', selectedRow);
-
+        if (!selectedRow) {
+            message.warning('Zəhmət olmasa seçim edin !');
+            return;
+        }
         setLoading(true);
 
         AdminApi.deleteAnnocument({ id: selectedRow.id })
             .then(() => {
                 getOrdersByStatus();
                 setSelectedRow(null);
-                console.log("Silinən ID:", selectedRow.id);
-
             })
             .catch((err) => {
                 console.error("Silinmə zamanı xəta:", err);
             })
             .finally(() => setLoading(false));
     };
+
+
+
+
+    useEffect(() => {
+        if (selectedRow?.id) {
+            AdminApi.getByIdAnnocument({ announcementModulePageIdHash: selectedRow.id })
+                .then((res) => {
+                    setSelectedAnnouncementData(res);
+                })
+                .catch((err) => console.error("getById error:", err));
+        } else {
+            setSelectedAnnouncementData(null);
+        }
+    }, [selectedRow]);
 
 
 
@@ -236,7 +275,6 @@ const News = () => {
                                     placeholder="Duyuru tipi seçin"
                                     loading={loading}
                                     options={announcementType}
-                                    // allowClear
                                     disabled={false} style={{ width: "100%" }}
                                     onChange={handleAnnouncementTypeChange}
                                     filterOption={(input, option) =>
@@ -245,6 +283,35 @@ const News = () => {
                                             .includes(input.toLowerCase())
                                     }
                                 />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12} md={6} className="p-2">
+                            <Form.Item
+                                label="Səhifə seç:"
+                                name="treeSelect"
+                                rules={[{ required: false }]}
+                                className="w-100"
+                            >
+                                <TreeSelect
+                                    style={{ width: '100%' }}
+                                    value={selectedModule}
+                                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                    treeData={modules}
+                                    disabled={announcementTypeDisabled}
+                                    placeholder="Səhifəni seçin"
+                                    treeDefaultExpandAll
+                                    onChange={(value) => {
+                                        setSelectedModule(value);
+                                        form.setFieldsValue({ treeSelect: value });
+
+                                        const currentValues = form.getFieldsValue();
+                                        if (currentValues.announcementType) {
+                                            getOrdersByStatus(1);
+                                        }
+                                    }}
+                                    treeLine
+                                />
+
                             </Form.Item>
                         </Col>
                         <Col span={12} md={6} className="p-2">
@@ -262,7 +329,7 @@ const News = () => {
                                         { value: "1", label: "Aktiv" },
                                         { value: "-1", label: "Passiv" },
                                     ]}
-                                    disabled={announcementTypeDisabled}
+                                    disabled={!selectedModule}
                                     onChange={handleListingTypeChange}
                                     filterOption={(input, option) =>
                                         (option?.label ?? "")
@@ -272,17 +339,11 @@ const News = () => {
                                 />
                             </Form.Item>
                         </Col>
+
+
                     </Row>
 
                     <Form.Item>
-                        {/* <Button
-                            type="default"
-                            className="Bin_Blue me-3"
-                            icon={<UnorderedListOutlined />}
-                            onClick={handleList}
-                        >
-                            Listele
-                        </Button> */}
                         <Button
                             type="default"
                             className="Delete_red me-3"
@@ -295,12 +356,13 @@ const News = () => {
                         <Button
                             type="default"
                             className="Save_green3 me-3"
-                            disabled={!selectedAnnouncementName}
+                            disabled={!selectedModule || !!selectedRow}
                             icon={<PlusCircleOutlined />}
                             onClick={handleNewClick}
                         >
                             Yeni
                         </Button>
+
 
                         <Button
                             type="default"
@@ -318,9 +380,20 @@ const News = () => {
                             className="me-3"
                             icon={<EditOutlined />}
                             disabled={!selectedRow}
+                            onClick={() => {
+                                if (selectedAnnouncementName) {
+                                    setIsCreateAndUptade(true);
+                                } else {
+                                    Modal.info({
+                                        title: "Tip seçimi lazım",
+                                        content: "Zəhmət olmasa modal tipi düzgün seçin.",
+                                    });
+                                }
+                            }}
                         >
                             Düzəlt
                         </Button>
+
 
                     </Form.Item>
                 </Form>
@@ -331,6 +404,7 @@ const News = () => {
                 <SearchList
                     products={products}
                     count={count}
+                    loading={loadingTable}
                     onSelect={(record) => setSelectedRow(record)}
                     clearTrigger={clearTrigger}
                     getOrdersByStatus={getOrdersByStatus}
@@ -338,32 +412,18 @@ const News = () => {
 
             </Card>
 
-
-            {isDuyuruModalOpen && (
-                <DuyuruModal
-                    open={true}
+            {isCreateAndUptade && (
+                <CreateAndUptade
+                    open={isCreateAndUptade}
+                    mode={selectedRow ? "edit" : "create"}
+                    onClose={() => setIsCreateAndUptade(false)}
+                    announcementType={selectedAnnouncementName}
+                    initialData={selectedRow && selectedAnnouncementData ? selectedAnnouncementData : {}}
                     selectedAnnouncement={selectedAnnouncementId}
-                    onClose={() => setIsDuyuruModalOpen(false)}
+                    selectedModule={selectedModule}
                     getOrdersByStatus={getOrdersByStatus}
                 />
             )}
-
-            {isVideoModalOpen && (
-                <VideoModal
-                    open={true}
-                    selectedAnnouncement={selectedAnnouncementId}
-                    onClose={() => setIsVideoModalOpen(false)}
-                />
-            )}
-
-            {isPictureModalOpen && (
-                <PictureModal
-                    open={true}
-                    selectedAnnouncement={selectedAnnouncementId}
-                    onClose={() => setIsPictureModalOpen(false)}
-                />
-            )}
-
 
 
         </div>
