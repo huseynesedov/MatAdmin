@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 const { RangePicker } = DatePicker;
 const { Dragger } = Upload;
 
-const PictureModal = ({
+const CreateAndUptade = ({
     open,
     mode,
     initialData,
@@ -29,7 +29,7 @@ const PictureModal = ({
     selectedModule,
     onClose,
     getOrdersByStatus,
-    announcementType,  // Bu prop eklendi!
+    announcementType,
 }) => {
     const [form] = Form.useForm();
 
@@ -45,13 +45,17 @@ const PictureModal = ({
     const [imageFileList, setImageFileList] = useState([]);
     const [previewImage, setPreviewImage] = useState(null);
 
+    console.log(initialData);
 
 
     useEffect(() => {
         if (mode === "edit" && initialData) {
-            // Diğer setState'ler...
-
+            setTitle(initialData.header || "");
+            setContent(initialData.content || "");
+            setStatus(initialData.status);
             setVideoLink(initialData.videoLink || "");
+            setStartDate(dayjs(initialData.startDate));
+            setEndDate(dayjs(initialData.endDate));
 
             form.setFieldsValue({
                 title: initialData.header,
@@ -62,26 +66,15 @@ const PictureModal = ({
                 videoLink: initialData.videoLink || "",
             });
 
-            form.setFieldsValue({
-                title: initialData.header,
-                content: initialData.content,
-                status: initialData.status === 1,
-                page: initialData.modulePageIdHash,
-                dateRange: [dayjs(initialData.startDate), dayjs(initialData.endDate)],
-            });
-
             if (initialData.fileIdHash && initialData.picturePath) {
                 const fileUrl = `${siteUrl}/filemanager/v1/File/GetContent?url=${initialData.picturePath}`;
                 setPreviewImage(fileUrl);
-
-                setImageFileList([
-                    {
-                        uid: '-1',
-                        name: initialData.fileName,
-                        status: 'done',
-                        url: fileUrl,
-                    }
-                ]);
+                setImageFileList([{
+                    uid: '-1',
+                    name: initialData.fileName,
+                    status: 'done',
+                    url: fileUrl,
+                }]);
             }
         } else {
             setVideoLink("");
@@ -384,4 +377,4 @@ const PictureModal = ({
     );
 };
 
-export default PictureModal;
+export default CreateAndUptade;

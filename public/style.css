@@ -14,6 +14,9 @@
     --Export_dark-color: #000E45;
     --Active-color: #182390;
 }
+.ant-message {
+    z-index: 99999;
+}
 
 .spin-overlay {
     position: fixed;

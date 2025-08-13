@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Form, Input, Modal, Row, Select, TreeSelect, Typography } from 'antd'
+import { Button, Card, Col, Form, message, Modal, Row, Select, TreeSelect, Typography } from 'antd'
 import "./../../assets/styles/Home.css";
 
-import { ClearOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, UnorderedListOutlined } from '@ant-design/icons'
+import { ClearOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, } from '@ant-design/icons'
 import { AdminApi } from '../../api/admin.api';
 import SearchList from './components/searchList';
-import VideoModal from './components/Modals/Video/video.modal';
-import DuyuruModal from './components/Modals/Duyuru/duyuru.modal';
-import PictureModal from './components/Modals/Pictures/picture.modal';
+import CreateAndUptade from './components/Modals/createanduptade/createanduptade.modal';
 import { useAuth } from '../../AuthContext';
 
 const { Title } = Typography;
 
 const News = () => {
     const [form] = Form.useForm();
+    const { logout } = useAuth();
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
-    const { logout } = useAuth();
 
     const [announcementType, setAnnouncementType] = useState([]);
     const [announcementTypeDisabled, setAnnouncementTypeDisabled] = useState(true);
@@ -86,9 +84,12 @@ const News = () => {
         setSelectedValue("0");
         setProducts([]);
         setSelectedAnnouncementName(null);
+        setSelectedAnnouncementId(null);
+        setSelectedModule(null);
         setSelectedRow(null);
         setClearTrigger(prev => !prev);
     };
+
 
     const [selectedModule, setSelectedModule] = useState(null);
 
@@ -132,10 +133,6 @@ const News = () => {
 
 
 
-
-
-
-
     const [products, setProducts] = useState([]);
     const [count, setCount] = useState(0);
 
@@ -143,9 +140,8 @@ const News = () => {
     const getOrdersByStatus = (page = 1) => {
         const currentValues = form.getFieldsValue();
 
-        // İki seçim de yapılmadıysa istek atma
         if (!currentValues.announcementType || !currentValues.treeSelect) {
-            console.log("Duyuru tipi veya modul seçilmediği için istek atılmadı.");
+            message.info('Səhifə seçin !');
             return;
         }
 
@@ -201,18 +197,17 @@ const News = () => {
 
     // Modals
     const [selectedAnnouncementName, setSelectedAnnouncementName] = useState(null);
-    const [isPictureModalOpen, setIsPictureModalOpen] = useState(false);
+    const [isCreateAndUptade, setIsCreateAndUptade] = useState(false);
 
 
     const handleNewClick = () => {
-        if (!selectedAnnouncementName) {
-            Modal.warning({ content: "Zəhmət olmasa bir tip seçin" });
+        if (!setSelectedModule) {
+            message.warning('Zəhmət olmasa bir tip seçin');
             return;
         }
-
-        // Tek modalı aç
-        setIsPictureModalOpen(true);
+        setIsCreateAndUptade(true);
     };
+
 
 
     // Sill
@@ -220,16 +215,16 @@ const News = () => {
 
 
     const deleteRow = () => {
-        console.log('selectedRow:', selectedRow);
-
+        if (!selectedRow) {
+            message.warning('Zəhmət olmasa seçim edin !');
+            return;
+        }
         setLoading(true);
 
         AdminApi.deleteAnnocument({ id: selectedRow.id })
             .then(() => {
                 getOrdersByStatus();
                 setSelectedRow(null);
-                console.log("Silinən ID:", selectedRow.id);
-
             })
             .catch((err) => {
                 console.error("Silinmə zamanı xəta:", err);
@@ -349,14 +344,6 @@ const News = () => {
                     </Row>
 
                     <Form.Item>
-                        {/* <Button
-                            type="default"
-                            className="Bin_Blue me-3"
-                            icon={<UnorderedListOutlined />}
-                            onClick={handleList}
-                        >
-                            Listele
-                        </Button> */}
                         <Button
                             type="default"
                             className="Delete_red me-3"
@@ -395,7 +382,7 @@ const News = () => {
                             disabled={!selectedRow}
                             onClick={() => {
                                 if (selectedAnnouncementName) {
-                                    setIsPictureModalOpen(true);
+                                    setIsCreateAndUptade(true);
                                 } else {
                                     Modal.info({
                                         title: "Tip seçimi lazım",
@@ -425,10 +412,11 @@ const News = () => {
 
             </Card>
 
-            {isPictureModalOpen && (
-                <PictureModal
-                    open={isPictureModalOpen}
-                    onClose={() => setIsPictureModalOpen(false)}
+            {isCreateAndUptade && (
+                <CreateAndUptade
+                    open={isCreateAndUptade}
+                    mode={selectedRow ? "edit" : "create"}
+                    onClose={() => setIsCreateAndUptade(false)}
                     announcementType={selectedAnnouncementName}
                     initialData={selectedRow && selectedAnnouncementData ? selectedAnnouncementData : {}}
                     selectedAnnouncement={selectedAnnouncementId}
@@ -436,6 +424,7 @@ const News = () => {
                     getOrdersByStatus={getOrdersByStatus}
                 />
             )}
+
 
         </div>
 
