@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import './assets/styles/index.scss';
 import './assets/styles/orderdetail.scss';
 import './assets/styles/Topbar.scss';
