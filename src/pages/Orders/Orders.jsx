@@ -6,145 +6,128 @@ import OrderList from './Components/OrderList/index';
 import { CatalogApi } from '../../api/catalog.api';
 import { AdminApi } from '../../api/admin.api';
 
-import '../../assets/styles/Home.css'
-import '../../assets/styles/Topbar.css'
+import '../../assets/styles/Home.css';
+import '../../assets/styles/Topbar.css';
 
 const { Title } = Typography;
 
 const Orders = () => {
     const [pageSize, setPageSize] = useState(10);
-    const [currentPage, setCurrentPage] = useState('xFsQPkFTRN0=');
+    const [currentDisplayText, setCurrentDisplayText] = useState(null); // UI kontrolü
+    const [currentValueHash, setCurrentValueHash] = useState(null); // API için hash
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
-    const [orderNumber, setOrderNumber] = useState('');
     const [currentDataPage, setCurrentDataPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
     const [orderStatusList, setOrderStatusList] = useState([]);
     const [count, setCount] = useState(0);
 
-
-    const getOrderStatusList = () => {
+    const getOrderStatusList = async () => {
         setLoading(true);
-        CatalogApi.GetOrderStatusList()
-            .then((response) => {
-                if (response && Array.isArray(response)) {
-                    setOrderStatusList(response);
-                } else {
-                    console.error("Invalid response format:", response);
+        try {
+            const response = await CatalogApi.GetOrderStatusList();
+            if (Array.isArray(response)) {
+                setOrderStatusList(response);
+
+                // Default Beklemede seçim burada yapılacak
+                const beklemede = response.find(s => s.displayText === "Beklemede");
+                if (beklemede) {
+                    setCurrentDisplayText(beklemede.displayText);
+                    setCurrentValueHash(beklemede.valueHash);
+                    getOrdersByStatus(beklemede.valueHash, 0, false);
                 }
-            })
-            .catch((error) => {
-                console.error("Error fetching order status list:", error);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+            }
+        } catch (error) {
+            console.error("Error fetching order status list:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const getOrdersByStatus = (statusValue, page, filter = false) => {
+    const getOrdersByStatus = async (valueHash, page = 0, filter = false) => {
         setLoading(true);
+        try {
+            const filters = [];
 
-        let filters = [];
-
-        if (currentPage !== 0) {
-            filters.push({
-                value: currentPage,
-                fieldName: 'orderStatusIdHash',
-                equalityType: 'Equal',
-            });
-        }
-
-        if (filter) {
-            if (fromDate) {
-                filters.push({
-                    value: fromDate,
-                    fieldName: 'createdDate',
-                    equalityType: 'GreaterOrEqual',
-                });
+            if (filter) {
+                if (fromDate) {
+                    filters.push({
+                        value: fromDate,
+                        fieldName: 'createdDate',
+                        equalityType: 'GreaterOrEqual',
+                    });
+                }
+                if (toDate) {
+                    filters.push({
+                        value: toDate,
+                        fieldName: 'createdDate',
+                        equalityType: 'LessOrEqual',
+                    });
+                }
             }
 
-            if (toDate) {
+            if (valueHash && valueHash !== "all") {
                 filters.push({
-                    value: toDate,
-                    fieldName: 'createdDate',
-                    equalityType: 'LessOrEqual',
-                });
-            }
-
-            if (statusValue && statusValue !== "all") {
-                filters.push({
-                    value: statusValue,
+                    value: valueHash,
                     fieldName: 'orderStatusIdHash',
                     equalityType: 'Equal',
                 });
             }
-        }
 
-        AdminApi.GetOrderList({
-            page,
-            pageSize,
-            filters,
-        })
-            .then((res) => {
-                setProducts(res.data);
-                setCount(res.count);
-            })
-            .catch((error) => {
-                console.error("Error fetching orders:", error);
-            })
-            .finally(() => {
-                setLoading(false);
+            const res = await AdminApi.GetOrderList({
+                page,
+                pageSize,
+                filters,
             });
+            setProducts(res.data);
+            setCount(res.count);
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
+    const handleRadioChange = (displayText) => {
+        const selected = orderStatusList.find(s => s.displayText === displayText);
+        if (selected) {
+            setCurrentDisplayText(selected.displayText);
+            setCurrentValueHash(selected.valueHash);
+            getOrdersByStatus(selected.valueHash, 0, true);
+        } else if (displayText === "all") {
+            setCurrentDisplayText("all");
+            setCurrentValueHash("all");
+            getOrdersByStatus("all", 0, false);
+        }
+    };
 
     const clearFilter = () => {
         setFromDate(null);
         setToDate(null);
-        setOrderNumber('');
-        setCurrentPage("xFsQPkFTRN0");
-        getOrdersByStatus("xFsQPkFTRN0", 0, false);
+        if (orderStatusList.length > 0) {
+            const beklemede = orderStatusList.find(s => s.displayText === "Beklemede");
+            if (beklemede) {
+                setCurrentDisplayText(beklemede.displayText);
+                setCurrentValueHash(beklemede.valueHash);
+                getOrdersByStatus(beklemede.valueHash, 0, false);
+            }
+        }
     };
 
-    const disableFromDate = (current) => {
-        return toDate ? current && current > toDate : false;
-    };
-
-    const disableToDate = (current) => {
-        return fromDate ? current && current < fromDate : false;
-    };
+    const disableFromDate = (current) => (toDate ? current && current > toDate : false);
+    const disableToDate = (current) => (fromDate ? current && current < fromDate : false);
 
     useEffect(() => {
         getOrderStatusList();
-        getOrdersByStatus("xFsQPkFTRN0=", 0, false);
     }, []);
 
     const handlePageChange = (page) => {
         setCurrentDataPage(page);
-        getOrdersByStatus(currentPage, page - 1, true);
+        getOrdersByStatus(currentValueHash, page - 1, true);
     };
-
-    const handlePageClick = (id) => {
-        if (id === "all") {
-            setCurrentPage(0);
-        } else {
-            setCurrentPage(id);
-        }
-        handleSearchClick();
-    };
-
-    const handlePageSizeChange = (current, size) => {
-        setPageSize(size);
-    };
-
-    const handleSearchClick = () => {
-        getOrdersByStatus(currentPage, 0, true);
-    };
-
 
     return (
-
         <>
             {loading ? (
                 <div className="spin-overlay">
@@ -163,6 +146,7 @@ const Orders = () => {
                                             value={fromDate}
                                             onChange={(value) => {
                                                 setFromDate(value);
+                                                getOrdersByStatus(currentValueHash, 0, true);
                                             }}
                                             format="DD/MM/YYYY"
                                             style={{ width: '240px', height: '40px' }}
@@ -172,6 +156,7 @@ const Orders = () => {
                                             value={toDate}
                                             onChange={(value) => {
                                                 setToDate(value);
+                                                getOrdersByStatus(currentValueHash, 0, true);
                                             }}
                                             format="DD/MM/YYYY"
                                             style={{ width: '240px', height: '40px' }}
@@ -182,23 +167,22 @@ const Orders = () => {
                             <div className="d-flex align-items-start m-11">
                                 <Form.Item>
                                     <Radio.Group
-                                        onChange={(e) => handlePageClick(e.target.value)}
-                                        defaultValue="xFsQPkFTRN0="
+                                        onChange={(e) => handleRadioChange(e.target.value)}
+                                        value={currentDisplayText}
                                         style={{
                                             display: 'flex',
                                             flexWrap: 'wrap',
-                                            gap: '12px',        // her buton arasında boşluk
-                                            width: '100%',      // full genişlik
+                                            gap: '12px',
+                                            width: '100%',
                                         }}
                                     >
                                         <Radio value="all">Tümü</Radio>
-                                        {orderStatusList.map((d) => (
-                                            <Radio key={d.valueHash} value={d.valueHash}>
-                                                {d.displayText}
+                                        {orderStatusList.map((s) => (
+                                            <Radio key={s.valueHash} value={s.displayText}>
+                                                {s.displayText}
                                             </Radio>
                                         ))}
                                     </Radio.Group>
-
                                 </Form.Item>
                             </div>
                         </Form>
@@ -211,15 +195,6 @@ const Orders = () => {
                                     onClick={clearFilter}
                                 >
                                     Temizle
-                                </Button>
-                                <Button
-                                    type="default"
-                                    style={{ marginLeft: '8px' }}
-                                    className="Bin_Blue3"
-                                    icon={<img src={Images.Search_blue} alt="search" />}
-                                    onClick={handleSearchClick}
-                                >
-                                    Ara
                                 </Button>
                                 <Button
                                     type="default"
@@ -240,20 +215,18 @@ const Orders = () => {
                             pageSize={pageSize}
                             count={count}
                             orderStatusList={orderStatusList}
-                            currentPage={currentPage}
+                            currentPage={currentDisplayText}
                             getOrdersByStatus={getOrdersByStatus}
                             products={products}
                             handlePageChange={handlePageChange}
                             currentDataPage={currentDataPage}
-                            handlePageSizeChange={handlePageSizeChange}
+                            handlePageSizeChange={setPageSize}
+                            currentDisplayText={currentDisplayText}
                         />
                     </Card>
                 </div>
             )}
-
         </>
-
-
     );
 };
 

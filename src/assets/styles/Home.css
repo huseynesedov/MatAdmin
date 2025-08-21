@@ -232,8 +232,8 @@
 }
 
 .Search_gray {
-  width: 811px;
-  height: 219px;
+  /* width: 811px;
+  height: 219px; */
   border-radius: 8px;
   background-color: var(--dasborad_search-color);
 }
@@ -258,9 +258,6 @@
   background-color: #F2F2F2 !important;
 }
 
-.Table-size {
-  width: 834px !important;
-}
 
 :where(.css-dev-only-do-not-override-1uq9j6g).ant-table-wrapper .ant-table-thead>tr>th,
 :where(.css-dev-only-do-not-override-1uq9j6g).ant-table-wrapper .ant-table-thead>tr>td {

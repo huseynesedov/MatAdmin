@@ -17,6 +17,10 @@
 .ant-message {
     z-index: 99999;
 }
+/* index.css */
+[data-table] .ant-table-body {
+  overflow: auto !important;
+}
 
 .spin-overlay {
     position: fixed;
