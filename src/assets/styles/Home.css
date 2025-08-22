@@ -13,6 +13,7 @@
 .home .product-search-form {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
 }
 

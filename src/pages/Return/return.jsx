@@ -108,7 +108,7 @@ const Orders = () => {
             <Form layout="vertical" className="product-search-form" key={orderStatus}>
 
               <Form.Item label="Tarih Araligi">
-                <Space direction="inline">
+                <Space direction="inline" className='flex-wrap' size={12}>
                   <DatePicker
                     value={fromDate}
                     onChange={setFromDate}

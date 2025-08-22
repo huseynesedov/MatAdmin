@@ -138,9 +138,9 @@ const Orders = () => {
                     <Card className="search-card">
                         <Title level={4}>Arama Detaylari</Title>
                         <Form layout="vertical" className="product-search-form">
-                            <div className="d-flex">
+                            <div className="d-flex flex-wrap">
                                 <Form.Item label="Tarih Araligi">
-                                    <Space direction="inline">
+                                    <Space direction="inline" className='flex-wrap' size={12}>
                                         <DatePicker
                                             disabledDate={disableFromDate}
                                             value={fromDate}
@@ -164,7 +164,7 @@ const Orders = () => {
                                     </Space>
                                 </Form.Item>
                             </div>
-                            <div className="d-flex align-items-start m-11">
+                            <div className="d-flex align-items-start m-11" style={{width: '37%'}}>
                                 <Form.Item>
                                     <Radio.Group
                                         onChange={(e) => handleRadioChange(e.target.value)}
@@ -173,6 +173,7 @@ const Orders = () => {
                                             display: 'flex',
                                             flexWrap: 'wrap',
                                             gap: '12px',
+                                            maxwidth: '50%',
                                             width: '100%',
                                         }}
                                     >
