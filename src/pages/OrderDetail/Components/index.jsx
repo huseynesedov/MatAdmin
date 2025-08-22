@@ -49,7 +49,39 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
 
     const [data, setData] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
+    useEffect(() => {
+        if (!products) return;
 
+        const mappedData = products.map((p, idx) => {
+            // productStorages dinamik
+            const storages = {};
+            (p.productStorages || []).forEach((s, i) => {
+                storages[`storage_${i}`] = s.quantity;
+            });
+
+            // discounts dinamik
+            const discounts = {};
+            (p.discounts || []).forEach((d, i) => {
+                discounts[`discount_${i}`] = d.value;
+            });
+
+            return {
+                key: idx,
+                idHash: p.orderDetailIdHash,
+                code: p.productCode,
+                name: p.productName,
+                manufacturer: p.productManufacturerName,
+                amount: p.quantity,
+                br_Price: p.unitDiscountedPrice,
+                net_price: p.unitDiscountedPrice,         // sənə lazım olsa ayrıca hesablarsan
+                net_amount: p.totalDiscountedPrice,       // sənə lazım olsa ayrıca hesablarsan
+                ...storages,
+                ...discounts,
+            };
+        });
+
+        setData(mappedData);
+    }, [products]);
 
 
     const handleRowCheckboxChange = (rowKey) => {
@@ -63,6 +95,24 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
     };
 
     const createUniqueFilters = (data, key) => [...new Set(data.map(item => item[key]))].map(value => ({ text: value, value }));
+
+    const storageColumns = (products?.[0]?.productStorages || []).map((storage, index) => ({
+        title: storage.code || `Depo ${index + 1}`,
+        dataIndex: `storage_${index}`,
+        key: `storage_${index}`,
+        width: 110,
+        filters: createUniqueFilters(data, `storage_${index}`),
+        onFilter: (value, record) => record[`storage_${index}`] === value,
+    }));
+
+    const discountColumns = (products?.[0]?.discounts || []).map((discount, index) => ({
+        title: discount.discountName || `İsk${index + 1}`,
+        dataIndex: `discount_${index}`,
+        key: `discount_${index}`,
+        width: 110,
+        filters: createUniqueFilters(data, `discount_${index}`),
+        onFilter: (value, record) => record[`discount_${index}`] === value,
+    }));
 
     const columns = [
         {
@@ -85,30 +135,63 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                 />
             ),
         },
-        ...[
-            { title: 'Kodu', dataIndex: 'code', width: 150 },
-            { title: 'Adi', dataIndex: 'name', width: 250 },
-            { title: 'Üretici', dataIndex: 'manufacturer', width: 100 },
-            { title: 'Miktar', dataIndex: 'amount', width: 100 },
-            { title: 'Br.Fiyat', dataIndex: 'br_Price', width: 100 },
-            { title: products?.[0]?.productStorages?.[0]?.code || '-', dataIndex: 'WH_Baku', width: 110 },
-            { title: products?.[0]?.productStorages?.[1]?.code || '-', dataIndex: 'WH_Gunesli', width: 110 },
-            { title: products?.[0]?.productStorages?.[2]?.code || '-', dataIndex: 'WH_Gence', width: 110 },
-            { title: products?.[0]?.discounts?.[0]?.discountName || 'İsk1', dataIndex: 'isk1', width: 110 },
-            { title: products?.[0]?.discounts?.[1]?.discountName || 'İsk2', dataIndex: 'isk2', width: 110 },
-            { title: products?.[0]?.discounts?.[2]?.discountName || 'İsk3', dataIndex: 'isk3', width: 110 },
-            { title: products?.[0]?.discounts?.[3]?.discountName || 'İsk4', dataIndex: 'isk4', width: 110 },
-            { title: 'Tutar', dataIndex: 'amount', width: 110 },
-            { title: 'Net Fiyat', dataIndex: 'net_price', width: 100 },
-            { title: 'Net Tutar', dataIndex: 'net_amount', width: 100 },
-        ].map(col => ({
-            ...col,
-            key: col.dataIndex,
-            filters: createUniqueFilters(data, col.dataIndex),
-            onFilter: (value, record) => record[col.dataIndex] === value,
-        })),
+        {
+            title: 'Kodu',
+            dataIndex: 'code',
+            key: 'code',
+            width: 150,
+            filters: createUniqueFilters(data, 'code'),
+            onFilter: (value, record) => record.code === value,
+        },
+        {
+            title: 'Adi',
+            dataIndex: 'name',
+            key: 'name',
+            width: 250,
+            filters: createUniqueFilters(data, 'name'),
+            onFilter: (value, record) => record.name === value,
+        },
+        {
+            title: 'Üretici',
+            dataIndex: 'manufacturer',
+            key: 'manufacturer',
+            width: 100,
+            filters: createUniqueFilters(data, 'manufacturer'),
+            onFilter: (value, record) => record.manufacturer === value,
+        },
+        {
+            title: 'Miktar',
+            dataIndex: 'amount',
+            key: 'amount',
+            width: 100,
+        },
+        {
+            title: 'Br.Fiyat',
+            dataIndex: 'br_Price',
+            key: 'br_Price',
+            width: 100,
+        },
+        ...storageColumns,
+        ...discountColumns,
+        {
+            title: 'Tutar',
+            dataIndex: 'amount',
+            key: 'total',
+            width: 110,
+        },
+        {
+            title: 'Net Fiyat',
+            dataIndex: 'net_price',
+            key: 'net_price',
+            width: 100,
+        },
+        {
+            title: 'Net Tutar',
+            dataIndex: 'net_amount',
+            key: 'net_amount',
+            width: 100,
+        },
     ];
-
 
     // Product List -end
 
@@ -423,7 +506,6 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                 columns={columns}
                 dataSource={data}
                 pagination={false}
-                scroll={{ x: 2600 }}
                 onRow={(record) => ({
                     onDoubleClick: () => handleRowDoubleClick(record),
                 })}
@@ -601,7 +683,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                         {customerPayment2.grandTotal} AZN
+                            {customerPayment2.grandTotal} AZN
                         </span>
                     </div>
                     <div className="d-flex w-100 mt-2 justify-content-between">
@@ -610,7 +692,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                        {customerPayment2.discount} AZN
+                            {customerPayment2.discount} AZN
 
                         </span>
                     </div>
@@ -620,7 +702,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                        {customerPayment2.subTotal} AZN
+                            {customerPayment2.subTotal} AZN
 
                         </span>
                     </div>
@@ -630,7 +712,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                        {customerPayment2.kdv} AZN
+                            {customerPayment2.kdv} AZN
 
                         </span>
                     </div>
@@ -640,7 +722,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                         </span>
 
                         <span>
-                        {customerPayment2.amount} AZN
+                            {customerPayment2.amount} AZN
 
                         </span>
                     </div>

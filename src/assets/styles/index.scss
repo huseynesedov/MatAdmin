@@ -43,17 +43,17 @@ button:disabled img {
 
 
 :where(.css-dev-only-do-not-override-1uq9j6g).ant-radio-group {
-  width: 564px !important;
+  max-width: 70% !important;
 
-  label {
-    margin-left: 124px;
-    margin-top: 20px;
-  }
-  label:nth-of-type(4) {
-    margin-left: 98px !important;
-  }
-  label:nth-of-type(6) {
-    margin-left: 50px !important;
-  }
+  // label {
+  //   margin-left: 124px;
+  //   margin-top: 20px;
+  // }
+  // label:nth-of-type(4) {
+  //   margin-left: 98px !important;
+  // }
+  // label:nth-of-type(6) {
+  //   margin-left: 50px !important;
+  // }
 }
 

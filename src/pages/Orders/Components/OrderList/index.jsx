@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pagination, Table, Checkbox, notification, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { BaseApi } from '../../../../const/api';
@@ -9,6 +9,23 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
     const [showCheckboxAndButton, setShowCheckboxAndButton] = useState(false);
 
     const navigate = useNavigate();
+
+
+    // ResizeObserver hatasını önlemek için özel tablo bileşeni
+    const ResizeTable = (props) => {
+        const tableRef = useCallback((node) => {
+            if (node) {
+                // Tablo içindeki ResizeObserver'ı iptal et
+                const resizeObserver = new ResizeObserver(() => { });
+                resizeObserver.observe(node);
+                return () => resizeObserver.disconnect();
+            }
+        }, []);
+
+        return <div ref={tableRef}><Table {...props} /></div>;
+    };
+
+
 
     useEffect(() => {
         if (Array.isArray(products)) {
@@ -109,6 +126,7 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
             title: 'No',
             dataIndex: 'no',
             key: 'no',
+            width: 50,
             filters: createUniqueFilters(data, 'no'),
             onFilter: (value, record) => record.no === value,
         },
@@ -126,13 +144,13 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
             filters: createUniqueFilters(data, 'address'),
             onFilter: (value, record) => record.address === value,
         },
-        {
-            title: 'Region',
-            dataIndex: 'region',
-            key: 'region',
-            filters: createUniqueFilters(data, 'region'),
-            onFilter: (value, record) => record.region === value,
-        },
+        // {
+        //     title: 'Region',
+        //     dataIndex: 'region',
+        //     key: 'region',
+        //     filters: createUniqueFilters(data, 'region'),
+        //     onFilter: (value, record) => record.region === value,
+        // },
         {
             title: 'Gönderi şekli',
             dataIndex: 'post_form',
@@ -163,30 +181,31 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
                 const date = new Date(text);
                 return isNaN(date.getTime()) ? '' : date.toLocaleDateString();
             },
+            
         },
-        {
-            title: 'Onay T.',
-            dataIndex: 'confirim_t',
-            key: 'confirim_t',
-            render: (text) => {
-                const date = new Date(text);
-                return isNaN(date.getTime()) ? '' : date.toLocaleDateString();
-            },
-        },
-        {
-            title: 'Onay No',
-            dataIndex: 'confirim_no',
-            key: 'confirim_no',
-            filters: createUniqueFilters(data, 'confirim_no'),
-            onFilter: (value, record) => record.confirim_no === value,
-        },
-        {
-            title: 'Yazdirildi',
-            dataIndex: 'printed',
-            key: 'printed',
-            filters: createUniqueFilters(data, 'printed'),
-            onFilter: (value, record) => record.printed === value,
-        },
+        // {
+        //     title: 'Onay T.',
+        //     dataIndex: 'confirim_t',
+        //     key: 'confirim_t',
+        //     render: (text) => {
+        //         const date = new Date(text);
+        //         return isNaN(date.getTime()) ? '' : date.toLocaleDateString();
+        //     },
+        // },
+        // {
+        //     title: 'Onay No',
+        //     dataIndex: 'confirim_no',
+        //     key: 'confirim_no',
+        //     filters: createUniqueFilters(data, 'confirim_no'),
+        //     onFilter: (value, record) => record.confirim_no === value,
+        // },
+        // {
+        //     title: 'Yazdirildi',
+        //     dataIndex: 'printed',
+        //     key: 'printed',
+        //     filters: createUniqueFilters(data, 'printed'),
+        //     onFilter: (value, record) => record.printed === value,
+        // },
         {
             title: 'Toplam',
             dataIndex: 'total',
@@ -198,16 +217,17 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
             title: 'Sifaris Notu',
             dataIndex: 'sip_note',
             key: 'sip_note',
+            width: 20,
             filters: createUniqueFilters(data, 'sip_note'),
             onFilter: (value, record) => record.sip_note === value,
         },
-        {
-            title: 'Göndərən',
-            dataIndex: 'deliver',
-            key: 'deliver',
-            filters: createUniqueFilters(data, 'deliver'),
-            onFilter: (value, record) => record.deliver === value,
-        },
+        // {
+        //     title: 'Göndərən',
+        //     dataIndex: 'deliver',
+        //     key: 'deliver',
+        //     filters: createUniqueFilters(data, 'deliver'),
+        //     onFilter: (value, record) => record.deliver === value,
+        // },
         {
             title: 'Depo',
             dataIndex: 'storage',
@@ -215,13 +235,13 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
             filters: createUniqueFilters(data, 'storage'),
             onFilter: (value, record) => record.storage === value,
         },
-        {
-            title: 'Plasiyer Notu',
-            dataIndex: 'salesmanNote',
-            key: 'salesmanNote',
-            filters: createUniqueFilters(data, 'salesmanNote'),
-            onFilter: (value, record) => record.salesmanNote === value,
-        },
+        // {
+        //     title: 'Plasiyer Notu',
+        //     dataIndex: 'salesmanNote',
+        //     key: 'salesmanNote',
+        //     filters: createUniqueFilters(data, 'salesmanNote'),
+        //     onFilter: (value, record) => record.salesmanNote === value,
+        // },
     ];
 
     const isSaveDisabled = selectedIds.length < 2;
@@ -229,14 +249,16 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
 
     return (
         <>
-
-            <div style={{ overflowX: 'auto' }}>
-                <Table
-                    columns={columns}
+            <div className="table-responsive-container">
+                <ResizeTable
+                    columns={columns.map(col => ({
+                        ...col,
+                        ellipsis: true, // Uzun metinleri üç nokta ile kısalt
+                    }))}
                     rowClassName={rowClassName}
                     dataSource={data}
                     pagination={false}
-                    scroll={{ x: 2000 }}
+                    scroll={{ x: 'max-content' }}
                     onRow={(record) => ({
                         onClick: (e) => {
                             if (e.target.tagName !== 'INPUT') {
@@ -247,10 +269,11 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
                     rowKey="idHash"
                     bordered
                     locale={{ emptyText: 'Kayıt bulunamadı' }}
+                    size="middle"
                 />
             </div>
 
-            <div className="d-flex w-100 justify-content-end align-items-center mt-4">
+            <div className="d-flex w-100 justify-content-between align-items-center mt-4 flex-wrap gap-2">
                 <Pagination
                     current={currentDataPage}
                     total={count}
@@ -259,11 +282,11 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
                     onShowSizeChange={handlePageSizeChange}
                     showSizeChanger={true}
                     pageSizeOptions={['5', '10', '20', '40', '50', '100']}
+                    responsive={true}
                 />
-                <span className="t_016 fs_16 fw_600 ms-2">Toplam {count}</span>
+                <span className="t_016 fs_16 fw_600">Toplam {count}</span>
             </div>
             <hr />
-
 
             {showCheckboxAndButton && (
                 <Button
@@ -271,6 +294,7 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
                     onClick={handleSendSelectedIds}
                     disabled={isSaveDisabled}
                     icon={<LuCombine />}
+                    style={{ marginTop: '16px' }}
                 >
                     Birlesdir
                 </Button>
