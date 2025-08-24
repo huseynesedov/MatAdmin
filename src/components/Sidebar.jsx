@@ -45,7 +45,7 @@ const Sidebar = () => {
     return (
         <>
             <Button
-                className="menu-button"
+                className="menu-button d-md-none"
                 icon={<MenuOutlined />}
                 onClick={() => setVisible(true)}
             />

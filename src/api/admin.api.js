@@ -129,6 +129,10 @@ export const AdminApi = {
         return BaseApi.post(apiRoutes.customer.getLicenseHistoryByCustomerId, data);
     },
 
+    postSalesmanGetTableAsync(data) {
+        return BaseApi.post(apiRoutes.salesman.salesmanGetTableAsync, data);
+    },
+
     GetSalesmanGetTableAsync() {
         return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, '');
     },

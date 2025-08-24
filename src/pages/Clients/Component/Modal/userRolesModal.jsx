@@ -52,7 +52,7 @@ const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
                 equalityType: 'Contains'
             }
         }*/
-        AdminApi.GetSalesmanGetTableAsync().then((res) => {
+        AdminApi.postSalesmanGetTableAsync(searchProductCount).then((res) => {
             setDataList(res);
         })
     }

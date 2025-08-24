@@ -497,15 +497,9 @@ a {
 }
 
 .main {
-    width: calc(100% - 126px);
+    width: 100% !important;
 }
 
-/* .main{
-    width: 100%;
-} */
-.main {
-    width: 100%;
-}
 
 .ant-form-item-explain-error {
     float: right !important;
