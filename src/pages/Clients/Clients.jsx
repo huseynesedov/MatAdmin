@@ -1,13 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {  useEffect, useRef, useState } from 'react';
 import { Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, Checkbox, Radio, notification, } from 'antd';
 import { useAuth } from '../../AuthContext';
-
+import { Outlet } from 'react-router-dom';
+import { AdminApi } from "../../api/admin.api";
+import { useNavigate, useParams } from "react-router-dom";
 
 import SearchModal from './Component/Modal/modal';
 import SearchModal2 from './Component/Modal/modal2';
-
-
-import './../../assets/styles/Clients.scss';
 
 import Images from '../../assets/images/js/Images';
 
@@ -19,8 +18,6 @@ import Searches from './Component/Searches';
 import Discount from './Component/Additional discount/discount';
 import Producer from './Component/Additional discount/producer';
 import Users from './Component/Users';
-import { AdminApi } from "../../api/admin.api";
-import { useNavigate, useParams } from "react-router-dom";
 import General from "./Component/General";
 import ModalDiscount from "./Component/Modal/modalDiscount";
 import ProducerOil from "./Component/AdditionalOil/producerOil";
@@ -28,7 +25,6 @@ import DiscountOil from "./Component/AdditionalOil/discountOil";
 import ModalDiscountOil from "./Component/Modal/modalDiscountOil";
 import ModalDiscountProduct from "./Component/Modal/modalDiscountProduct";
 import Active from "./Component/manufacturerPA/active";
-import Passif from "./Component/Description/passif";
 import Passive from "./Component/manufacturerPA/passive";
 import ModalDiscountManufacturer from "./Component/Modal/modalDiscountManufacturer";
 import ClientUsers from "./Component/Modal/clientUsers";
@@ -40,6 +36,8 @@ const { TabPane } = Tabs;
 
 const Clients = () => {
     const { logout } = useAuth();
+    let { id } = useParams();
+    const navigate = useNavigate();
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [showDiscount, setShowDiscount] = useState(false);
@@ -47,7 +45,6 @@ const Clients = () => {
     const [showDiscountProduct, setShowDiscountProduct] = useState(false);
     const [showDiscountManufacturer, setShowDiscountManufacturer] = useState(false);
     const [showDiscountOil, setShowDiscountOil] = useState(false);
-    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(null);
     const [tabDisable, setTabDisable] = useState(false);
     const [isShowProduct, setShowProduct] = useState();
@@ -67,7 +64,6 @@ const Clients = () => {
     const [modalUsersType, setModalUsersType] = useState();
     const [editDataDiscount, setEditDataDiscount] = useState();
     const [editDataDiscountOil, setEditDataDiscountOil] = useState();
-    let { id } = useParams();
     const [formData, setFormData] = useState({
         kodu: '',
         uretici: '',
@@ -192,48 +188,13 @@ const Clients = () => {
         setManufacturerListsProduct(data)
         console.log(data, 'setManufacturerList')
     }
-
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
-    };
 
-    const handleBlur = (e) => {
-
-        if (!dropdownRef.current.contains(e.relatedTarget)) {
-            setIsDropdownOpen(false);
-        }
-    };
-
-
-    const handleItemClick = () => {
-        setIsDropdownOpen(false);
-    };
 
 
     const [isUpVisible, setIsUpVisible] = useState(false);
     const [isTableViewVisible, setIsTableViewVisible] = useState(false);
-
-    const handleToggleClick = () => {
-        setIsUpVisible(!isUpVisible);
-        setIsTableViewVisible(!isTableViewVisible);
-    };
-
-
-    const [showAlert, setShowAlert] = useState(false);
-
-    const handleSaveClick = () => {
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 5000);
-    };
-
-    const handleCloseAlert = () => {
-        setShowAlert(false);
-    };
 
 
     const openNotification = (message, description, error) => {
@@ -253,17 +214,6 @@ const Clients = () => {
     };
 
 
-    const [isBarCode, setIsBarCode] = useState(false);
-
-    const handlePrintClick = () => {
-        setIsBarCode(true)
-    };
-
-    const [isNewFoto, setIsNewFoto] = useState(false);
-
-    const handleNewFotoClick = () => {
-        setIsNewFoto(true)
-    };
 
     const [inputs, setInputs] = useState({
         product_code: '',
@@ -304,7 +254,8 @@ const Clients = () => {
             data = res
         }).catch((err) => {
             logout()
-            openNotification('Xəta baş verdi', err.response.data.message, true)
+            console.log("errrorrrrrrrrrrrrr", err);
+        
         }).finally(r => {
             setShowProduct(data);
             console.log(data, '')
@@ -339,7 +290,6 @@ const Clients = () => {
             filters: values
         }
 
-        const searchUrl = switchTab(activeTab)
         // AdminApi[searchUrl](data).then((res) => {
         AdminApi.GetCustomerListBySearch(data).then((res) => {
             if (res) {
@@ -355,7 +305,7 @@ const Clients = () => {
     const onInitialSearch = (values) => {
         console.log('Success:', values);
         if (!values) return
-        navigate(`/Clients`);
+        navigate(`/clients`);
         const result = Object.keys(values).filter(key => values[key] !== undefined && values[key] !== null && values[key] !== "").map((key) => ({
             value: values[key],
             fieldName: key,
@@ -382,7 +332,7 @@ const Clients = () => {
                 handleCloseDiscount()
                 openNotification('Uğurlu əməliyyat..', `-`, false)
             }).catch((err) => {
-                openNotification('Xəta baş verdi', '-', true)
+                openNotification('Xəta baş verdi', err.response.data.message, true)
             })
         } else {
             const updateData = {
@@ -401,7 +351,7 @@ const Clients = () => {
                 handleCloseDiscount()
                 openNotification('Uğurlu əməliyyat..', `-`, false)
             }).catch((err) => {
-                openNotification('Xəta baş verdi', '-', true)
+                openNotification('Xəta baş verdi', err.response.data.message, true)
             })
         }
 
@@ -427,7 +377,7 @@ const Clients = () => {
             handleCloseDiscount()*/
             openNotification('Uğurlu əməliyyat..', `-`, false)
         }).catch((err) => {
-            openNotification('Xəta baş verdi', '-', true)
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     }
 
@@ -445,7 +395,7 @@ const Clients = () => {
             handleCloseDiscount()*/
             openNotification('Uğurlu əməliyyat..', `-`, false)
         }).catch((err) => {
-            openNotification('Xəta baş verdi', '-', true)
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     }
 
@@ -1036,6 +986,7 @@ const Clients = () => {
                         type={modalDiscountTypeOil} editData={editDataDiscountOil} />
                 </TabPane>
             </Tabs>
+             <Outlet />
         </div>
     );
 };

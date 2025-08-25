@@ -1,21 +1,22 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Checkbox, Col, Form, Input, Modal, Row, Table} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Checkbox, Col, Form, Input, Modal, Row, Table } from 'antd';
 import Images from "../../../../assets/images/js/Images";
-import {useNavigate, useParams} from "react-router-dom";
-import {AdminApi} from "../../../../api/admin.api";
+import { useNavigate, useParams } from "react-router-dom";
+import { AdminApi } from "../../../../api/admin.api";
+import './../../../../assets/styles/Clients.css';
 import TextArea from "antd/es/input/TextArea";
-import {useAuth} from "../../../../AuthContext";
-import {ExclamationCircleFilled} from "@ant-design/icons";
+import { useAuth } from "../../../../AuthContext";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 const { confirm } = Modal;
 
-const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleShows, handleEditClickk}) => {
+const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
     const [data, setData] = useState([]);
     const [isDisabled, setIsDisabled] = useState(true);
     const [form] = Form.useForm();
     const { openNotification } = useAuth();
     const navigate = useNavigate();
 
-    let {id} = useParams();
+    let { id } = useParams();
 
     useEffect(() => {
         getByIdData()
@@ -24,16 +25,25 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
     useEffect(() => {
         setIsDisabled(isDisableds)
     }, [isDisableds]);
-
-
+    
     useEffect(() => {
-        console.log(form, 'form')
-    }, [form]);
+        if (isSetData) {
+            form.setFieldsValue({
+                storageIdHash: isSetData.storageIdHash,
+                cityIdHash: isSetData.cityIdHash,
+                districtIdHash: isSetData.districtIdHash,
+                currencyIdHash: isSetData.currencyIdHash,
+                status: isSetData.status,
+                notes: isSetData.notes,
+                companyIdHash: isSetData.companyIdHash,
+            });
+        }
+    }, [isSetData, form]);
+
 
     const getByIdData = () => {
-        AdminApi.customerGetById({id}).then(res => {
+        AdminApi.customerGetById({ id }).then(res => {
             console.log(res, 'customerGetById')
-            let data = {}
             setData(res);
             form.setFieldsValue(res)
         })
@@ -55,29 +65,35 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
         buy_rate: '',
     });
 
-    const onSearch = (value) => {
-        console.log(value, 'form value')
+    const uptadeCustomer = (value) => {
+        console.log(value, 'form value');
+
         const data = {
             ...value,
-            idHash: id
-        }
+            idHash: id,
+            storageIdHash: value.storageIdHash ?? isSetData?.storageIdHash,
+            cityIdHash: value.cityIdHash ?? isSetData?.cityIdHash,
+            districtIdHash: value.districtIdHash ?? isSetData?.districtIdHash,
+            currencyIdHash: value.currencyIdHash ?? isSetData?.currencyIdHash,
+            status: value.status ?? isSetData?.status ?? true,
+            notes: value.notes ?? isSetData?.notes,
+        };
 
-        if (id) {
-            AdminApi.UpdateCustomer(data).then(res => {
-                console.log(res, 'UpdateCustomer')
-            })
-        }
-    }
+        AdminApi.UpdateCustomer(data).then(res => {
+            console.log(res, 'UpdateCustomer');
+        });
+    };
+
 
     const customerDelete = () => {
-        AdminApi.UpdateCustomerDeleteId({customerIdHash: id}).then(res => {
-            console.log(res,'UpdateCustomerDeleteId')
+        AdminApi.UpdateCustomerDeleteId({ customerIdHash: id }).then(res => {
+            console.log(res, 'UpdateCustomerDeleteId')
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false);
             navigate(`/`)
         })
-        .catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
-        })
+            .catch((err) => {
+                openNotification('Xəta baş verdi', err.response.data.message, true)
+            })
     }
 
     const showDeleteConfirm = (id) => {
@@ -101,7 +117,7 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
             <Row gutter={16}>
                 <Col span={24}>
 
-                    <Form form={form} onFinish={onSearch}>
+                    <Form form={form} onFinish={uptadeCustomer}>
 
                         <Row gutter={16} className="mb-3">
                             <Col span={12}>
@@ -121,13 +137,13 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                             <Form.Item label="Müştəri" name="customerName">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}}
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
                                 />
                             </Form.Item>
                             <Form.Item label="Müştəri code" name="customerCode">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}}/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }} />
                             </Form.Item>
                         </Card>
 
@@ -135,18 +151,18 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                             <Form.Item label="Address" name="address">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}}
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
                                 />
                             </Form.Item>
                             <Form.Item label="Il" name="cityName">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}}/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }} />
                             </Form.Item>
                             <Form.Item label="Ilce" name="districtName">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}}
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
                                 />
                             </Form.Item>
                         </Card>
@@ -156,23 +172,23 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                             <Form.Item label="Vergi Idaresi" name="taxOffice">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}}/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }} />
                             </Form.Item>
                             <Form.Item label="Vergi Numarasi" name="tpin">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}}/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }} />
                             </Form.Item>
                             <Form.Item label="Branch" name="storageCode">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}} className='position-relative'/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }} className='position-relative' />
                             </Form.Item>
 
                             <Form.Item label="1C Doviz" name="currencyType">
                                 <Input
                                     disabled={isDisabled}
-                                    style={{maxWidth: "240px",width: "100%", float: "right"}} className='position-relative'/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }} className='position-relative' />
                             </Form.Item>
                             <h4 className='t_44 fs_16 fw_600 mt-5'>
                                 Iletisim Bilgileri
@@ -183,22 +199,22 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                                 <Form.Item label="Tel 1 - Tel 2" name="phoneNumber">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{maxWidth: "240px",width: "100%", float: "right"}} className='ms-3'/>
+                                        style={{ maxWidth: "240px", width: "100%", float: "right" }} className='ms-3' />
                                 </Form.Item>
                                 <Form.Item label="GSM 1 - GSM 2" name="mobileNumber">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{maxWidth: "240px",width: "100%", float: "right"}} className='ms-3'/>
+                                        style={{ maxWidth: "240px", width: "100%", float: "right" }} className='ms-3' />
                                 </Form.Item>
                                 <Form.Item label="Faks" name="fax">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{maxWidth: "240px",width: "100%", float: "right"}}/>
+                                        style={{ maxWidth: "240px", width: "100%", float: "right" }} />
                                 </Form.Item>
                                 <Form.Item label="E- Posta" name="email">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{maxWidth: "240px",width: "100%", float: "right"}}/>
+                                        style={{ maxWidth: "240px", width: "100%", float: "right" }} />
                                 </Form.Item>
                             </div>
 
@@ -211,7 +227,7 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                                 <Form.Item label="B2B Kodu" name="customerCode">
                                     <Input
                                         disabled={isDisabled}
-                                        style={{maxWidth: "240px",width: "100%", float: "right"}}/>
+                                        style={{ maxWidth: "240px", width: "100%", float: "right" }} />
                                 </Form.Item>
 
 
@@ -225,7 +241,7 @@ const General = ({isSetData, handleShowModal2, activeKey, isDisableds, handleSho
                             <div className="mt-3">
                                 <Form.Item label="Qeyd" name="note">
                                     <TextArea rows={6} placeholder="Note"
-                                              disabled={isDisabled}/>
+                                        disabled={isDisabled} />
                                 </Form.Item>
                             </div>
 

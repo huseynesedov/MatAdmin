@@ -24,14 +24,6 @@ const createFormDataConfig = (params) => {
     return createConfig(params, "multipart/form-data");
 }
 
-const openNotification = (title, description, isError) => {
-    notification[isError ? 'error' : 'success']({
-        message: title,
-        description,
-    });
-};
-
-
 
 export const BaseApi = {
     get(url, params) {

@@ -29,7 +29,7 @@ const Sidebar = () => {
 
     const menuItems = [
         { key: "1", icon: Images.dashborad_blue, label: "Məhsullar", link: "/", status: "true" },
-        { key: "2", icon: Images.Family_blue, label: "Müştərilər", link: "/Clients", status: "true" },
+        { key: "2", icon: Images.Family_blue, label: "Müştərilər", link: "/clients", status: "true" },
         { key: "3", icon: Images.BoardList_blue, label: "Sifarişlər", link: "/Orders", status: "true" },
         { key: "4", icon: Images.User_blue, label: "Nümayəndələr", link: "/Delegates", status: "true" },
         { key: "8", icon: Images.Notifications_blue, label: "Duyurular və Xəbərlər",link: "/news", status: "true"  },

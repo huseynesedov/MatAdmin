@@ -3,8 +3,6 @@ import {Modal} from 'react-bootstrap';
 import {Button, Typography, Checkbox, Card, Form, Input, Table, Col, Row, Select, Pagination} from 'antd';
 import Images from '../../../../assets/images/js/Images';
 import {SearchContext} from '../../../../searchprovider';
-import {AdminApi} from "../../../../api/admin.api";
-import {CatalogApi} from "../../../../api/catalog.api";
 import {useNavigate} from "react-router-dom";
 
 
@@ -60,7 +58,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
     const columns = [
         {
             title: '',
-            width: 20,
+            width: 10,
             dataIndex: 'id',
             key: 'id',
             render: () => <Checkbox/>,
@@ -80,16 +78,6 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
             width: 77,
             dataIndex: 'customerName',
             key: 'customerName',
-            sorter: true,
-            render: (text, record) => (
-                <div className="age-column">{text}</div>
-            ),
-        },
-        {
-            title: 'Koşul Kodu',
-            width: 100,
-            dataIndex: 'paymentTermName',
-            key: 'paymentTermName',
             sorter: true,
             render: (text, record) => (
                 <div className="age-column">{text}</div>
@@ -240,7 +228,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
                         rowClassName={rowClassName}
                         columns={columns}
                         dataSource={data}
-                        scroll={{x: 1500}}
+                        // scroll={{x: 100}}
                         pagination={false}
                         onRow={(record) => ({
                             onClick: () => handleRowClick(record),
@@ -251,20 +239,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
                 <hr/>
 
                 <Pagination current={current} pageSize={pageSize} onChange={onChange} total={searchData.count} />
-                {/* <div className="d-flex justify-content-end align-items-center">
-
-                    <span className='pagination_number fw_500'>
-                        1-20 of 406
-                    </span>
-                    <div className="ms-2">
-                        <img src={Images.Arrow_left_blue} alt=""/>
-                        <button className='pagination_number ms-2 fw_500'>1</button>
-                        <button className='pagination_number ms-2 fw_500'>2</button>
-                        <button className='pagination_number ms-2 fw_500'>3</button>
-                        <img src={Images.Arrow_right_blue} alt="" className='ms-2'/>
-
-                    </div>
-                </div>*/}
+            
 
             </Modal.Body>
             <Modal.Footer>

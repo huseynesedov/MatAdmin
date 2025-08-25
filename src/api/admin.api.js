@@ -130,7 +130,7 @@ export const AdminApi = {
     },
 
     GetSalesmanGetTableAsync() {
-        return BaseApi.get(apiRoutes.salesman.salesmanGetTableAsync, '');
+        return BaseApi.post(apiRoutes.salesman.salesmanGetTableAsync, '');
     },
 
     PostSalesmanGetTableAsync(data) {
