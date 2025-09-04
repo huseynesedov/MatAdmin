@@ -153,7 +153,7 @@ function AppContent() {
             <div>
                 <Sidebar />
             </div>
-            <div className="main">
+            <div className="main w-100">
                 <Header />
                 <RouteList />
             </div>
