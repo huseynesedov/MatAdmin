@@ -215,7 +215,7 @@ const Delegates = () => {
     useEffect(() => {
         setActiveTab(1)
         if (id) {
-            console.log(id, 'onSalesmanDatas')
+            // console.log(id, 'onSalesmanDatas')
             onSalesmanDatas(id);
             onProductData();
             setTabDisable(false)
@@ -283,7 +283,7 @@ const Delegates = () => {
     };
 
     const onInitialSearch = (values) => {
-        console.log('Success:', values);
+        // console.log('Success:', values);
         if (!values) return
         navigate(`/Delegates`);
         const result = Object.keys(values).filter(key => values[key] !== undefined && values[key] !== null && values[key] !== "").map((key) => ({
@@ -308,7 +308,7 @@ const Delegates = () => {
             ...e,
             salesmanIdHash: isShowProduct?.salesmanIdHash
         }
-        console.log(data, 'data ssd')
+        // console.log(data, 'data ssd')
         setDataPermission(data)
     }
     const fetchPermissions = async () => {
@@ -318,7 +318,7 @@ const Delegates = () => {
             let data
             if (id) {
                 AdminApi.getSalesmanModulePageRole({ salesmanIdHash: id }).then(res => {
-                    console.log(res, 'customerGetById')
+                    // console.log(res, 'customerGetById')
                     if (res) {
                         data = res;
                         setModuleData(data)
@@ -345,7 +345,7 @@ const Delegates = () => {
             setModuleData(data);
             setPermissionMap(map);
         } catch (err) {
-            console.log(err)
+            // console.log(err)
         } finally {
             setLoading(false);
         }
@@ -411,17 +411,11 @@ const Delegates = () => {
             </Card>
             <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
                 <TabPane disabled={tabDisable} tab="Genel" key="1">
-                    <SearchModal
-                        show={show}
-                        handleClose={handleClose}
-                        handleClear={handleClear}
-                        formData={formData}
-                        handleInputChange={handleInputChange}
-                        handleShowModal2={handleShowModal2}
-                    />
-                    <Divider/>
+                   
                     <General activeKey={activeTab === '1'}/>
                 </TabPane>
+
+                
                 <TabPane disabled={tabDisable} tab="Yetkilendirme" key="2">
                     <Row gutter={16}>
                         <Col span={12}>

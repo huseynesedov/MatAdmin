@@ -5,7 +5,7 @@ import { AdminApi } from "../../../../api/admin.api";
 import { CatalogApi } from "../../../../api/catalog.api";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { useAuth } from "../../../../AuthContext";
-import { useParams } from "react-router-dom";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const { confirm } = Modal;
 
@@ -17,7 +17,8 @@ const Qem = ({ activeKey }) => {
     const { openNotification, logout } = useAuth()
     const [vehicleBrand, setVehicleBrand] = useState([]);
     const [groupList, setGroupList] = useState([]);
-    let { id } = useParams();
+    const { id } = useIds()
+
 
 
     const rowClassName = (record, index) => {
@@ -26,7 +27,7 @@ const Qem = ({ activeKey }) => {
     };
 
     const showDeleteConfirm = (id) => {
-        console.log(id, ';;;')
+        // console.log(id, ';;;')
         confirm({
             title: 'Silməyə əminsinizmi?',
             icon: <ExclamationCircleFilled />,
@@ -35,33 +36,21 @@ const Qem = ({ activeKey }) => {
             okType: 'danger',
             cancelText: 'Legv et',
             onOk() {
-                console.log('OK', id);
+                // console.log('OK', id);
                 handleDelete(id);
             },
             onCancel() {
-                console.log('Cancel');
+                // console.log('Cancel');
             },
         });
     };
-    const createData = () => {
-        // Generate 10 items
-        let arr = [];
-        for (let i = 0; i < 10; i++) {
-            arr.push({
-                key: i + 1,
-                car_brend: `test${i + 1}`,
-                oem_no: `test`,
-            });
-        }
-        setData(arr);
-    };
 
     useEffect(() => {
+        if (!id) return;
         getOemType();
-        getBrand();
+        getBrand(id);
         getProductGroupList();
-        console.log(activeKey, 'activeKey')
-    }, [activeKey]);
+    }, [id]);
 
     const getProductGroupList = () => {
         setLoading(true);
@@ -97,7 +86,7 @@ const Qem = ({ activeKey }) => {
             }
             getOemsByTypeLists(type[0].valueHash)
             setOemType(type)
-            console.log(res, type, 'oemTypes aaa')
+            // console.log(res, type, 'oemTypes aaa')
         }).finally(() => {
             setLoading(false);
         });
@@ -111,7 +100,7 @@ const Qem = ({ activeKey }) => {
             oemType: typeId
         }
         AdminApi.GetOemsByTypes(data).then(res => {
-            console.log(res, 'data type')
+            // console.log(res, 'data type')
             const mapData = res.data.map(r => {
                 return {
                     idHash: r.idHash,
@@ -144,7 +133,7 @@ const Qem = ({ activeKey }) => {
     const handleDelete = (id) => {
         setLoading(true);
         AdminApi.DeleteOem(id).then(res => {
-            console.log(res.status, 'res')
+            // console.log(res.status, 'res')
             getOemsByTypeLists(oemType[0].valueHash)
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
@@ -206,7 +195,7 @@ const Qem = ({ activeKey }) => {
 
         AdminApi.AddOem(data)
             .then((response) => {
-                console.log('Başarılı:', response);
+                // console.log('Başarılı:', response);
                 getOemsByTypeLists(oemType[0].valueHash)
                 form.resetFields();
             })
@@ -218,7 +207,7 @@ const Qem = ({ activeKey }) => {
     };
 
     const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
+        // console.log('Failed:', errorInfo);
     };
     return (
         <>

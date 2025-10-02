@@ -1,39 +1,42 @@
 import { useEffect, useState } from 'react';
 import { Table, Spin } from 'antd';
 import { AdminApi } from "../../../../api/admin.api";
-import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../AuthContext";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const Equivalent = ({ activeKey, showData }) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
-    let { id } = useParams();
+    const { id } = useIds()
+
 
     const { openNotification, logout } = useAuth()
 
-    const navigate = useNavigate();
 
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
     const createData = () => {
-        setLoading(true);
-        const pathname = window.location.pathname;
+        // Əgər datada artıq məlumat varsa, API çağırma
+        if (data.length > 0) {
+            return;
+        }
 
-        const data = {
+        setLoading(true);
+
+        const requestData = {
             pagingRequest: {
                 page: 0,
                 pageSize: 10,
                 filters: []
             },
             productIdHash: id
-        }
+        };
 
-        AdminApi.GetSearchEquivalentProducts(data).then(res => {
-            console.log(res, 'ekvivalent ssss')
-            const data = res.data.map(rest => {
-                return {
+        AdminApi.GetSearchEquivalentProducts(requestData)
+            .then(res => {
+                const mappedData = res.data.map(rest => ({
                     seller: rest.manufacturerName,
                     code: rest.code,
                     name: rest.name,
@@ -42,22 +45,22 @@ const Equivalent = ({ activeKey, showData }) => {
                     foregin_selling_rate: rest.price.currencyName,
                     id: rest.idHash,
                     equivalent_id: rest.groupIdHash,
-                }
+                }));
+                setData(mappedData);
             })
-            setData(data)
-        })
-        .catch((err) => {
-            logout();
-            openNotification('Xəta baş verdi', err.response.data.message, true)
-        })
-        .finally(() => {
-            setLoading(false);
-        });
+            .catch((err) => {
+                logout();
+                openNotification('Xəta baş verdi', err.response?.data?.message || "Naməlum xəta", true);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
+
 
     useEffect(() => {
         createData();
-        console.log(data)
+        // console.log(data)
     }, [activeKey]);
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -69,18 +72,6 @@ const Equivalent = ({ activeKey, showData }) => {
             setSelectedRowKeys(selectedRowKeys);
             setSelectAll(selectedRowKeys.length === data.length);
         },
-    };
-
-    const onSelectAllChange = (e) => {
-        const checked = e.target.checked;
-        const allRowKeys = checked ? data.map((item) => item.key) : [];
-        setSelectedRowKeys(allRowKeys);
-        setSelectAll(checked);
-    };
-
-    const handleDelete = (key) => {
-        const newData = data.filter((item) => item.key !== key);
-        setData(newData);
     };
 
     const columns = [
@@ -167,7 +158,7 @@ const Equivalent = ({ activeKey, showData }) => {
                     dataSource={data}
                     rowSelection={rowSelection}
                     pagination={{ pageSize: 10 }}
-                    scroll={{ x: 800 }}
+                // scroll={{ x: 800 }}
                 />
             </Spin>
         </>

@@ -41,7 +41,7 @@ const ChildUser = ({}) => {
                     setSelectedRowKeys([])
                 }
             }).catch((err) => {
-                openNotification('Xəta baş verdi' , '-'  , true )
+                openNotification('Xəta baş verdi' , err.response.data.message, true)
             })
         }
     };

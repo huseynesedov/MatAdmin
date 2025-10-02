@@ -13,6 +13,7 @@ import Login from "./pages/Login/login";
 
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { IdsProvider } from "./Contexts/ids.context";
 
 function AppContent() {
     const { logged, setLogged, logout, openNotification } = useAuth();
@@ -29,41 +30,50 @@ function AppContent() {
         measurementId: "G-K2TZ0QSBFJ",
     };
 
-    const vapidKey =
-        "BAT0FgBF3i5A0tQajz-CezPaX8-y3lhGANijxI1BmOL4T9NA3Vem8QByWd2bhb4zvbFJy-r3pQOB4E-d3mYL-gw";
+    const vapidKey = "BAT0FgBF3i5A0tQajz-CezPaX8-y3lhGANijxI1BmOL4T9NA3Vem8QByWd2bhb4zvbFJy-r3pQOB4E-d3mYL-gw";
 
-    useEffect(() => {
-        // Firebase init
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
+useEffect(() => {
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
 
-        // İcazə soruş və token al
-        Notification.requestPermission().then(async (permission) => {
-            if (permission === "granted") {
-                try {
-                    const token = await getToken(messaging, { vapidKey });
-                    console.log("✅ FCM Token:", token);
-                    // Backendə göndərə bilərsən burda
-                } catch (err) {
-                    console.error("❌ Token alınmadı:", err);
-                }
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        .then((registration) => {
+            console.log('Service Worker registered:', registration);
+
+            // SW’nin active olmasını bekle
+            if (registration.active) {
+                return registration;
+            } else {
+                return new Promise((resolve) => {
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'activated') {
+                                resolve(registration);
+                            }
+                        });
+                    });
+                });
             }
+        })
+        .then((registration) => {
+            return getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
+        })
+        .then((token) => {
+            console.log('✅ FCM Token:', token);
+        })
+        .catch((err) => {
+            console.error('❌ Token alınamadı:', err);
         });
 
-        // 🔔 Realtime mesaj listener
-        const unsubscribe = onMessage(messaging, (payload) => {
-            console.log("📩 Yeni mesaj:", payload);
-            if (payload?.notification) {
-                openNotification(
-                    `${payload.notification.title}`,
-                    `${payload.notification.body}`,
-                    false // error = true verib qırmızı da edə bilərsən
-                );
-            }
-        });
+    const unsubscribe = onMessage(messaging, (payload) => {
+        if (payload?.notification) {
+            openNotification(payload.notification.title, payload.notification.body, false);
+        }
+    });
 
-        return () => unsubscribe();
-    }, []);
+    return () => unsubscribe();
+}, []);
 
     // ------------------- LOGIN CHECK -------------------
     useEffect(() => {
@@ -155,6 +165,7 @@ function AppContent() {
             </div>
             <div className="main w-100">
                 <Header />
+                
                 <RouteList />
             </div>
         </div>
@@ -165,9 +176,11 @@ const App = () => {
     return (
         <Router>
             <AuthProvider>
-                <SearchProvider>
-                    <AppContent />
-                </SearchProvider>
+                <IdsProvider>
+                    <SearchProvider>
+                        <AppContent />
+                    </SearchProvider>
+                </IdsProvider>
             </AuthProvider>
         </Router>
     );

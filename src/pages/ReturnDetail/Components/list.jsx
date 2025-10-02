@@ -420,7 +420,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                 if (response && response.totalPayment !== undefined && response.currentDebt !== undefined) {
                     setCustomerPayment(response);
                 } else {
-                    console.log("hata");
+                    // console.log("hata");
 
                 }
             })
@@ -440,7 +440,7 @@ const OrderList = ({ products, update, setSalesmanNote, setStorageNote, storageN
                 if (response) {
                     setCustomerPayment2(response);
                 } else {
-                    console.log("hata");
+                    // console.log("hata");
 
                 }
             })

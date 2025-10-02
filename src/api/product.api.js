@@ -18,7 +18,6 @@ export const ProductApi = {
         return BaseApi.get(apiRoutes.product.encryptProduct, { ...params });
     },
     GetProductById(params) {
-        console.log(apiRoutes, 'apiRoutes')
         return BaseApi.get('/product/v1/Product/GetById', { ...params });
     },
     GetCrossListByProductId(params) {
@@ -49,7 +48,6 @@ export const ProductApi = {
         return BaseApi.post(apiRoutes.product.getSearchTable, data);
     },
     GetShelfAdressesById(params) {
-        console.log(apiRoutes.product.getShelfAdressesById,'alalla')
         return BaseApi.get('/product/v1/Product/GetShelfAdressesById', { ...params });
     },
     GetVehicleBrandById(params) {

@@ -6,17 +6,19 @@ import { ExclamationCircleFilled, MinusCircleOutlined, PlusOutlined } from "@ant
 import { CatalogApi } from "../../../../api/catalog.api";
 import { AdminApi } from "../../../../api/admin.api";
 import Title from "antd/es/skeleton/Title";
-import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from "../../../../AuthContext";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const { confirm } = Modal;
 
-const General = ({ isSetData, handleShowModal2 }) => {
+const General = ({ isSetData, handleShowModal2, form }) => {
     const [loading, setLoading] = useState(false); // Loading durumu
-    let { id } = useParams();
-    const navigate = useNavigate();
+    // let { id } = useParams();
+
     const { openNotification, logout } = useAuth()
-    const [form] = Form.useForm();
+
+    const { id, selectedId } = useIds()
+
     const [isDisabled, setIsDisabled] = useState(true);
     const [productPropertys, setProductProperty] = useState([]);
     const [productPropertyVal, setproductPropertyValue] = useState([]);
@@ -36,24 +38,18 @@ const General = ({ isSetData, handleShowModal2 }) => {
     const [isShowProduct, setShowProduct] = useState();
 
     useEffect(() => {
-        facturersProductCount();
-        shelfList();
-        currencyList();
-        productTypeLists();
-        productProperty();
-        getBrand();
-        manufacturerLists();
-
-    }, []);
+        if (!id) return; // id yoxdursa heç bir şey çağırma
 
 
-    useEffect(() => {
-        getBrand();
-        if (!id) {
-            form.resetFields()
-            resetData()
-        }
-
+        Promise.all([
+            facturersProductCount(id),
+            shelfList(id),
+            currencyList(id),
+            productTypeLists(id),
+            productProperty(id),
+            getBrand(id),
+            manufacturerLists(id)
+        ])
     }, [id]);
 
 
@@ -94,7 +90,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
 
     useEffect(() => {
         if (checkVehicleBrand.length > 0) onChangeBrand(checkVehicleBrand)
-        console.log(checkVehicleBrand, 'checkVehicleBrand ss use');
+        // console.log(checkVehicleBrand, 'checkVehicleBrand ss use');
     }, [checkVehicleBrand]);
 
 
@@ -132,7 +128,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
         });
 
         setCheckVehicleModel(updatedCheckVehicleModel);
-        console.log(updatedCheckVehicleModel, "final updated model");
+        // console.log(updatedCheckVehicleModel, "final updated model");
     };
     const joinData = (isShowProduct) => {
 
@@ -182,7 +178,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                     return updatedBrands;
                 });
 
-                console.log(fetchedBrandsCheck, 'fetchedBrandsCheck fetchedBrandsCheck')
+                // console.log(fetchedBrandsCheck, 'fetchedBrandsCheck fetchedBrandsCheck')
 
                 setCheckVehicleBrand(fetchedBrandsCheck);
             }
@@ -208,7 +204,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                     return updatedModels;
                 });
 
-                console.log(fetchedModelsCheck, 'fetchedModelsCheck fetchedModelsCheck fetchedModelsCheck v ')
+                // console.log(fetchedModelsCheck, 'fetchedModelsCheck fetchedModelsCheck fetchedModelsCheck v ')
                 setTimeout(() => {
                     setCheckVehicleModel(fetchedModelsCheck);
                     setCheckVehicleModelHistory(fetchedModels);
@@ -217,24 +213,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
         } else {
 
         }
-        /*if (isShowProduct?.productVehicleBrand?.productVehicleBrands.length > 0) {
-            const fetchedBrands = isShowProduct.productVehicleBrand.productVehicleBrands.map((data) => data.vehicleBrandIdHash);
-
-            // Gelen verilerle vehicleBrand'i güncelle
-            const updatedBrands = vehicleBrand.map((brand) => {
-                if (fetchedBrands.includes(brand.value)) {
-                    return { ...brand, isDeleted: false }; // Gelen verilerde varsa, isDeleted=false
-                }
-                return brand; // Diğer durumlar etkilenmez
-            });
-
-            console.log(updatedBrands, 'updatedBrands updatedBrands updatedBrands updatedBrands ')
-            console.log(fetchedBrands, 'fetchedBrands fetchedBrands fetchedBrands fetchedBrands')
-
-            setVehicleBrand(updatedBrands); // Güncellenmiş liste
-            setCheckVehicleBrand(fetchedBrands); // Seçili markalar
-        }*/
-
 
         if (productPropertys && isShowProduct?.productPropertyValue) {
             const productProp = productPropertys.filter(
@@ -286,10 +264,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
             description: isShowProduct?.description,
         }
         form.setFieldsValue(data)
-    }
-
-    const joinModel = () => {
-
     }
 
     const productTypeLists = () => {
@@ -404,8 +378,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
             salesPrices
         }
 
-        console.log(prices, 'prices prices ')
-
         if (id) {
             let getBrands = [];
 
@@ -445,9 +417,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
             }
 
 
-            console.log(brandsLists, 'brandsLists')
-
-
             let getModel = [];
 
             vehicleModel.forEach((item) => {
@@ -460,9 +429,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
                     ...item,
                     isDeleted: true,
                 }));
-
-            console.log(differenceModel, 'differenceModel')
-
 
             const modelsLists = [];
 
@@ -499,7 +465,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
             if (differenceModel.length > 0) {
                 modelsLists.push(...differenceModel);
             }
-            console.log(modelsLists, 'modelsLists')
 
             brand = brandsLists;
             model = modelsLists
@@ -527,6 +492,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 productVehicleBrands: brand,
                 productVehicleModels: model,
                 productPrice: prices,
+                discount: 0,
                 idHash: id,
                 code: isShowProduct?.code
             }
@@ -534,11 +500,9 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yeniləndi`, false)
             }).catch((err) => {
                 logout();
-                openNotification('Xəta baş verdi', '-', true)
+                openNotification('Xəta baş verdi', err.response.data.message, true)
             }).finally(() => {
                 setLoading(false);
-                /* resetData()
-                 isEdit()*/
             })
 
         } else {
@@ -552,21 +516,23 @@ const General = ({ isSetData, handleShowModal2 }) => {
             }
             AdminApi.AddProduct(data).then(res => {
                 openNotification('Uğurlu əməliyyat..', `Məhsul yaradıldı`, false)
-                if (res) navigate(`/home/${res.idHash}`)
+                if (res) {
+                    selectedId(res.idHash);
+                }
             }).catch((err) => {
                 logout();
-                openNotification('Xəta baş verdi', '-', true)
+                openNotification('Xəta baş verdi', err.response.data.message, true)
             }).finally(() => {
                 setLoading(false);
-                /* resetData()
-                 isEdit()*/
             })
         }
 
     };
 
-    const facturersProductCount = () => {
+    const facturersProductCount = (id) => {
+        if (!id) return;
         setLoading(true);
+
         AdminApi.GetPaymentTermList()
             .then((res) => {
                 if (!res || !Array.isArray(res)) {
@@ -601,15 +567,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
         newData[index][field] = value;
         setShelfData(newData);
     };
-
-
-    /*form.setFieldsValue({
-                price: {
-                    salesPrices: salesPrices,
-                    purchasePrices: purchasePrices,
-                    costPrices: costPrices
-                }
-            });*/
 
     const handleValueChange = (setPriceFn, prices, index, key, value) => {
         const updatedPrices = prices.map((price, i) => (
@@ -686,8 +643,10 @@ const General = ({ isSetData, handleShowModal2 }) => {
 
     const [manufacturerList, setManufacturerList] = useState([]);
 
-    const manufacturerLists = () => {
-        CatalogApi.GetManufacturerList()
+    const manufacturerLists = (id) => {
+        if (!id) return; // ✅ id yoxdursa, heç bir istek atılmır
+
+        CatalogApi.GetManufacturerList(id)
             .then(res => {
                 if (!res || !Array.isArray(res)) {
                     throw new Error("API'den beklenen formatta veri gelmedi");
@@ -703,7 +662,8 @@ const General = ({ isSetData, handleShowModal2 }) => {
                 openNotification("Xəta baş verdi", message, true);
                 console.error("GetManufacturerList hatası:", err);
             });
-    }
+    };
+
 
 
 
@@ -759,13 +719,14 @@ const General = ({ isSetData, handleShowModal2 }) => {
     const deleteProduct = () => {
         setLoading(true);
         AdminApi.deleteProduct(id).then(res => {
-            console.log(res.status, 'res')
+            // console.log(res.status, 'res')
             form.resetFields()
             resetData()
-            navigate(`/`)
+            selectedId(null);
+            // navigate(`/`)
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
-            logout();
+            // logout();
             openNotification('Xəta baş verdi', err.response.data.message, true)
         }).finally(() => {
             setLoading(false);
@@ -774,7 +735,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
 
 
     const showDeleteConfirm = (id) => {
-        console.log(id, ';;;')
         confirm({
             title: 'Silməyə əminsinizmi?',
             icon: <ExclamationCircleFilled />,
@@ -784,9 +744,6 @@ const General = ({ isSetData, handleShowModal2 }) => {
             cancelText: 'Legv et',
             onOk() {
                 deleteProduct();
-            },
-            onCancel() {
-                console.log('Cancel');
             },
         });
     };
@@ -799,14 +756,13 @@ const General = ({ isSetData, handleShowModal2 }) => {
             salesPrices
         }
 
-        console.log(prices, 'prices prices ')
-        console.log('Failed:', errorInfo);
     };
 
 
     return (
         <>
             <Spin spinning={loading}>
+
                 <Form form={form} onFinish={onSearch} initialValues={{ isNew: false, status: false }}
                     onFinishFailed={onFinishFailed}>
 
@@ -815,7 +771,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                             <Button onClick={() => {
                                 resetData();
                                 isEdit();
-                                navigate(`/`)
+                                selectedId(null);
                             }} type="default" className="button-margin bg_none add_button ">
                                 <img src={Images.add_circle_blue} alt="add" />
                                 Yeni
@@ -839,6 +795,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                 className="button-margin delete_red" style={{ width: "auto !important" }}></Button>
                         </Col>
                     </Row>
+
                     <div className='row flex-columnn'>
                         <div class="col">
                             <Card className="info-card" title="Üretici Bilgileri">
@@ -935,21 +892,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                                         }
                                         options={productTypeList} />
                                 </Form.Item>
-                                {/*<Form.Item label="Grup 1">
-                                    <div className='d-flex justify-content-end'>
-                                        <Input style={{maxWidth: "240px",width: "100%"}} placeholder="12356789"/>
-                                    </div>
-                                </Form.Item>
-                                <Form.Item label="Grup 2">
-                                    <div className='d-flex justify-content-end'>
-                                        <Input style={{maxWidth: "240px",width: "100%"}} placeholder="12356789"/>
-                                    </div>
-                                </Form.Item>
-                                <Form.Item label="Grup 3">
-                                    <div className='d-flex justify-content-end'>
-                                        <Input style={{maxWidth: "240px",width: "100%"}} placeholder="12356789"/>
-                                    </div>
-                                </Form.Item>*/}
+
                                 <h4 className='t_44 fs_16 fw_600'>
                                     Raf
                                 </h4>
@@ -1209,6 +1152,7 @@ const General = ({ isSetData, handleShowModal2 }) => {
                             </Card>
                         </div>
                     </div>
+
                 </Form>
             </Spin>
         </>

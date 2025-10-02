@@ -30,7 +30,6 @@ const RouteList = () => (
       <Route path="/login" element={<Login />} />
 
       <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
-      <Route path="/home/:id" element={<PrivateRoute><Home /></PrivateRoute>} />
 
       <Route path="/clients" element={<PrivateRoute><Clients /></PrivateRoute>} />
       <Route path="/clients/:id" element={<PrivateRoute><Clients /></PrivateRoute>}>

@@ -63,8 +63,8 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
                        }
                    }
                 })
-                .catch(() => {
-                    openNotification('Xəta baş verdi', '-', true);
+                .catch((err) => {
+                    openNotification('Xəta baş verdi', err.response.data.message, true);
                 });
         }
     };
@@ -112,13 +112,11 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
         })
         /*AdminApi.DeleteOem*/
         AdminApi.DeleteManufacturerAdditionalDiscount(ids).then(res => {
-            console.log(res.status, 'res')
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false);
             createData();
         }).catch((err) => {
             openNotification('Xəta baş verdi' , err.response.data.message  , true )
         })
-        console.log(ids, 'sss')
     };
 
     const showDeleteConfirm = () => {
@@ -131,9 +129,6 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
             cancelText: 'Legv et',
             onOk() {
                 handleDelete();
-            },
-            onCancel() {
-                console.log('Cancel');
             },
         });
     };

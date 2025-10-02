@@ -110,16 +110,15 @@ export const AdminApi = {
     GetLoginHistoryByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerId, data);
     },
-
+// ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
     getLoginHistoryByCustomerIdss(data) {
-        return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerIds, data);
+        return BaseApi.post(apiRoutes.customer.getLoginHistories, data);
     },
 
     getProductTransactionDetails(data) {
         return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
     },
 
-    /*/admin/v1/LogTransaction/GetProductTransactionDetails*/
 
     getProductTransactionDetails(data) {
         return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
@@ -202,8 +201,10 @@ export const AdminApi = {
     DeleteOem(userId) {
         return BaseApi.delete(apiRoutes.product.deleteOem, { ...{ id: userId } });
     },
-    deleteProduct(userId) {
-        return BaseApi.delete(apiRoutes.product.deleteProduct, { ...{ id: userId } });
+    deleteProduct(id) {
+        // id'yi query param olarak ekle
+        const url = `${apiRoutes.product.deleteProduct}?id=${id}`;
+        return BaseApi.delete(url);
     },
     DeleteProductVehicleBrand(userId) {
         return BaseApi.delete(apiRoutes.product.deleteProductVehicleBrand, userId);

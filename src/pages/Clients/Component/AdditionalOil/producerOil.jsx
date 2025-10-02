@@ -30,13 +30,12 @@ const ProducerOil = ({showModalDiscount, coolBackList, changeDatas, activeKey}) 
             }
 
             AdminApi.GetUpdateGetAdminProductOilTypeList(data).then(res => {
-                console.log(res)
                 if (res.data) {
                     setData(res);
                 }
             })
             .catch((err) => {
-                openNotification('Xəta baş verdi' , '-'  , true )
+                openNotification('Xəta baş verdi' , err.response.data.message, true)
             })
         }
     };

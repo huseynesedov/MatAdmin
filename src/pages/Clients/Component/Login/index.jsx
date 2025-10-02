@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Checkbox, Table } from 'antd';
+import {  Table } from 'antd';
 import {useParams} from "react-router-dom";
 import {useAuth} from "../../../../AuthContext";
 import {AdminApi} from "../../../../api/admin.api";
@@ -28,12 +28,11 @@ const Login = ({changeDatas, activeKey}) => {
                     filters: []}*/
             }
             AdminApi.getLoginHistoryByCustomerIdss(data).then(res => {
-                console.log(res)
                 if (res) {
-                    setData(res);
+                    setData(res.data);
                 }
             }).catch((err) => {
-                openNotification('Xəta baş verdi' , '-'  , true )
+                openNotification('Xəta baş verdi' , err.response.data.message, true)
             })
         }
     };
@@ -42,47 +41,15 @@ const Login = ({changeDatas, activeKey}) => {
         return '';
     };
 
-    /*
-explanation
-:
-"İmza sertifikati düzgün deyil."
-idHash
-:
-"L9ObMXcS5yM="
-isDeleted
-:
-false
-loginDate
-:
-"2025-03-17T20:35:54.335343"
-process
-:
-"Failed"
-source
-:
-"Login"
-userIdHash
-:
-"ivWdO+gl8oU="*/
     const columns = [
         {
             title: 'Durum',
             width: 77,
-            dataIndex: 'process',
-            key: 'process',
+            dataIndex: 'processStatus',
+            key: 'processStatus',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
-           /* render: (text) => {
-               
-                const statusClass = text === 'Succes' ? 'StatusSucces' : 'StatusDeaktiv';
-                return (
-                    <div className="age-column">
-                        <div className={statusClass}>
-                            {text}
-                        </div>
-                    </div>
-                );
-            },*/
+        
         },
         {
             title: 'Icerik',

@@ -1,78 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {Button, Card, Checkbox, Col, Form, Input, Pagination, Radio, Row, Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import { Button, Card, Checkbox, Col, Form, Input, Pagination, Radio, Row, Table } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../../../AuthContext";
 import Images from "../../../../assets/images/js/Images";
 import SanufacturerModal from "../../../Home/components/Modal/manufacturerModal";
 import UserRolesModal from "../Modal/userRolesModal";
 
-const OtherInfo = ({changeDatas, activeKey}) => {
-    /*SAtış təmsilcisində popoda salesman /admin/v1/Salesman/GetTableAsync seciləcək*/
-    /*Update zamanı /admin/v1/Customer/UpdateCustomerAdditionalInfo bu apidən istifadə edəcəm*/
-    /*webUsageCount: mwsteri gurupu = Kullanici Sayisi*/
-    /*androidUsageCount: mwsteri gurupu = android Kullanici Sayisi*/
-    /*androidUsageCount: mwsteri gurupu = Ios Kullanici Sayisi*/
-    /*Grup Bilgileri də 3 tip customerda userRoles dan məlumatları cəkib hasRole false isə demək user təyin olunmayıb və təyin etmək ücün /admin/v1/Salesman/GetTableAsync bu api vasitəsi ilə popopda userlist cıxarıb secərək təin edəcəm*/
-    /*Statuslar ücün rol əlavə olunmalıdır /admin/v1/Role/Add  rol əlavə etdikdə roleTypeIdHash bunun ücün GET/catalog/v1/Role/GetRoleTypeList burdan roleCategoryHash ücün isə bu apidən siyahıdan secməlidir catalog/v1/Role/GetRoleCategories */
-    /*[ role type list
-        {
-            "valueHash": "xFsQPkFTRN0=",
-            "displayText": "User",
-            "select": false
-        },
-        {
-            "valueHash": "3LlDuXpKEl0=",
-            "displayText": "Customer",
-            "select": false
-        },
-        {
-            "valueHash": "a1LJadsYP0o=",
-            "displayText": "Salesman",
-            "select": false
-        }
-    ]*/
-
-    /* "result": [ roles categories
-    {
-      "id": 1,
-      "description": "Page Permissions"
-    },
-    {
-      "id": 2,
-      "description": "Execution Permission"
-    },
-    {
-      "id": 3,
-      "description": "Customer Users Sales Role"
-    },
-    {
-      "id": 4,
-      "description": "Salesman Sales Role"
-    }
-  ],*/
-
-
-    /*
-    "userRoles": [
-    {
-      "userIdHash": "string",
-      "roleIdHash": "string",
-      "isDeleted": true,
-      "idHash": "string"
-    }
-  ],
-  */
-
-    /* {
-    description:"Customer battery"
-        hasRole:false
-        name:"Customer battery"
-        roleIdHash:"6DZPeBiikp0="
-        userId:0
-        userIdHash:null
-        userName:null
-        }*/
+const OtherInfo = ({ changeDatas, activeKey }) => {
 
     let { id } = useParams();
     const [form] = Form.useForm();
@@ -92,7 +27,7 @@ const OtherInfo = ({changeDatas, activeKey}) => {
     const handleCloseManufacturer = () => setShowShowManufacturer(false);
     const handleShowModal = (v) => {
         setShowShowManufacturer(false);
-        console.log(v, 'restFieldrestFieldrestField')
+        // // console.log(v, 'restFieldrestFieldrestField')
         setChangeUreRole(v);
         setShowShowManufacturer(true);
     };
@@ -103,7 +38,7 @@ const OtherInfo = ({changeDatas, activeKey}) => {
                 role.name === newRole.name ? newRole : role
             )
         });
-        console.log("Form Değerleri:", form.getFieldsValue());
+        // console.log("Form Değerleri:", form.getFieldsValue());
 
         handleCloseManufacturer()
     }
@@ -115,16 +50,17 @@ const OtherInfo = ({changeDatas, activeKey}) => {
             }
 
             AdminApi.GetCustomerAdditionalInfo(data).then(res => {
-                console.log(res,res.userRoles, 'aaa')
-                if (res) {
-                    setData(res);
+                // console.log(res, res.userRoles, 'aaa')
+                const response = res?.data;
+                if (response) {
+                    setData(response);
                     let userRole = res.userRoles.map(r => ({
-                            userIdHash: r.userIdHash,
-                            roleIdHash: r.roleIdHash,
-                            name: r.name,
-                            userName: r.userName,
-                            userId: r.userId,
-                            hasRole: r.hasRole,
+                        userIdHash: r.userIdHash,
+                        roleIdHash: r.roleIdHash,
+                        name: r.name,
+                        userName: r.userName,
+                        userId: r.userId,
+                        hasRole: r.hasRole,
                     }));
                     form.setFieldsValue({
                         userRoles: userRole,
@@ -132,11 +68,13 @@ const OtherInfo = ({changeDatas, activeKey}) => {
                         webUsageCount: res.userLicense.webUsageCount,
                         iosUsageCount: res.userLicense.iosUsageCount,
                     })
-                    
+
                 }
             }).catch((err) => {
-                openNotification('Xəta baş verdi' , '-'  , true )
+                const message = err?.response?.data?.message || "Bilinməyən xəta baş verdi";
+                openNotification('Xəta baş verdi', message, true)
             })
+
         }
     };
 
@@ -148,10 +86,10 @@ const OtherInfo = ({changeDatas, activeKey}) => {
                         <Form layout="Horizontal">
                             <Form.Item label="Plasiyer">
                                 <div className='d-flex justify-content-end'>
-                                    <Input style={{width: "240px", height: "44px"}}
-                                           className="position-relative"/>
+                                    <Input style={{ width: "240px", height: "44px" }}
+                                        className="position-relative" />
                                     <img src={Images.Search_blue} className='position-absolute'
-                                         style={{right: "10px", top: "10px"}}/>
+                                        style={{ right: "10px", top: "10px" }} />
                                 </div>
                             </Form.Item>
                         </Form>
@@ -162,20 +100,20 @@ const OtherInfo = ({changeDatas, activeKey}) => {
 
                             <Form.Item label="Kullanici Sayisi" name="webUsageCount">
                                 <div className='d-flex justify-content-end'>
-                                    <Input style={{width: "240px", height: "40px"}} placeholder="777777"/>
+                                    <Input style={{ width: "240px", height: "40px" }} placeholder="777777" />
 
                                 </div>
                             </Form.Item>
                             <Form.Item label="Kullanici Sayisi Android" name="androidUsageCount">
                                 <div className='d-flex justify-content-end'>
-                                    <Input style={{width: "240px", height: "40px"}}
-                                           className='position-relative' placeholder="" disabled/>
+                                    <Input style={{ width: "240px", height: "40px" }}
+                                        className='position-relative' placeholder="" disabled />
                                 </div>
                             </Form.Item>
                             <Form.Item label="Kullanici Sayisi Ios" name="iosUsageCount">
                                 <div className='d-flex justify-content-end'>
-                                    <Input style={{width: "240px", height: "40px"}}
-                                           className='position-relative' placeholder="" disabled/>
+                                    <Input style={{ width: "240px", height: "40px" }}
+                                        className='position-relative' placeholder="" disabled />
                                 </div>
                             </Form.Item>
 
@@ -285,31 +223,31 @@ const OtherInfo = ({changeDatas, activeKey}) => {
                                 <div>
                                     <Form layout="Vertical" className='mt-4'>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>B2B</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Aktif</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Kampaniya</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>İade Yapabilsin</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Yedek Parca</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Yag</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Aku</span>
                                         </Form.Item>
 
@@ -317,35 +255,35 @@ const OtherInfo = ({changeDatas, activeKey}) => {
                                     </Form>
                                 </div>
 
-                                <div style={{marginLeft: "509px"}}>
+                                <div style={{ marginLeft: "509px" }}>
                                     <Form layout="Vertical" className='mt-4'>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span
                                                 className='fs_14 fw_400 t_44 ms-2'>Sanalpos Direct Odeme</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Muşteri Kilitli</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Sepette Seçme işlemi</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Genel</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>WH Baku</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>WH Gence</span>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Checkbox/>
+                                            <Checkbox />
                                             <span className='fs_14 fw_400 t_44 ms-2'>Depo Transfer</span>
                                         </Form.Item>
                                     </Form>
@@ -355,9 +293,9 @@ const OtherInfo = ({changeDatas, activeKey}) => {
                     </Card>
 
                     <UserRolesModal shows={showManufacturer}
-                                       handleClose={handleCloseManufacturer}
-                                       productData={changeUreRole}
-                                       checkData={onCheckData} />
+                        handleClose={handleCloseManufacturer}
+                        productData={changeUreRole}
+                        checkData={onCheckData} />
                 </Col>
             </Row>
         </>

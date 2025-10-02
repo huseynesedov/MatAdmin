@@ -43,7 +43,6 @@ const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
 
     const getByIdData = () => {
         AdminApi.customerGetById({ id }).then(res => {
-            console.log(res, 'customerGetById')
             setData(res);
             form.setFieldsValue(res)
         })
@@ -66,7 +65,6 @@ const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
     });
 
     const uptadeCustomer = (value) => {
-        console.log(value, 'form value');
 
         const data = {
             ...value,
@@ -80,14 +78,12 @@ const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
         };
 
         AdminApi.UpdateCustomer(data).then(res => {
-            console.log(res, 'UpdateCustomer');
         });
     };
 
 
     const customerDelete = () => {
         AdminApi.UpdateCustomerDeleteId({ customerIdHash: id }).then(res => {
-            console.log(res, 'UpdateCustomerDeleteId')
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false);
             navigate(`/`)
         })
@@ -106,9 +102,6 @@ const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
             cancelText: 'Legv et',
             onOk() {
                 customerDelete();
-            },
-            onCancel() {
-                console.log('Cancel');
             },
         });
     };

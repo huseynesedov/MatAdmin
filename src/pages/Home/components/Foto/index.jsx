@@ -5,12 +5,14 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../../../../AuthContext";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import Images from "../../../../assets/images/js/Images";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const { confirm } = Modal;
 
 const Equivalent = (activeKey) => {
     const [data, setData] = useState([]);
-    let { id } = useParams();
+    const { id } = useIds()
+
 
     const { openNotification, logout } = useAuth()
     const rowClassName = (record, index) => {
@@ -24,7 +26,7 @@ const Equivalent = (activeKey) => {
 
     const getData = () => {
         AdminApi.GetProductFileByProductId({ ProductId: id }).then(res => {
-            console.log(res, 'photo list')
+            // console.log(res, 'photo list')
             let data = res.map(da => {
                 return {
                     id: da.file.idHash,
@@ -41,7 +43,7 @@ const Equivalent = (activeKey) => {
     }
 
     const showDeleteConfirm = (id) => {
-        console.log(id, ';;;')
+        // console.log(id, ';;;')
         confirm({
             title: 'Silməyə əminsinizmi?',
             icon: <ExclamationCircleFilled />,
@@ -50,11 +52,11 @@ const Equivalent = (activeKey) => {
             okType: 'danger',
             cancelText: 'Legv et',
             onOk() {
-                console.log('OK', id);
+                // console.log('OK', id);
                 handleDelete(id);
             },
             onCancel() {
-                console.log('Cancel');
+                // console.log('Cancel');
             },
         });
     };
@@ -62,14 +64,14 @@ const Equivalent = (activeKey) => {
     const handleDelete = (id) => {
         /*AdminApi.DeleteOem*/
         AdminApi.deleteProductPhoto(id).then(res => {
-            console.log(res.status, 'res')
+            // console.log(res.status, 'res')
             getData();
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false)
         }).catch((err) => {
             logout();
             openNotification('Xəta baş verdi', err.response.data.message, true)
         })
-        console.log(id, 'sss')
+        // console.log(id, 'sss')
     };
 
     const columns = [

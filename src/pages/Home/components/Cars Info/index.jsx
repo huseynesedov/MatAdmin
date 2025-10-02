@@ -3,6 +3,7 @@ import { Spin, Table } from 'antd';
 import { AdminApi } from "../../../../api/admin.api";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../../../AuthContext";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const Cars_info = ({ activeKey }) => {
 
@@ -10,7 +11,8 @@ const Cars_info = ({ activeKey }) => {
     const [data, setData] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
-    let { id } = useParams();
+    const { id } = useIds()
+
 
     const { openNotification, logout } = useAuth()
     const rowClassName = (record, index) => {
@@ -25,7 +27,7 @@ const Cars_info = ({ activeKey }) => {
     const getData = () => {
         setLoading(true);
         AdminApi.GetVehicleBrandProductId({ productId: id }).then((res) => {
-            console.log(res);
+            // console.log(res);
 
             const data = res.data.map(re => {
                 return {

@@ -19,27 +19,12 @@ const Licence = ({activeKey}) => {
 
     const createData = () => {
         if (id) {
-          /*  let data = {
-                customerIdHash: id,
-                customerId: 0,
-                pagingRequest: {
-                    page: 0,
-                    pageSize: 10,
-                    filters: [{
-                        value: "Web",
-                        fieldName: "deviceType",
-                        equalityType: "Equal",
-                    }]
-
-                }
-            }*/
-
+       
             AdminApi.getLicenseHistoryGetTable(data).then(res => {
-                console.log(res, 'aaa')
                 setData(res)
             })
             .catch((err) => {
-                openNotification('Xəta baş verdi' , '-'  , true )
+                openNotification('Xəta baş verdi' , err.response.data.message, true)
             })
         }
     };

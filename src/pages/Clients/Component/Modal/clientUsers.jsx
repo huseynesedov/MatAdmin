@@ -23,7 +23,6 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
 
 
     useEffect(() => {
-        console.log(changeDatas, 'changeDatas')
         form.setFieldsValue(changeDatas);
     }, [changeDatas]);
 
@@ -42,7 +41,6 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
 
     const handleSubmit = () => {
         const formData = form.getFieldsValue();
-        console.log(changeDatas, 'changeDatas aa')
         const setData = {
             code: String(formData.code),
             email: formData.email,
@@ -53,7 +51,6 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
             ...(type === 1 ? { customerIdHash: id } : { idHash: changeDatas.idHash })
         };
 
-        console.log(setData, 'customerIdHash aa')
 
         clientUserData(setData);
         form.resetFields();

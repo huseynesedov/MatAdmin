@@ -51,7 +51,7 @@ const SearchModal2 = ({shows, searchData, activeTab, handleClose, searchChange, 
 
 
     const handleRowClick = (record) => {
-        console.log(record, 'record')
+        // console.log(record, 'record')
         // onProduct(record);
 
         //navigate(`/delegates/${record.idHash}`);

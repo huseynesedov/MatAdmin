@@ -20,7 +20,7 @@ const Users = ({showModalUsers, activeKey}) => {
 
     useEffect(() => {
         createData();
-        console.log('users')
+        // console.log('users')
     }, [current, pageSize, activeKey]);
 
     const createData = () => {
@@ -39,7 +39,7 @@ const Users = ({showModalUsers, activeKey}) => {
                     setSelectedRowKeys([])
                 }
             }).catch((err) => {
-                openNotification('Xəta baş verdi' , '-'  , true )
+                openNotification('Xəta baş verdi' , err.response.data.message, true)
             })
         }
     };
