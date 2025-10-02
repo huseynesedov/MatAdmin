@@ -37,7 +37,7 @@ const Equivalent = ({activeKey}) => {
             if (res) {
                 setCount(res.count);
                 setData(res.data);
-                console.log(res, 'get data')
+                // console.log(res, 'get data')
             }
         }).catch((error) => {
             // openNotification('Xəta baş verdi', error.response.data.message, true)

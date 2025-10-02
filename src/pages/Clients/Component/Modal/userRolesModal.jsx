@@ -57,7 +57,6 @@ const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
         })
     }
     const handleRowClick = (record) => {
-        console.log(record, form, 'recordd ddd')
         let recordData = {
             hasRole: true,
             name: productData.name,

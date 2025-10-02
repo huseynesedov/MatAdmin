@@ -44,7 +44,7 @@ const Oil = () => {
                     }))
                 );
 
-                console.log(res, 'GetProductAdditionalDiscountsByCustomerId')
+                // console.log(res, 'GetProductAdditionalDiscountsByCustomerId')
 
                 if (manufacturers.length > 0 && manufacturers[0].discounts) {
                     const discountColumns = manufacturers[0].discounts.map((discount) => ({

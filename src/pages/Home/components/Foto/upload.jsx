@@ -4,12 +4,14 @@ import { PlusOutlined } from '@ant-design/icons';
 import { ProductApi } from "../../../../api/product.api";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../../../AuthContext";
+import { useIds } from '../../../../Contexts/ids.context';
 
 
 const PhotoUpload = ({ handleShow }) => {
     const [fileList, setFileList] = useState([]);
     const [description, setDescription] = useState('');
-    let { id } = useParams();
+        const { id } = useIds()
+    
     const { openNotification } = useAuth()
     const [loading, setLoading] = useState(false); // Loading durumu
 
@@ -61,12 +63,12 @@ const PhotoUpload = ({ handleShow }) => {
         });
 
         ProductApi.AddProductFile(formData).then(res => {
-            console.log(res, 'payload res payload')
+            // console.log(res, 'payload res payload')
             openNotification('Uğurlu əməliyyat..', `-`, false)
             handleShow(false)
         })
         .catch(err => {
-            openNotification('Xəta baş verdi', '-', true)
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
         .finally(() => {
             setLoading(false);

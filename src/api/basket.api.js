@@ -24,7 +24,6 @@ export const BasketApi = {
         return BaseApi.delete(apiRoutes.basket.deleteBasketDetailById, { ...params });
     },
     DeleteByIds(params) {
-        console.log(params)
         return BaseApi.deleteNew(apiRoutes.basket.deleteBasketDetailByIds, params);
     },
     EncryptBasketDetail(params) {

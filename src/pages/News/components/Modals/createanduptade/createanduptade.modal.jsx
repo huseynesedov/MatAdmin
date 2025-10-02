@@ -45,7 +45,7 @@ const CreateAndUptade = ({
     const [imageFileList, setImageFileList] = useState([]);
     const [previewImage, setPreviewImage] = useState(null);
 
-    console.log(initialData);
+    // console.log(initialData);
 
 
     useEffect(() => {

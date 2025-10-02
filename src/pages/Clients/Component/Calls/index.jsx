@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Checkbox, Col, Form, Input, InputNumber, Pagination, Row, Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import React, { useEffect, useState } from 'react';
+import { Checkbox, Col, Form, Input, InputNumber, Pagination, Row, Table } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../../../AuthContext";
 
-const Calls = ({showModalUsers, activeKey}) => {
+const Calls = ({ showModalUsers, activeKey }) => {
 
     /*Genel = searchRequest icinde searchText */
     /*Durum = ilk obj icinde process */
@@ -16,8 +16,8 @@ const Calls = ({showModalUsers, activeKey}) => {
     const [dataDetail, setDataDetail] = useState();
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
-    let {id} = useParams();
-    const {openNotification} = useAuth()
+    let { id } = useParams();
+    const { openNotification } = useAuth()
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
 
@@ -28,7 +28,6 @@ const Calls = ({showModalUsers, activeKey}) => {
 
     useEffect(() => {
         createData();
-        console.log('users')
     }, [current, pageSize, activeKey]);
 
     const createData = () => {
@@ -39,24 +38,27 @@ const Calls = ({showModalUsers, activeKey}) => {
                     page: current - 1,
                     pageSize: pageSize,
                     filters: [
-                       /* {
-                            value: "string",
-                            fieldName: "string",
-                            equalityType: "string"
-                        },*/
+                        /* {
+                             value: "string",
+                             fieldName: "string",
+                             equalityType: "string"
+                         },*/
                     ]
                 }
             }
 
             AdminApi.getProductTransactionDetails(data).then(res => {
                 if (res) {
-                    setData(res, 'ssss');
+                    setData(res);
                     setSelectedRowKeys([]);
                 }
             })
-            .catch((err) => {
-                openNotification('Xəta baş verdi', '-', true)
-            })
+                .catch((err) => {
+                    if (err.response?.data?.status !== 204) {
+                        openNotification('Xəta baş verdi', err.response?.data?.message || "Bilinməyən xəta", true);
+                    }
+                })
+
         }
     };
 
@@ -100,9 +102,7 @@ const Calls = ({showModalUsers, activeKey}) => {
     const handleRowClick = (record) => {
         setDataDetailsCode(record)
         form.resetFields();
-        console.log(dataDetailsCode, 'ataDetailsCode')
 
-        console.log(record, 'getStatusById(record.process)')
         let firstDetail = {
             searchText: record.explanation.searchRequest.searchText,
             searchDate: record.searchDate,
@@ -115,7 +115,6 @@ const Calls = ({showModalUsers, activeKey}) => {
 
     const handleRowClickDetail = (record) => {
         setDataDetail(record)
-        console.log(record, 'record record ss')
         let firstDetail = {
             manufacturerName: record.manufacturerName,
             brands: record.vehicleBrands,
@@ -124,7 +123,6 @@ const Calls = ({showModalUsers, activeKey}) => {
             isNew: record.isNew,
         }
         form.setFieldsValue(firstDetail);
-        console.log(firstDetail, form.getFieldValue(),  'form.setFieldsValue(changeDatas);')
     };
 
     return (
@@ -142,7 +140,7 @@ const Calls = ({showModalUsers, activeKey}) => {
                             onClick: () => handleRowClick(record),
                         })}
                     />
-                    <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data}/>
+                    <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data} />
                 </div>
 
                 <div className="p-3 w-100">
@@ -165,7 +163,7 @@ const Calls = ({showModalUsers, activeKey}) => {
                                 <Form.Item label="Tarix" name="searchDate">
                                     <InputNumber disabled
                                         min={0}
-                                        style={{width: "240px", height: "40px"}}
+                                        style={{ width: "240px", height: "40px" }}
                                         className='position-relative'
                                     />
                                 </Form.Item>
@@ -174,7 +172,7 @@ const Calls = ({showModalUsers, activeKey}) => {
                                 <Form.Item label="Durum" name="status">
                                     <Input disabled
                                         min={0}
-                                        style={{width: "240px", height: "40px"}}
+                                        style={{ width: "240px", height: "40px" }}
                                         className='position-relative'
                                     />
                                 </Form.Item>
@@ -183,7 +181,7 @@ const Calls = ({showModalUsers, activeKey}) => {
                                 <Form.Item label="Genel" name="searchText">
                                     <Input disabled
                                         min={0}
-                                        style={{width: "240px", height: "40px"}}
+                                        style={{ width: "240px", height: "40px" }}
                                         className='position-relative'
                                     />
                                 </Form.Item>
@@ -192,7 +190,7 @@ const Calls = ({showModalUsers, activeKey}) => {
                                 <Form.Item label="Üretici" name="manufacturerName">
                                     <Input disabled
                                         min={0}
-                                        style={{width: "240px", height: "40px"}}
+                                        style={{ width: "240px", height: "40px" }}
                                         className='position-relative'
                                     />
                                 </Form.Item>
@@ -201,7 +199,7 @@ const Calls = ({showModalUsers, activeKey}) => {
                                 <Form.Item label="Ana gurup" name="passwordHash">
                                     <Input disabled
                                         min={0}
-                                        style={{width: "240px", height: "40px"}}
+                                        style={{ width: "240px", height: "40px" }}
                                         className='position-relative'
                                     />
                                 </Form.Item>
@@ -210,7 +208,7 @@ const Calls = ({showModalUsers, activeKey}) => {
                                 <Form.Item label="Alt grup 1" name="passwordHash">
                                     <Input disabled
                                         min={0}
-                                        style={{width: "240px", height: "40px"}}
+                                        style={{ width: "240px", height: "40px" }}
                                         className='position-relative'
                                     />
                                 </Form.Item>
@@ -219,7 +217,7 @@ const Calls = ({showModalUsers, activeKey}) => {
                                 <Form.Item label="Alt grup 2" name="passwordHash">
                                     <Input disabled
                                         min={0}
-                                        style={{width: "240px", height: "40px"}}
+                                        style={{ width: "240px", height: "40px" }}
                                         className='position-relative'
                                     />
                                 </Form.Item>
@@ -249,25 +247,25 @@ const Calls = ({showModalUsers, activeKey}) => {
 
                             <Col span={24}>
                                 <Form.Item label="Kampanya" name="hasCampaign" valuePropName="checked"
-                                           initialValue={false}>
+                                    initialValue={false}>
                                     <div className='d-flex'>
-                                        <Checkbox disabled/>
+                                        <Checkbox disabled />
                                     </div>
                                 </Form.Item>
                             </Col>
                             <Col span={24}>
                                 <Form.Item label="Yeni məhsul" name="isNew" valuePropName="checked"
-                                           initialValue={false}>
+                                    initialValue={false}>
                                     <div className='d-flex'>
-                                        <Checkbox disabled/>
+                                        <Checkbox disabled />
                                     </div>
                                 </Form.Item>
                             </Col>
                             <Col span={24}>
                                 <Form.Item label="Bugün gələn" name="hasB2B" valuePropName="checked"
-                                           initialValue={false}>
+                                    initialValue={false}>
                                     <div className='d-flex'>
-                                        <Checkbox disabled/>
+                                        <Checkbox disabled />
                                     </div>
                                 </Form.Item>
                             </Col>

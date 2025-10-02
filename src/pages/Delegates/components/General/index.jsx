@@ -1,23 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Checkbox, Col, Divider, Form, Input, InputNumber, Modal, Row, Table, Upload} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Checkbox, Col, Divider, Form, Input, InputNumber, Modal, Row, Table, Upload } from 'antd';
 import Images from "../../../../assets/images/js/Images";
-import {useNavigate, useParams} from "react-router-dom";
-import {AdminApi} from "../../../../api/admin.api";
+import { useNavigate, useParams } from "react-router-dom";
+import { AdminApi } from "../../../../api/admin.api";
 import TextArea from "antd/es/input/TextArea";
-import {useAuth} from "../../../../AuthContext";
-import {ExclamationCircleFilled, PlusOutlined, VerticalAlignTopOutlined} from "@ant-design/icons";
+import { useAuth } from "../../../../AuthContext";
 import Undergraduate from "../../Component/Undergraduate";
-import UndergraduateMode from "../../Component/Undergraduate Moderator";
 
-const {confirm} = Modal;
+const { confirm } = Modal;
 
-const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
+const General = ({ activeKey, isDisableds, handleShows, handleEditClickk }) => {
     const [data, setData] = useState([]);
     const [isDisabled, setIsDisabled] = useState(true);
     const [form] = Form.useForm();
-    const {openNotification} = useAuth();
+    const { openNotification } = useAuth();
     const navigate = useNavigate();
-    let {id} = useParams();
+    let { id } = useParams();
     const [checkboxData, setCheckboxData] = useState([]);
 
 
@@ -27,17 +25,12 @@ const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
         }
     };
 
-
-    useEffect(() => {
-        console.log(form, 'form')
-    }, [form]);
-
     const getByIdData = () => {
         if (id) {
-            AdminApi.GetSalesmanAdditionalInfos({salesmanIdHash: id}).then(res => {
-                console.log(res, 'customerGetById')
+            AdminApi.GetSalesmanAdditionalInfos({ salesmanIdHash: id }).then(res => {
+                // console.log(res, 'customerGetById')
                 if (res) {
-                    console.log(res, 'email sss ')
+                    // console.log(res, 'email sss ')
                     let data = {
                         email: res.email,
                         name: res.name,
@@ -53,7 +46,7 @@ const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
                         salesmanRoles: res.salesmanRoles,
                     }
                     setData(data);
-                    console.log(data, 'form')
+                    // console.log(data, 'form')
                     form.setFieldsValue(data)
                 }
             })
@@ -65,7 +58,7 @@ const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
     }, [activeKey, id]);
 
     const onSearch = (value) => {
-        console.log(value, 'form value')
+        // console.log(value, 'form value')
         const datas = {
             ...value,
             userLicenseIdHash: data.userLicenseIdHash,
@@ -74,11 +67,11 @@ const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
             salesmanIdHash: id,
         }
 
-        console.log(datas, 'data dsalesmanIdHash')
+        // console.log(datas, 'data dsalesmanIdHash')
 
         if (id) {
             AdminApi.UpdateSalesmanAdditionalInfo(datas).then(res => {
-                console.log(res, 'UpdateCustomer')
+                // console.log(res, 'UpdateCustomer')
             })
         }
     }
@@ -99,7 +92,7 @@ const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
 
         setCheckboxData(updated);
 
-        console.log(checkboxData, 'form için set edilen roles');
+        // console.log(checkboxData, 'form için set edilen roles');
     };
     return (
         <>
@@ -123,83 +116,41 @@ const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
                                     <Button type="default" htmlType="submit" icon={<img src={Images.Save_green} alt="save" />} className="button-margin Save_green" disabled={isDisabled}></Button>
                                 </Col>
                             </Row>
-                            <Divider/>
-                            {/* <Form.Item label="Temsilci No">
-                                <div className="d-flex justify-content-end">
-                                    <Input
-                                        className="position-relative"
-                                        value={inputs.product_code}
-                                        disabled={isDisabled}
-                                        onChange={handleInputChangee}
-                                        style={{width: "240px"}}
-                                        placeholder="123544"
-                                    />
 
-                                    <img
-                                        src={Images.Search_blue}
-                                        className="position-absolute"
-                                        style={{right: "10px", top: "6px"}}
-                                    />
-                                </div>
-                            </Form.Item>
-                            <Form.Item label="Kullanici Sayisi">
-                                <div className="d-flex justify-content-end">
-                                    <Input
-                                        value={inputs.seller_code}
-                                        disabled={isDisabled}
-                                        onChange={handleInputChangee}
-                                        style={{width: "240px"}}
-                                        placeholder="123544"
-                                    />
-                                </div>
-                            </Form.Item>
-                            <Form.Item label="Kullanici Sayisi Mode">
-                                <div className="d-flex justify-content-end">
-                                    <Input
-                                        value={inputs.company}
-                                        disabled={isDisabled}
-                                        onChange={handleInputChangee}
-                                        style={{width: "240px"}}
-                                        placeholder="123544"
-                                    />
-                                </div>
-                            </Form.Item>*/}
+                            <Divider />
+
                             <Form.Item label="Kullanici Sayisi IOS" name="iosUsageCount">
                                 <InputNumber
-                                    min={0} style={{maxWidth: "240px", width: "100%", float: "right"}}
-                                       disabled={isDisabled} placeholder="123544"/>
+                                    min={0} style={{ maxWidth: "240px", width: "100%", float: "right" }}
+                                    disabled={isDisabled} placeholder="123544" />
                             </Form.Item>
                             <Form.Item label="Kullanici Sayisi Android" name="androidUsageCount">
                                 <InputNumber
                                     min={0}
-                                    style={{maxWidth: "240px", width: "100%", float: "right"}}
-                                    disabled={isDisabled} placeholder="123544"/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
+                                    disabled={isDisabled} placeholder="123544" />
                             </Form.Item>
                             <Form.Item label="Web Sayisi Android" name="webUsageCount">
                                 <InputNumber
                                     min={0}
-                                    style={{maxWidth: "240px", width: "100%", float: "right"}}
-                                    disabled={isDisabled} placeholder="123544"/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
+                                    disabled={isDisabled} placeholder="123544" />
                             </Form.Item>
                             <Form.Item label="Parol" name="password">
                                 <Input
-                                    style={{maxWidth: "240px", width: "100%", float: "right"}}
-                                    disabled={isDisabled} placeholder=""/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
+                                    disabled={isDisabled} placeholder="" />
                             </Form.Item>
-                            {/*<Form.Item label="Sip Kont Suresi" name="">
-                                <div className="d-flex justify-content-end">
-                                    <Input style={{width: "240px"}} placeholder="123544"/>
-                                </div>
-                            </Form.Item>*/}
+
                             <Form.Item label="Tel 1" name="phoneNumber">
                                 <Input
-                                    style={{maxWidth: "240px", width: "100%", float: "right"}}
-                                    disabled={isDisabled} placeholder="123544"/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
+                                    disabled={isDisabled} placeholder="123544" />
                             </Form.Item>
                             <Form.Item label="E-posta" name="email">
                                 <Input
-                                    style={{maxWidth: "240px", width: "100%", float: "right"}}
-                                    disabled={isDisabled} placeholder="123544"/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
+                                    disabled={isDisabled} placeholder="123544" />
                             </Form.Item>
                             {/*<Form.Item label="Ses Tanima Dili" name="">
                                 <div className="d-flex justify-content-end">
@@ -209,8 +160,8 @@ const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
 
                             <Form.Item label="Şube" name="storageCode">
                                 <Input
-                                    style={{maxWidth: "240px", width: "100%", float: "right"}}
-                                    disabled={isDisabled} placeholder="123544"/>
+                                    style={{ maxWidth: "240px", width: "100%", float: "right" }}
+                                    disabled={isDisabled} placeholder="123544" />
                             </Form.Item>
 
                             <Form.Item label="İcazələr">
@@ -226,50 +177,19 @@ const General = ({activeKey, isDisableds, handleShows, handleEditClickk}) => {
                                 </Checkbox.Group>
                             </Form.Item>
 
-                            {/* <div className="d-flex mt-4">
-                                <div className="d-flex">
-                                    <Checkbox/> <span className="ms-2 t_8F">Moderator</span>
-                                </div>
-                                <div className="d-flex ms-4">
-                                    <Checkbox/> <span className="ms-2 t_8F">Şofor</span>
-                                </div>
-                            </div>*/}
+                            <div className="mt-4"></div>
 
-                             <div className="mt-4"></div>
-                           {/* <Form.Item label="Temsilci Resmi"></Form.Item>
-                            <div style={{margin: "0px 130px"}}>
-                                <Upload.Dragger
-                                    multiple
-                                    style={{
-                                        padding: 5,
-                                        border: "1px dashed #d9d9d9",
-                                        borderRadius: 4,
-                                    }}
-                                >
-                                    <p className="ant-upload-drag-icon">
-                                        <VerticalAlignTopOutlined/>
-                                    </p>
-                                    <p className="ant-upload-text">
-                                        Drag and Drop Files Here
-                                    </p>
-                                    <p className="ant-upload-hint mt-2">OR</p>
-
-                                    <Button>
-                                        <PlusOutlined/> Browse Files
-                                    </Button>
-                                </Upload.Dragger>
-                            </div>*/}
                             <div className="mt-4">
                                 <Form.Item label="Mesaj"></Form.Item>
 
-                                <TextArea rows={6} placeholder="mesaj"/>
+                                <TextArea rows={6} placeholder="mesaj" />
                             </div>
                         </Form>
                     </Card>
                 </Col>
                 <Col span={12}>
                     <Card className="info-card" title="Lisans">
-                        <Undergraduate/>
+                        <Undergraduate />
                     </Card>
                 </Col>
             </Row>

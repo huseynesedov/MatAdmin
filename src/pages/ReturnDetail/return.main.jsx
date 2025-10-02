@@ -40,7 +40,7 @@ const ReturnDetail = () => {
 
 
 
-    console.log("return product", products);
+    // console.log("return product", products);
 
 
     const fetchOrderDetail = (page) => {
@@ -73,7 +73,7 @@ const ReturnDetail = () => {
                 // console.error('API hatası:', errorMessage);
                 // alert(errorMessage);
 
-                console.log(error);
+                // console.log(error);
 
             })
             .finally(() => {

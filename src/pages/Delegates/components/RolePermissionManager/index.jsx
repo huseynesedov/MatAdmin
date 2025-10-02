@@ -24,7 +24,7 @@ const RolePermissionManager = ({ salesmanIdHash, permission }) => {
             let data
             if (id) {
                 AdminApi.getSalesmanModulePageRole({salesmanIdHash: id}).then(res => {
-                    console.log(res, 'customerGetById')
+                    // console.log(res, 'customerGetById')
                     if (res) {
                         data = res;
                     }
@@ -51,7 +51,7 @@ const RolePermissionManager = ({ salesmanIdHash, permission }) => {
             setModuleData(data);
             setPermissionMap(map);
         } catch (err) {
-            console.log(err)
+            // console.log(err)
         } finally {
             setLoading(false);
         }
@@ -70,11 +70,11 @@ const RolePermissionManager = ({ salesmanIdHash, permission }) => {
     };
 
     const handleSubmit = async () => {
-        console.log(permission, '...permission.permission')
+        // console.log(permission, '...permission.permission')
         try {
             AdminApi.updateSalesmanModulePage({...permission}).then(res => {
                 if (res) {
-                    console.log(res, 'customerGetById')
+                    // console.log(res, 'customerGetById')
                 }
             })
             message.success("İcazələr uğurla yadda saxlanıldı.");

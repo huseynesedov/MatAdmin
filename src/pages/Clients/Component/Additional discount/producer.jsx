@@ -35,7 +35,7 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => 
                 }
             })
             .catch((err) => {
-                openNotification('Xəta baş verdi' , '-'  , true )
+                openNotification('Xəta baş verdi' , err.response.data.message, true)
             })
         }
     };

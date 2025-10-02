@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Accordion, Card, Form } from "react-bootstrap";
 
-const PermissionSettings = ({ modules, onChange }: any) => {
+const PermissionSettings = ({ modules, onChange }) => {
     const [data, setData] = useState(modules);
 
     const [changedPermissions, setChangedPermissions] = useState([]);
@@ -35,7 +35,7 @@ const PermissionSettings = ({ modules, onChange }: any) => {
         if (id) {
             AdminApi.updateSalesmanModulePage({data}).then(res => {
                 if (res) {
-                    console.log(res)
+                    // console.log(res)
                 }
             })
         }*!/

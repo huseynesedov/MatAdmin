@@ -10,7 +10,6 @@ const ModalDiscountProduct = ({ show, handleClose, changeDatas, discountData, ty
 
 
     const handleSubmit = () => {
-        console.log(changeDatas, 'changeDatas')
         discountData(changeDatas);
         setDiscounts([]);
     };

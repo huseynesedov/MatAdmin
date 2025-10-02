@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import {Form, Input, Button, Table, Checkbox, Row, Col, Pagination} from 'antd';
+import { Form, Input, Button, Table, Checkbox, Row, Col, Pagination } from 'antd';
 
 import Images from '../../../../assets/images/js/Images';
-import {AdminApi} from "../../../../api/admin.api";
+import { AdminApi } from "../../../../api/admin.api";
 
 
 const SearchModal = ({ shows, handleClose, checkData }) => {
@@ -18,9 +18,9 @@ const SearchModal = ({ shows, handleClose, checkData }) => {
         return index % 2 === 0 ? 'custom_bg' : '';
     };
 
-    useEffect(() => {
-        getList('')
-    }, []);
+    // useEffect(() => {
+    //     getList('')
+    // }, []);
 
 
     useEffect(() => {
@@ -56,8 +56,9 @@ const SearchModal = ({ shows, handleClose, checkData }) => {
             setDataList(res);
         })
     }
+
     const handleRowClick = (record) => {
-        console.log(record, form, 'recordd ddd')
+        // console.log(record, form, 'recordd ddd')
         checkData(record);
     };
 
@@ -94,7 +95,7 @@ const SearchModal = ({ shows, handleClose, checkData }) => {
             backdrop="static"
             keyboard={false}
             size="hh"
-            style={{background: '#3f3f3fba'}}
+            style={{ background: '#3f3f3fba' }}
         >
             <Modal.Header closeButton>
                 <Modal.Title>
@@ -119,8 +120,8 @@ const SearchModal = ({ shows, handleClose, checkData }) => {
                                 </Col>
                                 <Col span={8} className="mb-0 pt-1">
                                     <Form.Item>
-                                        <Button type="default" htmlType="submit" style={{marginLeft: '8px'}} className="Bin_Blue mb-0 mt-4"
-                                                icon={<img src={Images.Search_blue} alt="search"/>}>Ara</Button>
+                                        <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue mb-0 mt-4"
+                                            icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -134,7 +135,7 @@ const SearchModal = ({ shows, handleClose, checkData }) => {
                             rowClassName={rowClassName}
                             columns={columns}
                             dataSource={dataList.data}
-                            scroll={{x: 150}}
+                            scroll={{ x: 150 }}
                             pagination={false}
                             onRow={(record) => ({
                                 onClick: () => handleRowClick(record),
@@ -145,22 +146,6 @@ const SearchModal = ({ shows, handleClose, checkData }) => {
                     <Pagination current={current} pageSize={pageSize} onChange={onChange} total={dataList.count} />
                 </div>
             </Modal.Body>
-           {/* <Modal.Footer>
-                <Button
-                    type="default"
-                    className="Delete_red2"
-                    icon={<img src={Images.delete_red} />}
-                >
-                    Temizle
-                </Button>
-                <Button
-                    type="default"
-                    style={{ marginLeft: '8px' }}
-                    className="Bin_Blue2"
-                    icon={<img src={Images.Search_blue} />}>
-                    Ara
-                </Button>
-            </Modal.Footer>*/}
         </Modal>
     );
 }

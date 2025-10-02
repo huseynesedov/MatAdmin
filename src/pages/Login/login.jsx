@@ -1,5 +1,5 @@
 import { Button, Form, InputGroup } from "react-bootstrap";
-import "./login.scss";
+import "./login.css";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
