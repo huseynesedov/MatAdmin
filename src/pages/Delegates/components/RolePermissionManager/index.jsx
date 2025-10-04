@@ -103,7 +103,7 @@ const RolePermissionManager = ({ salesmanIdHash, permission }) => {
 
     return (
         <div>
-            <Title level={4}>Satış təmsilçisi üçün icazə təyini</Title>
+            {/* <Title level={4}>Satış təmsilçisi üçün icazə təyini</Title> */}
 
             <Collapse accordion>
                 {moduleData?.map((mod) => (

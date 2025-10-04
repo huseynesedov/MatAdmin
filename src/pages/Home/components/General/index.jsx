@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useEffect, useState } from 'react';
 import { Button, Card, Checkbox, Col, Form, Input, InputNumber, Modal, Row, Select, Space, Spin } from 'antd';
 
 import Images from '../../../../assets/images/js/Images';
@@ -11,7 +11,9 @@ import { useIds } from '../../../../Contexts/ids.context';
 
 const { confirm } = Modal;
 
-const General = ({ isSetData, handleShowModal2, form }) => {
+const General = forwardRef(({ isSetData, handleShowModal2, form,setSalesPrices,salesPrices,purchasePrices,setPurchasePrices,costPrices,setCostPrices,
+    checkVehicleBrand, setCheckVehicleBrand, checkVehicleModel, setCheckVehicleModel
+ }, ref) => {
     const [loading, setLoading] = useState(false); // Loading durumu
     // let { id } = useParams();
 
@@ -28,29 +30,35 @@ const General = ({ isSetData, handleShowModal2, form }) => {
     const [currencyLists, setCurrencyList] = useState([]);
     const [vehicleBrand, setVehicleBrand] = useState([]);
     const [vehicleModel, setVehicleModel] = useState([]);
-    const [checkVehicleBrand, setCheckVehicleBrand] = useState([]);
-    const [checkVehicleModel, setCheckVehicleModel] = useState([]);
     const [checkVehicleModelHistory, setCheckVehicleModelHistory] = useState([]);
     const [shelfData, setShelfData] = useState([]);
-    const [salesPrices, setSalesPrices] = useState([]);
-    const [purchasePrices, setPurchasePrices] = useState([]);
-    const [costPrices, setCostPrices] = useState([]);
     const [isShowProduct, setShowProduct] = useState();
 
+    // useEffect(() => {
+    //     if (!id) return; // id yoxdursa heç bir şey çağırma
+
+
+    //     Promise.all([
+    //         facturersProductCount(id),
+    //         shelfList(id),
+    //         currencyList(id),
+    //         productTypeLists(id),
+    //         productProperty(id),
+    //         getBrand(id),
+    //         manufacturerLists(id)
+    //     ])
+    // }, [id]);
+
     useEffect(() => {
-        if (!id) return; // id yoxdursa heç bir şey çağırma
+        facturersProductCount()
+        shelfList()
+        currencyList()
+        productTypeLists()
+        productProperty()
+        getBrand()
+        manufacturerLists()
 
-
-        Promise.all([
-            facturersProductCount(id),
-            shelfList(id),
-            currencyList(id),
-            productTypeLists(id),
-            productProperty(id),
-            getBrand(id),
-            manufacturerLists(id)
-        ])
-    }, [id]);
+    }, []);
 
 
     useEffect(() => {
@@ -529,8 +537,7 @@ const General = ({ isSetData, handleShowModal2, form }) => {
 
     };
 
-    const facturersProductCount = (id) => {
-        if (!id) return;
+    const facturersProductCount = () => {
         setLoading(true);
 
         AdminApi.GetPaymentTermList()
@@ -643,8 +650,7 @@ const General = ({ isSetData, handleShowModal2, form }) => {
 
     const [manufacturerList, setManufacturerList] = useState([]);
 
-    const manufacturerLists = (id) => {
-        if (!id) return; // ✅ id yoxdursa, heç bir istek atılmır
+    const manufacturerLists = () => {
 
         CatalogApi.GetManufacturerList(id)
             .then(res => {
@@ -674,19 +680,22 @@ const General = ({ isSetData, handleShowModal2, form }) => {
         });
     };
 
-    const resetData = () => {
-        form.resetFields();
-        setSalesPrices([]);
-        setPurchasePrices([]);
-        setCostPrices([]);
-        setCheckVehicleBrand([]);
-        setproductPropertyValue([]);
-        setCheckVehicleModel([]);
-        setShelfData([]);
-        setCheckVehicleModelHistory([]);
+  const resetData = () => {
+    form.resetFields(); // formdakı bütün Form.Item-ları sıfırla
+    setproductPropertyValue(null);
+    setCheckVehicleBrand([]);
+    setCheckVehicleModel([]);
+    setShelfData([]);
+  };
 
-    }
-
+  useImperativeHandle(ref, () => ({
+        resetData: () => {
+            form.resetFields();
+        },
+        setData: (data) => {
+            form.setFieldsValue(data);
+        }
+    }));
     const isEdit = () => {
         setIsDisabled(false)
     }
@@ -1128,15 +1137,11 @@ const General = ({ isSetData, handleShowModal2, form }) => {
                         </div>
                         <div class="col">
                             <Card className="info-card" title="Fiyat Bilgileri">
-                                <Form layout="horizontal">
+                                <Form  layout="horizontal">
                                     {renderPriceList(salesPrices, setSalesPrices, 'Satış Fiyatı')}
                                     {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
                                     {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
                                 </Form>
-                                {/*<Form.Item name="discount" label="Endirim" className="mt-5">
-                                <InputNumber min={0} placeholder="Value"
-                                             style={{width: '100%'}}/>
-                            </Form.Item>*/}
                             </Card>
 
                             <Card className="info-card" title="Ek bilgiler">
@@ -1157,6 +1162,6 @@ const General = ({ isSetData, handleShowModal2, form }) => {
             </Spin>
         </>
     );
-}
+},);
 
 export default General;

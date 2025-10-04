@@ -417,7 +417,7 @@ const Delegates = () => {
 
                 
                 <TabPane disabled={tabDisable} tab="Yetkilendirme" key="2">
-                    <Row gutter={16}>
+                    {/* <Row gutter={16}>
                         <Col span={12}>
                             <Button
                                 type="default"
@@ -454,7 +454,7 @@ const Delegates = () => {
                                 disabled={isDeleteDisabled}
                             ></Button>
                         </Col>
-                    </Row>
+                    </Row> */}
 
                     <RolePermissionManager permission={dataPermission} />
 

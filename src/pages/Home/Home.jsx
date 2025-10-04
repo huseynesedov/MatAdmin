@@ -24,6 +24,7 @@ const { TabPane } = Tabs;
 const Home = () => {
     const { id, selectedId } = useIds()
     const { logout } = useAuth();
+    const generalRef = useRef(null);
 
     const [form] = Form.useForm();
     const [generalForm] = Form.useForm();
@@ -40,6 +41,17 @@ const Home = () => {
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
     const { selectedItem } = useContext(SearchContext);
+
+    // General states
+    const [salesPrices, setSalesPrices] = useState([]);
+    const [purchasePrices, setPurchasePrices] = useState([]);
+    const [costPrices, setCostPrices] = useState([]);
+    const [checkVehicleBrand, setCheckVehicleBrand] = useState([]);
+    const [checkVehicleModel, setCheckVehicleModel] = useState([]);
+
+    // Genel olaraq form məlumatlarını saxlamaq üçün useRef istifadə edin
+    // Beləliklə, səhifə dəyişdikdə və ya digər əməliyyatlar zamanı məlumat itməz
+
 
     const formsRef = useRef({});
 
@@ -73,7 +85,6 @@ const Home = () => {
         setActiveTab(1)
         if (id) {
             onProductDatas(id);
-            onProductData();
             setTabDisable(false)
         } else {
             setTabDisable(true)
@@ -278,15 +289,25 @@ const Home = () => {
                         <Form.Item>
                             <Button
                                 type="default"
-                                className="Delete_red"
+                                className={id ? "Delete_red" : "transitionDelete d-none"}
                                 icon={<img src={Images.delete_red} alt="delete" />}
                                 onClick={() => {
-                                    form.resetFields();        // əsas form
-                                    generalForm.resetFields(); // General form
+                                    form.resetFields();
+                                    generalForm.resetFields();
                                     formsRef.current = {};
                                     selectedId(null);
                                     setCurrent(1);
+                                    if (generalRef.current && typeof generalRef.current.resetData === 'function') {
+                                        generalRef.current.resetData();
+                                    }
+                                    setSalesPrices([]);
+                                    setPurchasePrices([]);
+                                    setCheckVehicleBrand([]);
+                                    setCheckVehicleModel([]);
+                                    setCostPrices([]);
+
                                 }}
+
                             >
                                 Temizle
                             </Button>
@@ -294,7 +315,7 @@ const Home = () => {
                             <Button
                                 type="default"
                                 style={{ marginLeft: "8px" }}
-                                className="Bin_Blue"
+                                className="Bin_Blue transition"
                                 icon={<img src={Images.Search_blue} alt="search" />}
                                 onClick={() => {
                                     const values = form.getFieldsValue();
@@ -331,7 +352,18 @@ const Home = () => {
 
                         {/* <Divider /> */}
 
-                        <General form={generalForm} isSetData={isShowProduct} handleShowModal2={handleShowModal2} />
+                        <General form={generalForm} ref={generalRef} isSetData={isShowProduct} handleShowModal2={handleShowModal2}
+                            setSalesPrices={setSalesPrices}
+                            salesPrices={salesPrices}
+                            purchasePrices={purchasePrices}
+                            setPurchasePrices={setPurchasePrices}
+                            costPrices={costPrices}
+                            setCostPrices={setCostPrices}
+                            setCheckVehicleBrand={setCheckVehicleBrand}
+                            setCheckVehicleModel={setCheckVehicleModel}
+                            checkVehicleBrand={checkVehicleBrand}
+                            checkVehicleModel={checkVehicleModel}
+                        />
 
                     </TabPane>
 

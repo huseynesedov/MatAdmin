@@ -1,45 +1,11 @@
 import React, { useState } from "react";
 import { Accordion, Card, Form } from "react-bootstrap";
 
-const PermissionSettings = ({ modules, onChange }) => {
+const PermissionSettings = ({ modules, onChange }: any) => {
     const [data, setData] = useState(modules);
 
     const [changedPermissions, setChangedPermissions] = useState([]);
 
-    /*const handlePermissionChange = (moduleIndex: number, subIndex: number, pageIndex: number, permissionIndex: number) => {
-        const newData = [...data];
-        const perm = newData[moduleIndex]
-            .subModules[subIndex]
-            .salesmanModulePages[pageIndex]
-            .permissions[permissionIndex];
-
-        perm.hasPermission = !perm.hasPermission;
-        setData(newData);
-        onChange && onChange(newData); // dəyişiklikləri yuxarıya ötürmək üçün
-
-        /!* let data = {
-            salesmanIdHash: id,
-            salesmanRoleModulePageRightModels: [
-                {
-                    modulePageRightId: newData[moduleIndex]
-                        .subModules[subIndex]
-                        .salesmanModulePages[pageIndex].id,
-                    salesmanRoleTypeId:  newData[moduleIndex]
-                        .subModules[subIndex]
-                        .salesmanModulePages[pageIndex]
-                        .permissions[permissionIndex].id,
-                    hasPermission: perm.hasPermission
-                }
-            ]
-        }
-        if (id) {
-            AdminApi.updateSalesmanModulePage({data}).then(res => {
-                if (res) {
-                    // console.log(res)
-                }
-            })
-        }*!/
-    };*/
     const handlePermissionChange = (
         moduleIndex: number,
         subIndex: number,

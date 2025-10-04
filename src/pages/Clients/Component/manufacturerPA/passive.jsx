@@ -57,7 +57,6 @@ const Product_passive = ({showModalDiscount, coolBackList, changeDatas, activeKe
 
     useEffect(() => {
         coolBackList(selectedRowKeys)
-        console.log(selectedRowKeys, 'selectedRowKeys')
     }, [selectedRowKeys]);
 
 
