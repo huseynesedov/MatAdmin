@@ -25,7 +25,7 @@ const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
     useEffect(() => {
         setIsDisabled(isDisableds)
     }, [isDisableds]);
-    
+
     useEffect(() => {
         if (isSetData) {
             form.setFieldsValue({
@@ -78,7 +78,11 @@ const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
         };
 
         AdminApi.UpdateCustomer(data).then(res => {
-        });
+            openNotification('Uğurlu əməliyyat..', `Məhsul Yeniləndi!`, false);
+
+        }).catch((err) => {
+                openNotification('Xəta baş verdi', err.response.data.message, true)
+            });
     };
 
 

@@ -20,7 +20,6 @@ const SearchModal2 = ({
     const [data, setData] = useState([]);
     const [form] = Form.useForm();
     const navigate = useNavigate();
-    console.log(searchData);
 
     // Backenddən gələn data-nı table üçün formatla
     useEffect(() => {

@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import {Form, Input, Button, Table, Checkbox, Row, Col, Pagination} from 'antd';
+import { Form, Input, Button, Table, Checkbox, Row, Col, Pagination } from 'antd';
 
 import Images from '../../../../assets/images/js/Images';
-import {AdminApi} from "../../../../api/admin.api";
+import { AdminApi } from "../../../../api/admin.api";
 
 
 const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
@@ -28,10 +28,6 @@ const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
     }, [current, pageSize]);
 
 
-    const onChange = (page, pageSize) => {
-        setCurrent(page);
-        setdefaultPageSize(pageSize);
-    };
 
     const onSearch = (values) => {
         setCurrent(1)
@@ -45,13 +41,13 @@ const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
             filters: []
         }
 
-       /* if (values) {
-            searchProductCount.filters[0] = {
-                value: values.manufacturer,
-                fieldName: 'name',
-                equalityType: 'Contains'
-            }
-        }*/
+        /* if (values) {
+             searchProductCount.filters[0] = {
+                 value: values.manufacturer,
+                 fieldName: 'name',
+                 equalityType: 'Contains'
+             }
+         }*/
         AdminApi.postSalesmanGetTableAsync(searchProductCount).then((res) => {
             setDataList(res);
         })
@@ -101,7 +97,7 @@ const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
             backdrop="static"
             keyboard={false}
             size="hh"
-            style={{background: '#3f3f3fba'}}
+            style={{ background: '#3f3f3fba' }}
         >
             <Modal.Header closeButton>
                 <Modal.Title>
@@ -126,8 +122,8 @@ const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
                                 </Col>
                                 <Col span={8} className="mb-0 pt-1">
                                     <Form.Item>
-                                        <Button type="default" htmlType="submit" style={{marginLeft: '8px'}} className="Bin_Blue mb-0 mt-4"
-                                                icon={<img src={Images.Search_blue} alt="search"/>}>Ara</Button>
+                                        <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue mb-0 mt-4"
+                                            icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -141,7 +137,7 @@ const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
                             rowClassName={rowClassName}
                             columns={columns}
                             dataSource={dataList}
-                            scroll={{x: 150}}
+                            scroll={{ x: 150 }}
                             pagination={false}
                             onRow={(record) => ({
                                 onClick: () => handleRowClick(record),
@@ -152,7 +148,7 @@ const UserRolesModal = ({ shows, handleClose, checkData, productData }) => {
                     {/*<Pagination current={current} pageSize={pageSize} onChange={onChange} total={dataList} />*/}
                 </div>
             </Modal.Body>
-           {/* <Modal.Footer>
+            {/* <Modal.Footer>
                 <Button
                     type="default"
                     className="Delete_red2"

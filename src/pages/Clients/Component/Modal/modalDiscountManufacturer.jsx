@@ -9,7 +9,6 @@ const ModalDiscountManufacturer = ({ show, handleClose, changeDatas, discountDat
 
 
     const handleSubmit = () => {
-        console.log(changeDatas, 'changeDatas')
         discountData(changeDatas);
         setDiscounts([]);
     };

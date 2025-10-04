@@ -16,64 +16,67 @@ import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { IdsProvider } from "./Contexts/ids.context";
 
 function AppContent() {
+
     const { logged, setLogged, logout, openNotification } = useAuth();
     const navigate = useNavigate();
 
     // 🔥 Firebase Config
     const firebaseConfig = {
-        apiKey: "AIzaSyAY4xPP3d_42JVcB0gySpcR_muct9Cijus",
-        authDomain: "matb2b-54a06.firebaseapp.com",
-        projectId: "matb2b-54a06",
-        storageBucket: "matb2b-54a06.firebasestorage.app",
-        messagingSenderId: "463425467837",
-        appId: "1:463425467837:web:53d8a0ac26a08723bf0ed4",
-        measurementId: "G-K2TZ0QSBFJ",
+        apiKey: "AIzaSyBMpTtk-Zp0K_Zj0F-7AZb6NMXs66g-pMs",
+        authDomain: "matt-6c92c.firebaseapp.com",
+        projectId: "matt-6c92c",
+        storageBucket: "matt-6c92c.firebasestorage.app",
+        messagingSenderId: "37643677283",
+        appId: "1:37643677283:web:0f3b40e218976717271256",
+        measurementId: "G-L15LBMF6HW"
     };
 
-    const vapidKey = "BAT0FgBF3i5A0tQajz-CezPaX8-y3lhGANijxI1BmOL4T9NA3Vem8QByWd2bhb4zvbFJy-r3pQOB4E-d3mYL-gw";
+    const vapidKey = "BJNATOZRMAk82-d__q2VLAT93Rf7bSEBv-ZZwYZkwRLOildfWeR8N5sxdEwmPSGblPSkWkkG6dWkoFdFOx_BYdM";
 
-useEffect(() => {
-    const app = initializeApp(firebaseConfig);
-    const messaging = getMessaging(app);
+    useEffect(() => {
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
 
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
-        .then((registration) => {
-            console.log('Service Worker registered:', registration);
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+            .then((registration) => {
+                console.log('Service Worker registered:', registration);
 
-            // SW’nin active olmasını bekle
-            if (registration.active) {
-                return registration;
-            } else {
-                return new Promise((resolve) => {
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'activated') {
-                                resolve(registration);
-                            }
+                // SW’nin active olmasını bekle
+                if (registration.active) {
+                    return registration;
+                } else {
+                    return new Promise((resolve) => {
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'activated') {
+                                    resolve(registration);
+                                }
+                            });
                         });
                     });
-                });
+                }
+            })
+            .then((registration) => {
+                return getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
+            })
+            .then((token) => {
+                console.log('✅ FCM Token:', token);
+            })
+            .catch((err) => {
+                console.error('❌ Token alınamadı:', err);
+            });
+
+        const unsubscribe = onMessage(messaging, (payload) => {
+            if (payload?.notification) {
+                openNotification(payload.notification.title, payload.notification.body, false);
             }
-        })
-        .then((registration) => {
-            return getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
-        })
-        .then((token) => {
-            console.log('✅ FCM Token:', token);
-        })
-        .catch((err) => {
-            console.error('❌ Token alınamadı:', err);
         });
 
-    const unsubscribe = onMessage(messaging, (payload) => {
-        if (payload?.notification) {
-            openNotification(payload.notification.title, payload.notification.body, false);
-        }
-    });
+        return () => unsubscribe();
+    }, []);
 
-    return () => unsubscribe();
-}, []);
+
 
     // ------------------- LOGIN CHECK -------------------
     useEffect(() => {
@@ -165,7 +168,7 @@ useEffect(() => {
             </div>
             <div className="main w-100">
                 <Header />
-                
+
                 <RouteList />
             </div>
         </div>

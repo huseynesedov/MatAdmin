@@ -114,7 +114,7 @@ const OtherInfo = ({ changeDatas, activeKey }) => {
                                 <div className='d-flex justify-content-end'>
                                     <Input style={{ width: "240px", height: "40px" }}
                                         className='position-relative' placeholder="" disabled />
-                                </div>
+                                </div> 
                             </Form.Item>
 
                             <h4 className='t_44 fs_16 fw_600 mt-5'>
@@ -180,6 +180,7 @@ const OtherInfo = ({ changeDatas, activeKey }) => {
                                                     <Form.Item {...restField} name={[name, 'hasRole']} hidden>
                                                         <Input type="hidden" />
                                                     </Form.Item>
+                                                    ssssssssssssssssssss
                                                     <Form.Item {...restField} name={[name, 'roleIdHash']} hidden>
                                                         <Input type="hidden" />
                                                     </Form.Item>
@@ -198,13 +199,6 @@ const OtherInfo = ({ changeDatas, activeKey }) => {
                                                         icon={<img src={Images.Search_blue} alt="search" />}
                                                     />
 
-                                                    {/* <Button
-                            type="default"
-                            danger
-                            onClick={() => remove(name)}
-                            style={{ marginLeft: '8px' }}
-                            icon={<img src={Images.Close_gray} alt="remove" />}
-                        /> */}
                                                 </div>
                                             );
                                         })}

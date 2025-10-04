@@ -23,7 +23,9 @@
 }
 
 
-
+.transition {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
 
 .spin-overlay {
     position: fixed;

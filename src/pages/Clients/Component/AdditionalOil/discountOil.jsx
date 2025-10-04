@@ -129,7 +129,7 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
             cancelText: 'Legv et',
             onOk() {
                 handleDelete();
-            },
+            }
         });
     };
     const handleRowClick = (record) => {
