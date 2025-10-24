@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import {Button, Checkbox, Pagination, Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import { Button, Checkbox, Pagination, Table } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../../../AuthContext";
 import Images from "../../../../assets/images/js/Images";
+import { useIds } from '../../../../Contexts/ids.context';
 
-const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => {
+const Producer = ({ showModalDiscount, coolBackList, changeDatas, activeKey }) => {
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
-    let { id } = useParams();
+    const { id } = useIds()
+
     const { openNotification } = useAuth()
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -30,13 +32,13 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => 
             }
 
             AdminApi.getAdminManufacturerList(data).then(res => {
-                if(res.data) {
+                if (res.data) {
                     setData(res);
                 }
             })
-            .catch((err) => {
-                openNotification('Xəta baş verdi' , err.response.data.message, true)
-            })
+                .catch((err) => {
+                    openNotification('Xəta baş verdi', err.response.data.message, true)
+                })
         }
     };
 
@@ -112,7 +114,7 @@ const Producer = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => 
                 pagination={false}
                 className="mb-3"
             />
-            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data.count}/>
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data.count} />
 
 
         </>

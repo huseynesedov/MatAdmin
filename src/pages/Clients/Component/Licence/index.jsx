@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
-import {Checkbox, Form, Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import { Checkbox, Form, Table } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../../../AuthContext";
+import { useIds } from '../../../../Contexts/ids.context';
 
 
-const Licence = ({activeKey}) => {
-    /*/admin/v1/UserLicense/Add  Add user license*/
+const Licence = ({ activeKey }) => {
     const [data, setData] = useState([]);
-    let { id } = useParams();
+    const { id } = useIds()
+
     const [form] = Form.useForm();
     const { openNotification } = useAuth()
 
@@ -19,13 +20,15 @@ const Licence = ({activeKey}) => {
 
     const createData = () => {
         if (id) {
-       
+
             AdminApi.getLicenseHistoryGetTable(data).then(res => {
                 setData(res)
-            })
-            .catch((err) => {
-                openNotification('Xəta baş verdi' , err.response.data.message, true)
-            })
+            }).catch((err) => {
+                openNotification('Xəta baş verdi', err.response.data.message, true)
+            });
+        } else {
+            // id yoxdursa, table-ı sıfırla
+            setData({ data: [], count: 0 });
         }
     };
 
@@ -37,16 +40,7 @@ const Licence = ({activeKey}) => {
 
 
     const columns = [
-        /*{
-            title: '',
-            width: 0,
-            dataIndex: 'checkbox',
-            key: 'checkbox',
-            render: () => <div className="age-column">
-                <Checkbox />
-            </div>,
-
-        },*/
+        
         {
             title: 'Browser',
             width: 77,

@@ -7,16 +7,18 @@ import './../../../../assets/styles/Clients.css';
 import TextArea from "antd/es/input/TextArea";
 import { useAuth } from "../../../../AuthContext";
 import { ExclamationCircleFilled } from "@ant-design/icons";
+import { useIds } from '../../../../Contexts/ids.context';
 const { confirm } = Modal;
 
 const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
+    // const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [isDisabled, setIsDisabled] = useState(true);
     const [form] = Form.useForm();
     const { openNotification } = useAuth();
-    const navigate = useNavigate();
 
-    let { id } = useParams();
+    const { id, selectedId } = useIds()
+
 
     useEffect(() => {
         getByIdData()
@@ -42,27 +44,26 @@ const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
 
 
     const getByIdData = () => {
-        AdminApi.customerGetById({ id }).then(res => {
-            setData(res);
-            form.setFieldsValue(res)
-        })
+        if (!id) {
+            // id yoxdursa, heç nə etmirik
+            setData(null);
+            form.resetFields(); // formu təmizləmək istəyə bilərsən
+            return;
+        }
+        console.log(id);
+
+        AdminApi.customerGetById(id)
+            .then((res) => {
+                setData(res);
+                form.setFieldsValue(res);
+            })
+            .catch((err) => {
+                console.error("Müştəri məlumatı alınarkən xəta baş verdi:", err);
+            });
     };
 
-    const [inputs, setInputs] = useState({
-        product_code: '',
-        product_name: '',
-        seller_code: '',
-        seller: '',
-        company: '',
-        case: '',
-        foregin_selling_rate: '',
-        raf_address: '',
-        photo: '',
-        balance_1: '',
-        balance_2: '',
-        selling_rate: '',
-        buy_rate: '',
-    });
+
+
 
     const uptadeCustomer = (value) => {
 
@@ -78,18 +79,19 @@ const General = ({ activeKey, isDisableds, handleEditClickk, isSetData }) => {
         };
 
         AdminApi.UpdateCustomer(data).then(res => {
-            openNotification('Uğurlu əməliyyat..', `Məhsul Yeniləndi!`, false);
+            openNotification('Uğurlu əməliyyat..', `İstifadəçi Yeniləndi!`, false);
 
         }).catch((err) => {
-                openNotification('Xəta baş verdi', err.response.data.message, true)
-            });
+            openNotification('Xəta baş verdi', err.response.data.message, true)
+        });
     };
 
 
     const customerDelete = () => {
         AdminApi.UpdateCustomerDeleteId({ customerIdHash: id }).then(res => {
-            openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false);
-            navigate(`/`)
+            openNotification('Uğurlu əməliyyat..', `Istifadəçi silindi`, false);
+            selectedId(null);
+            // navigate('/clients');
         })
             .catch((err) => {
                 openNotification('Xəta baş verdi', err.response.data.message, true)

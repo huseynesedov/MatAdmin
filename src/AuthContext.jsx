@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     const AdminLogin = (userCode, passwordHash) => {
         setLoginLoading(true);
         setLoading(true);
-        AccountApi.AdminLogin({ userCode, passwordHash })
+        AccountApi.AdminLogin({ userCode, passwordHash,deviceToken:localStorage.getItem("fireBaseToken") })
             .then((res) => {
                 localStorage.setItem("token", res.accessToken);
                 localStorage.setItem("refreshToken", res.refreshToken);

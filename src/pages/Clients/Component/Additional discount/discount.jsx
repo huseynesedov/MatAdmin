@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {Button, Checkbox, Modal, Pagination, Table} from 'antd';
+import { Button, Checkbox, Modal, Pagination, Table } from 'antd';
 import { AdminApi } from "../../../../api/admin.api";
-import { useParams } from "react-router-dom";
 import { useAuth } from "../../../../AuthContext";
 import Images from "../../../../assets/images/js/Images";
-import {ExclamationCircleFilled} from "@ant-design/icons";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const { confirm } = Modal;
-const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
+const Discount = ({ showModalDiscount, changeDatas, editData, activeKey }) => {
     const [data, setData] = useState([]);
     const [count, setCount] = useState([]);
     const [current, setCurrent] = useState(1);
@@ -15,7 +15,8 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
     const [dynamicColumns, setDynamicColumns] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-    let { id } = useParams();
+    const { id } = useIds()
+
     const { openNotification } = useAuth();
 
     const rowClassName = (record, index) => {
@@ -39,7 +40,7 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
 
             AdminApi.GetManufacturerAdditionalDiscountsByCustomerId(requestData)
                 .then((res) => {
-                    if(res.data) {
+                    if (res.data) {
                         setCount(res.count)
                         const manufacturers = res?.data || [];
                         setData(
@@ -123,7 +124,7 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
             openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false);
             createData();
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     };
 
@@ -141,7 +142,7 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
         });
     };
     const handleRowClick = (record) => {
-       editData(record);
+        editData(record);
     };
     const additionalDiscount = () => {
         showModalDiscount(1)
@@ -150,12 +151,12 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
     return (
         <>
             <div className="d-flex w-100 justify-content-between">
-               {/* <Button type="default" icon={<img src={Images.edit_green} alt="edit"/>} className="button-margin bg_none edit_button p-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>*/}
+                {/* <Button type="default" icon={<img src={Images.edit_green} alt="edit"/>} className="button-margin bg_none edit_button p-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>*/}
                 <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red mb-3" disabled={!selectedRowKeys.length > 0}
-                        onClick={showDeleteConfirm} ></Button>
+                    onClick={showDeleteConfirm} ></Button>
             </div>
             <Table
-                scroll={{x: 'max-content'}}
+                scroll={{ x: 'max-content' }}
                 rowClassName={rowClassName}
                 columns={columns}
                 dataSource={data}
@@ -166,7 +167,7 @@ const Discount = ({showModalDiscount, changeDatas, editData, activeKey}) => {
                     onDoubleClick: () => handleRowClick(record),
                 })}
             />
-            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count}/>
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count} />
         </>
     );
 };

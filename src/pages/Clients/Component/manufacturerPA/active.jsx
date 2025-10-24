@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import {Button, Checkbox, Pagination, Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import { Button, Checkbox, Pagination, Table } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useAuth } from "../../../../AuthContext";
 import Images from "../../../../assets/images/js/Images";
+import { useIds } from '../../../../Contexts/ids.context';
 
-const Product_active = ({showModalDiscount, coolBackList, changeDatas, activeKey}) => {
+const Product_active = ({ showModalDiscount, coolBackList, changeDatas, activeKey }) => {
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
-    let { id } = useParams();
+    const { id } = useIds()
+
     const { openNotification } = useAuth()
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -36,13 +37,17 @@ const Product_active = ({showModalDiscount, coolBackList, changeDatas, activeKey
             }
 
             AdminApi.getCustomerManufacturerListByCustomerId(data).then(res => {
-                if(res.data) {
+                if (res.data) {
                     setData(res);
                     setSelectedRowKeys([])
                 }
             }).catch((err) => {
-                openNotification('Xəta baş verdi' ,err.response.data.message, true)
-            })
+                openNotification('Xəta baş verdi', err.response.data.message, true)
+            });
+        } else {
+            // id yoxdursa, table-ı sıfırla
+            setData({ data: [], count: 0 });
+            setSelectedRowKeys([]);
         }
     };
 
@@ -106,7 +111,7 @@ const Product_active = ({showModalDiscount, coolBackList, changeDatas, activeKey
                 pagination={false}
                 className="mb-3"
             />
-            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data.count}/>
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={data.count} />
 
 
         </>

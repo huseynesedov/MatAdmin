@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import {Button, Checkbox, Modal, Pagination, Table} from 'antd';
+import { Button, Checkbox, Modal, Pagination, Table } from 'antd';
 import { AdminApi } from "../../../../api/admin.api";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../../../AuthContext";
 import Images from "../../../../assets/images/js/Images";
-import {ExclamationCircleFilled} from "@ant-design/icons";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const { confirm } = Modal;
-const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
+const DiscountOil = ({ showModalDiscount, changeDatas, editData, activeKey }) => {
     const [data, setData] = useState([]);
     const [count, setCount] = useState([]);
     const [current, setCurrent] = useState(1);
@@ -15,7 +16,8 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
     const [dynamicColumns, setDynamicColumns] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-    let { id } = useParams();
+    const { id } = useIds()
+
     const { openNotification } = useAuth();
 
     const rowClassName = (record, index) => {
@@ -39,29 +41,29 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
 
             AdminApi.GetUpdateProductAdditionalDiscountsByCustomerId(requestData)
                 .then((res) => {
-                   if (res.data){
-                       setCount(res.count)
-                       const manufacturers = res?.data || [];
-                       setData(
-                           manufacturers.map((item) => ({
-                               ...item,
-                               ...item.discounts.reduce((acc, discount) => {
-                                   acc[`discount_${discount.discountIdHash}`] = discount.value;
-                                   return acc;
-                               }, {}),
-                           }))
-                       );
+                    if (res.data) {
+                        setCount(res.count)
+                        const manufacturers = res?.data || [];
+                        setData(
+                            manufacturers.map((item) => ({
+                                ...item,
+                                ...item.discounts.reduce((acc, discount) => {
+                                    acc[`discount_${discount.discountIdHash}`] = discount.value;
+                                    return acc;
+                                }, {}),
+                            }))
+                        );
 
-                       if (manufacturers.length > 0 && manufacturers[0].discounts) {
-                           const discountColumns = manufacturers[0].discounts.map((discount) => ({
-                               title: discount.discountName,
-                               dataIndex: `discount_${discount.discountIdHash}`,
-                               key: `discount-${discount.discountIdHash}`,
-                               render: (value) => <div>{value || 0}</div>,
-                           }));
-                           setDynamicColumns(discountColumns);
-                       }
-                   }
+                        if (manufacturers.length > 0 && manufacturers[0].discounts) {
+                            const discountColumns = manufacturers[0].discounts.map((discount) => ({
+                                title: discount.discountName,
+                                dataIndex: `discount_${discount.discountIdHash}`,
+                                key: `discount-${discount.discountIdHash}`,
+                                render: (value) => <div>{value || 0}</div>,
+                            }));
+                            setDynamicColumns(discountColumns);
+                        }
+                    }
                 })
                 .catch((err) => {
                     openNotification('Xəta baş verdi', err.response.data.message, true);
@@ -112,10 +114,10 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
         })
         /*AdminApi.DeleteOem*/
         AdminApi.DeleteManufacturerAdditionalDiscount(ids).then(res => {
-            openNotification('Uğurlu əməliyyat..', `Məhsul silindi`, false);
+            openNotification('Uğurlu əməliyyat..', `Oem silindi`, false);
             createData();
         }).catch((err) => {
-            openNotification('Xəta baş verdi' , err.response.data.message  , true )
+            openNotification('Xəta baş verdi', err.response.data.message, true)
         })
     };
 
@@ -133,21 +135,18 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
         });
     };
     const handleRowClick = (record) => {
-       editData(record);
+        editData(record);
     };
-    const additionalDiscount = () => {
-        showModalDiscount(1)
-    }
 
     return (
         <>
             <div className="d-flex w-100 justify-content-between">
-               {/* <Button type="default" icon={<img src={Images.edit_green} alt="edit"/>} className="button-margin bg_none edit_button p-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>*/}
+                {/* <Button type="default" icon={<img src={Images.edit_green} alt="edit"/>} className="button-margin bg_none edit_button p-3" disabled={!selectedRowKeys.length > 0} onClick={additionalDiscount}></Button>*/}
                 <Button type="default" icon={<img src={Images.delete_red} alt="delete" />} className="button-margin delete_red mb-3" disabled={!selectedRowKeys.length > 0}
-                        onClick={showDeleteConfirm} ></Button>
+                    onClick={showDeleteConfirm} ></Button>
             </div>
             <Table
-                scroll={{x: 'max-content'}}
+                scroll={{ x: 'max-content' }}
                 rowClassName={rowClassName}
                 columns={columns}
                 dataSource={data}
@@ -158,7 +157,7 @@ const DiscountOil = ({showModalDiscount, changeDatas, editData, activeKey}) => {
                     onDoubleClick: () => handleRowClick(record),
                 })}
             />
-            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count}/>
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count} />
         </>
     );
 };

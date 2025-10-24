@@ -12,6 +12,12 @@ export const AdminApi = {
     AddCustomerProducts(params) {
         return BaseApi.delete(apiRoutes.customer.addcustomerproducts, { ...params });
     },
+
+
+    GetProductTransactions(data) {
+        return BaseApi.post(apiRoutes.customer.getProductTransactions, data);
+    },
+
     AddManufacturerAdditionalDiscount(data) {
         return BaseApi.post(apiRoutes.customer.addmanufactureradditionaldiscount, data);
     },
@@ -33,12 +39,13 @@ export const AdminApi = {
     GetById(userId) {
         return BaseApi.get(apiRoutes.adminProduct.getById, userId);
     },
-    GetById(userId) {
-        return BaseApi.get(apiRoutes.adminProduct.getById, userId);
+
+
+    customerGetById(id) {
+        // URL-in sonuna ?id=... əlavə olunur
+        return BaseApi.get(`${apiRoutes.customer.getById}?id=${id}`);
     },
-    customerGetById(userId) {
-        return BaseApi.get(apiRoutes.customer.getById, userId);
-    },
+
     GetCustomerListBySearch(data) {
         return BaseApi.post(apiRoutes.customer.getcustomerlistbysearch, data);
     },
@@ -110,7 +117,7 @@ export const AdminApi = {
     GetLoginHistoryByCustomerId(data) {
         return BaseApi.post(apiRoutes.customer.getLoginHistoryByCustomerId, data);
     },
-// ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+    // ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
     getLoginHistoryByCustomerIdss(data) {
         return BaseApi.post(apiRoutes.customer.getLoginHistories, data);
     },
