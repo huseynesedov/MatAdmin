@@ -3,18 +3,15 @@ import { Typography, Form, Input, Button, Row, Col, Divider, Tabs, Card, Checkbo
 import { useAuth } from '../../AuthContext';
 import { Outlet } from 'react-router-dom';
 import { AdminApi } from "../../api/admin.api";
-import { useNavigate, useParams } from "react-router-dom";
-
-import SearchModal from './Component/Modal/modal';
-import SearchModal2 from './Component/Modal/modal2';
 
 import Images from '../../assets/images/js/Images';
 
+
+import SearchModal2 from './Component/Modal/modal2';
 import Product_passive from './Component/Passive Product/passive';
 import Product_active from './Component/Passive Product/active';
 import Licence from './Component/Licence';
 import Login from './Component/Login';
-import Searches from './Component/Searches';
 import Discount from './Component/Additional discount/discount';
 import Producer from './Component/Additional discount/producer';
 import Users from './Component/Users';
@@ -26,18 +23,22 @@ import ModalDiscountOil from "./Component/Modal/modalDiscountOil";
 import ModalDiscountProduct from "./Component/Modal/modalDiscountProduct";
 import Active from "./Component/manufacturerPA/active";
 import Passive from "./Component/manufacturerPA/passive";
-import ModalDiscountManufacturer from "./Component/Modal/modalDiscountManufacturer";
 import ClientUsers from "./Component/Modal/clientUsers";
 import OtherInfo from "./Component/OtherInfo";
-import Calls from "./Component/Calls";
+import ModalDiscountManufacturer from "./Component/Modal/modalDiscountManufacturer";
+
+// import Searches from './Component/Searches';
+import { useIds } from '../../Contexts/ids.context';
+import Calls from './Component/Calls';
+import MainCall from './Component/Calls/mainCall';
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const Clients = () => {
     const { logout } = useAuth();
-    let { id } = useParams();
-    const navigate = useNavigate();
+    const { id, selectedId } = useIds()
+
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [showDiscount, setShowDiscount] = useState(false);
@@ -45,7 +46,7 @@ const Clients = () => {
     const [showDiscountProduct, setShowDiscountProduct] = useState(false);
     const [showDiscountManufacturer, setShowDiscountManufacturer] = useState(false);
     const [showDiscountOil, setShowDiscountOil] = useState(false);
-    const [activeTab, setActiveTab] = useState(null);
+    const [activeTab, setActiveTab] = useState("1");
     const [tabDisable, setTabDisable] = useState(false);
     const [isShowProduct, setShowProduct] = useState();
     const [manufacturerList, setManufacturerLists] = useState();
@@ -75,12 +76,26 @@ const Clients = () => {
     });
 
 
+    const handleClearAndReset = () => {
+        selectedId(null);
+        setActiveTab("1"); // 1. taba geç
+        setFormData({
+            kodu: '',
+            uretici: '',
+            ureticiKodu: '',
+            kosulKodu: '',
+            genel: '',
+            rafAdresi: '',
+            qemNo: '',
+        });
+    };
+
     const handleTabChange = (activeKey) => {
         setActiveTab(activeKey)
     };
 
     useEffect(() => {
-        setActiveTab(1)
+        setActiveTab("1")
         if (id) {
             onProductDatas(id);
             onProductData();
@@ -188,24 +203,6 @@ const Clients = () => {
     };
 
 
-
-    const [inputs, setInputs] = useState({
-        product_code: '',
-        product_name: '',
-        seller_code: '',
-        seller: '',
-        company: '',
-        case: '',
-        foregin_selling_rate: '',
-        raf_address: '',
-        photo: '',
-        balance_1: '',
-        balance_2: '',
-        selling_rate: '',
-        buy_rate: '',
-    });
-
-
     const [isSearchTables, setSearchTable] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
@@ -217,16 +214,21 @@ const Clients = () => {
 
 
     const onProductDatas = (values) => {
-        let data
-        AdminApi.customerGetById({ id: values }).then((res) => {
-            data = res
-        }).catch((err) => {
-            logout()
+        // id yoxdursa, funksiyadan çıx
+        if (!values) {
+            setShowProduct(null);
+            return;
+        }
 
-        }).finally(r => {
-            setShowProduct(data);
-        })
+        AdminApi.customerGetById(values)
+            .then((res) => {
+                setShowProduct(res);
+            })
+            .catch((err) => {
+                logout();
+            });
     };
+
 
     const onProductData = () => {
         setShow2(false);
@@ -241,51 +243,57 @@ const Clients = () => {
             setIsDisabled(!isDisabled);
         }
     };
-const onPageSize = ({ current, pageSize, forms }) => {
-    setCurrent(current);
-    setdefaultPageSize(pageSize);
-    setdefaultforms(forms);
+    const onPageSize = ({ current, pageSize, forms }) => {
+        setCurrent(current);
+        setdefaultPageSize(pageSize);
+        setdefaultforms(forms);
 
-    // Yeni səhifə üçün API çağırışı
-    onInitialSearch(forms, current, pageSize);
-};
-
-const getSearch = (filters, page = 1, size = pageSize) => {
-    const data = {
-        page: page - 1,  // backend 0-based index tələb edir
-        pageSize: size,
-        filters
+        // Yeni səhifə üçün API çağırışı
+        onInitialSearch(forms, current, pageSize);
     };
 
-    AdminApi.GetCustomerListBySearch(data)
-        .then(res => {
-            if (res) {
-                setSearchTable(res);
-                setCurrent(page);
-                setdefaultPageSize(size);
-                handleShowModal2();
-            }
-        })
-        .catch(error => {
-            openNotification('Xəta baş verdi', error?.response?.data?.message || error.message, true);
-        });
-};
 
-const onInitialSearch = (values, page = 1, size = pageSize) => {
-    if (!values) return;
+    const [loadingSearch, setLoadingSearch] = useState(false);
 
-    navigate(`/clients`);
+    const getSearch = (filters, page = 1, size = pageSize) => {
+        const data = {
+            page: page - 1,  // backend 0-based index tələb edir
+            pageSize: size,
+            filters
+        };
+        setLoadingSearch(true);
+        AdminApi.GetCustomerListBySearch(data)
+            .then(res => {
+                if (res) {
+                    setSearchTable(res);
+                    setCurrent(page);
+                    setdefaultPageSize(size);
+                    handleShowModal2();
+                }
+            })
+            .catch(error => {
+                openNotification('Xəta baş verdi', error?.response?.data?.message || error.message, true);
+            })
+            .finally(() => {
+                setLoadingSearch(false); // 🔹 Bitəndə loading bağla
+            });
+    };
 
-    const filters = Object.keys(values)
-        .filter(key => values[key] !== undefined && values[key] !== null && values[key] !== "")
-        .map(key => ({
-            value: values[key],
-            fieldName: key,
-            equalityType: key === 'paymentTermIdHash' ? 'Equal' : 'Contains'
-        }));
+    const onInitialSearch = (values, page = 1, size = pageSize) => {
+        if (!values) return;
 
-    getSearch(filters, page, size);
-};
+        // navigate(`/clients`);
+
+        const filters = Object.keys(values)
+            .filter(key => values[key] !== undefined && values[key] !== null && values[key] !== "")
+            .map(key => ({
+                value: values[key],
+                fieldName: key,
+                equalityType: key === 'paymentTermIdHash' ? 'Equal' : 'Contains'
+            }));
+
+        getSearch(filters, page, size);
+    };
 
 
 
@@ -449,7 +457,7 @@ const onInitialSearch = (values, page = 1, size = pageSize) => {
     return (
         <div className="home">
             <Card className="search-card">
-                <Title level={4}>Ürün Bilgileri</Title>
+                <Title level={4}>Kullanici Bilgileri</Title>
                 <Form name="filter_form" layout="vertical" onFinish={onInitialSearch}
                     autoComplete="off">
                     <div className="d-flex w-100 justify-content-between">
@@ -484,29 +492,48 @@ const onInitialSearch = (values, page = 1, size = pageSize) => {
                     </div>
 
                     <Form.Item>
-                        <Button type="default" className="Delete_red"
-                            icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
-                        <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue"
-                            icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
+                        {id && (
+                            <Button
+                                type="default"
+                                className="Delete_red"
+                                icon={<img src={Images.delete_red} alt="delete" />}
+                                onClick={handleClearAndReset}
+                            >
+                                Temizle
+                            </Button>
+                        )}
+
+                        <Button
+                            type="default"
+                            htmlType="submit"
+                            style={{ marginLeft: '8px' }}
+                            className="Bin_Blue"
+                            icon={<img src={Images.Search_blue} alt="search" />}
+                            loading={loadingSearch} // 🔹 Özəl loading state burada aktiv olur
+                        >
+                            Ara
+                        </Button>
+
                     </Form.Item>
                 </Form>
             </Card>
-            <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
+            <Tabs activeKey={activeTab} className="product-tabs" onChange={handleTabChange}>
+
                 <TabPane disabled={tabDisable} tab="Genel" key="1">
 
-<SearchModal2
-    shows={show2}
-    searchData={isSearchTables}
-    current={current}
-    pageSize={pageSize}
-    handleClose={handleClose2}
-    searchChange={onSearchData}
-    setCurrent={setCurrent}
-    setPageSize={setdefaultPageSize}
-    searchPageSize={onPageSize}
-    productData={onProductData}
-    handleClear={handleClear}
-/>
+                    <SearchModal2
+                        shows={show2}
+                        searchData={isSearchTables}
+                        current={current}
+                        pageSize={pageSize}
+                        handleClose={handleClose2}
+                        searchChange={onSearchData}
+                        setCurrent={setCurrent}
+                        setPageSize={setdefaultPageSize}
+                        searchPageSize={onPageSize}
+                        productData={onProductData}
+                        handleClear={handleClear}
+                    />
 
 
 
@@ -622,9 +649,10 @@ const onInitialSearch = (values, page = 1, size = pageSize) => {
                 <TabPane disabled={tabDisable} tab="Aramalar" key="10">
 
 
-                    <Calls activeKey={activeTab === '10'} />
+                    {/* <Calls activeKey={activeTab === '10'} /> */}
+                    <MainCall activeKey={activeTab === '10'} />
 
-                    <Row gutter={16}>
+                    {/* <Row gutter={16}>
                         <Col span={24}>
                             <Card className="info-card mt-4 " title="Arama Detaylari">
                                 <Form layout="inline">
@@ -743,9 +771,8 @@ const onInitialSearch = (values, page = 1, size = pageSize) => {
 
                             </Card>
 
-                            <Searches className="mt-4" />
                         </Col>
-                    </Row>
+                    </Row> */}
 
                 </TabPane>
                 <TabPane disabled={tabDisable} tab="Ek Iskonto" key="12">

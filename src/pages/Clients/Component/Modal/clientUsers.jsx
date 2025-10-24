@@ -1,25 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {Modal} from 'react-bootstrap';
-import {Button, Checkbox, Col, Form, Input, InputNumber, Row} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import { Button, Checkbox, Col, Form, Input, InputNumber, Row } from 'antd';
+import { useIds } from '../../../../Contexts/ids.context';
 
-const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUserData}) => {
+const ClientUsers = ({ show, handleClose, changeDatas, type, editData, clientUserData }) => {
     const [form] = Form.useForm();
-    let { id } = useParams();
-
-    /*const getDiscount = () => {
-        AdminApi.GetDiscountList().then(res => {
-            const formattedDiscounts = res.map((item) => ({
-                displayText: item.displayText,
-                valueHash: item.valueHash,
-                additionalIdHash: item.additionalIdHash,
-                value: ""
-            }));
-            setDiscounts(formattedDiscounts);
-            form.resetFields();
-        });
-    };*/
+    const { id } = useIds()
 
 
     useEffect(() => {
@@ -80,7 +66,7 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
                                     <Form.Item label="Code" name="code">
                                         <InputNumber
                                             min={0}
-                                            style={{width: "240px", height: "40px"}}
+                                            style={{ width: "240px", height: "40px" }}
                                             className='position-relative'
                                         />
                                     </Form.Item>
@@ -89,7 +75,7 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
                                     <Form.Item label="Adı" name="name">
                                         <Input
                                             min={0}
-                                            style={{width: "240px", height: "40px"}}
+                                            style={{ width: "240px", height: "40px" }}
                                             className='position-relative'
                                         />
                                     </Form.Item>
@@ -98,7 +84,7 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
                                     <Form.Item label="Email" name="email">
                                         <Input
                                             min={0}
-                                            style={{width: "240px", height: "40px"}}
+                                            style={{ width: "240px", height: "40px" }}
                                             className='position-relative'
                                         />
                                     </Form.Item>
@@ -107,7 +93,7 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
                                     <Form.Item label="Password" name="passwordHash">
                                         <Input
                                             min={0}
-                                            style={{width: "240px", height: "40px"}}
+                                            style={{ width: "240px", height: "40px" }}
                                             className='position-relative'
                                         />
                                     </Form.Item>
@@ -115,14 +101,14 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
                                 <Col span={24} md={12}>
                                     <Form.Item label="Admin" name="hasAdmin" valuePropName="checked" initialValue={false}>
                                         <div className='d-flex'>
-                                            <Checkbox/>
+                                            <Checkbox />
                                         </div>
                                     </Form.Item>
                                 </Col>
                                 <Col span={24} md={12}>
                                     <Form.Item label="B2B" name="hasB2B" valuePropName="checked" initialValue={false}>
                                         <div className='d-flex'>
-                                            <Checkbox/>
+                                            <Checkbox />
                                         </div>
                                     </Form.Item>
                                 </Col>
@@ -134,7 +120,7 @@ const ClientUsers = ({show, handleClose, changeDatas, type, editData, clientUser
             <Modal.Footer>
                 <Button
                     type="primary"
-                    style={{marginLeft: '8px'}}
+                    style={{ marginLeft: '8px' }}
                     onClick={handleSubmit}
                 >
                     Gönder

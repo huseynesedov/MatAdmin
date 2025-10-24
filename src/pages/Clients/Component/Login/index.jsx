@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import {  Table } from 'antd';
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
-import {AdminApi} from "../../../../api/admin.api";
+import { Table } from 'antd';
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../../../AuthContext";
+import { AdminApi } from "../../../../api/admin.api";
+import { useIds } from '../../../../Contexts/ids.context';
 
-const Login = ({changeDatas, activeKey}) => {
-    let { id } = useParams();
+const Login = ({ changeDatas, activeKey }) => {
+    const { id } = useIds()
+
     const { openNotification } = useAuth()
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
@@ -32,7 +34,7 @@ const Login = ({changeDatas, activeKey}) => {
                     setData(res.data);
                 }
             }).catch((err) => {
-                openNotification('Xəta baş verdi' , err.response.data.message, true)
+                openNotification('Xəta baş verdi', err.response.data.message, true)
             })
         }
     };
@@ -49,7 +51,7 @@ const Login = ({changeDatas, activeKey}) => {
             key: 'processStatus',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
-        
+
         },
         {
             title: 'Icerik',

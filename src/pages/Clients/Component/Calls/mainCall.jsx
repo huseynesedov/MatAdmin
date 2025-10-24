@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, Pagination, Table } from 'antd';
 import { AdminApi } from "../../../../api/admin.api";
-import { useParams } from "react-router-dom";
 import { useAuth } from "../../../../AuthContext";
 import { useIds } from '../../../../Contexts/ids.context';
 
-const Users = ({ showModalUsers, activeKey }) => {
+const MainCall = ({ showModalUsers, activeKey }) => {
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setdefaultPageSize] = useState(10);
@@ -23,19 +22,19 @@ const Users = ({ showModalUsers, activeKey }) => {
     useEffect(() => {
         createData();
         // console.log('users')
-    }, [current, pageSize, activeKey]);
+    }, [current, pageSize, activeKey,id]);
 
     const createData = () => {
         if (id) {
             let data = {
-                customerIdHash: id,
-                pagingWithoutFilterRequest: {
-                    page: current - 1,
-                    pageSize: pageSize,
-                }
+                // customerIdHash: id,
+                // pagingWithoutFilterRequest: {
+                page: current - 1,
+                pageSize: pageSize,
+                // }
             }
 
-            AdminApi.getUpdateUserListByCustomerId(data).then(res => {
+            AdminApi.GetProductTransactions(data).then(res => {
                 if (res.data) {
                     setData(res);
                     setSelectedRowKeys([])
@@ -57,40 +56,43 @@ const Users = ({ showModalUsers, activeKey }) => {
 
     const columns = [
         {
-            title: 'Adı',
+            title: 'Arama Metni',
             width: 77,
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'searchText',
+            key: 'searchText',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Kodu',
+            title: 'Proses statusu',
             width: 77,
-            dataIndex: 'code',
-            key: 'code',
+            dataIndex: 'processStatus',
+            key: 'processStatus',
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
         {
-            title: 'Mail',
-            width: 77,
-            dataIndex: 'email',
-            key: 'email',
+            title: 'Axtarılan tarix',
+            width: 120,
+            dataIndex: 'searchDate',
+            key: 'searchDate',
             sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        },
-        {
-            title: 'B2B',
-            width: 77,
-            dataIndex: 'hasB2B',
-            key: 'hasB2B',
-            sorter: true,
-            render: () =>
-                <div className="age-column">
-                    <Checkbox disabled />
-                </div>,
-        },
+            render: (text) => {
+                if (!text) return '-';
+                const date = new Date(text);
+                const formattedDate = date.toLocaleDateString('az-AZ');
+                const formattedTime = date.toLocaleTimeString('az-AZ', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                return (
+                    <div className="age-column">
+                        {formattedDate} {formattedTime}
+                    </div>
+                );
+            },
+        }
     ];
 
 
@@ -115,4 +117,4 @@ const Users = ({ showModalUsers, activeKey }) => {
     );
 };
 
-export default Users;
+export default MainCall;

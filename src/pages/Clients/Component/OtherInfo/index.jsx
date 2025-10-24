@@ -6,10 +6,12 @@ import { useAuth } from "../../../../AuthContext";
 import Images from "../../../../assets/images/js/Images";
 import SanufacturerModal from "../../../Home/components/Modal/manufacturerModal";
 import UserRolesModal from "../Modal/userRolesModal";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const OtherInfo = ({ changeDatas, activeKey }) => {
 
-    let { id } = useParams();
+    const { id } = useIds()
+
     const [form] = Form.useForm();
     const { openNotification } = useAuth()
     const [data, setData] = useState([]);
@@ -44,45 +46,49 @@ const OtherInfo = ({ changeDatas, activeKey }) => {
     }
 
     const createData = () => {
-        if (id) {
-            let data = {
-                customerIdHash: id,
-            }
+    if (!id) return;
 
-            AdminApi.GetCustomerAdditionalInfo(data).then(res => {
-                // console.log(res, res.userRoles, 'aaa')
-                const response = res?.data;
-                if (response) {
-                    setData(response);
-                    let userRole = res.userRoles.map(r => ({
-                        userIdHash: r.userIdHash,
-                        roleIdHash: r.roleIdHash,
-                        name: r.name,
-                        userName: r.userName,
-                        userId: r.userId,
-                        hasRole: r.hasRole,
-                    }));
-                    form.setFieldsValue({
-                        userRoles: userRole,
-                        androidUsageCount: res.userLicense.androidUsageCount,
-                        webUsageCount: res.userLicense.webUsageCount,
-                        iosUsageCount: res.userLicense.iosUsageCount,
-                    })
+    const payload = { customerIdHash: id };
 
-                }
-            }).catch((err) => {
-                const message = err?.response?.data?.message || "Bilinməyən xəta baş verdi";
-                openNotification('Xəta baş verdi', message, true)
-            })
+    AdminApi.GetCustomerAdditionalInfo(payload)
+        .then(res => {
+            const response = res?.data;
+            if (!response) return;
 
-        }
-    };
+            // Satış təmsilçisini ayrıca set edə bilərik (əgər lazımdırsa)
+            setData(response);
+
+            // userRoles map
+            const userRole = response?.userRoles?.map(r => ({
+                roleIdHash: r.roleIdHash,
+                name: r.name,
+                userIdHash: r.userIdHash,
+                userName: r.userName,
+                userId: r.userId,
+                hasRole: r.hasRole,
+            })) || [];
+
+            // Form dəyərlərini set et
+            form.setFieldsValue({
+                userRoles: userRole,
+                androidUsageCount: response?.userLicense?.androidUsageCount,
+                webUsageCount: response?.userLicense?.webUsageCount,
+                iosUsageCount: response?.userLicense?.iosUsageCount,
+            });
+
+        })
+        .catch(err => {
+            const message = err?.response?.data?.message || "Bilinməyən xəta baş verdi";
+            openNotification('Xəta baş verdi', message, true);
+        });
+};
+
 
     return (
         <>
             <Row gutter={16}>
                 <Col span={24}>
-                    <Card className="info-card mt-3" title="Satiş Təmsilcisi">
+                    {/* <Card className="info-card mt-3" title="Satiş Təmsilcisi">
                         <Form layout="Horizontal">
                             <Form.Item label="Plasiyer">
                                 <div className='d-flex justify-content-end'>
@@ -93,7 +99,7 @@ const OtherInfo = ({ changeDatas, activeKey }) => {
                                 </div>
                             </Form.Item>
                         </Form>
-                    </Card>
+                    </Card> */}
 
                     <Card className="info-card " title="Musteri Grupu">
                         <Form layout="Horizontal" form={form}>
@@ -114,7 +120,7 @@ const OtherInfo = ({ changeDatas, activeKey }) => {
                                 <div className='d-flex justify-content-end'>
                                     <Input style={{ width: "240px", height: "40px" }}
                                         className='position-relative' placeholder="" disabled />
-                                </div> 
+                                </div>
                             </Form.Item>
 
                             <h4 className='t_44 fs_16 fw_600 mt-5'>

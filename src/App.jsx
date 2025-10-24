@@ -62,6 +62,7 @@ function AppContent() {
             })
             .then((token) => {
                 console.log('✅ FCM Token:', token);
+                localStorage.setItem("fireBaseToken", token);
             })
             .catch((err) => {
                 console.error('❌ Token alınamadı:', err);
@@ -168,7 +169,6 @@ function AppContent() {
             </div>
             <div className="main w-100">
                 <Header />
-
                 <RouteList />
             </div>
         </div>

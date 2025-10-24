@@ -3,6 +3,7 @@ import { Modal } from 'react-bootstrap';
 import { Button, Typography, Checkbox, Card, Form, Input, Table, Col, Row, Pagination } from 'antd';
 import Images from '../../../../assets/images/js/Images';
 import { useNavigate } from "react-router-dom";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const { Title } = Typography;
 
@@ -17,6 +18,9 @@ const SearchModal2 = ({
     current,
     pageSize,
 }) => {
+
+    const { selectedId } = useIds()
+
     const [data, setData] = useState([]);
     const [form] = Form.useForm();
     const navigate = useNavigate();
@@ -39,7 +43,7 @@ const SearchModal2 = ({
     const rowClassName = (record, index) => index % 2 === 0 ? 'custom_bg' : '';
 
     const handleRowClick = (record) => {
-        navigate(`/clients/${record.id}`);
+        selectedId(record.id);
         handleClose();
     };
 
