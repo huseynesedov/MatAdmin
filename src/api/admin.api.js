@@ -36,8 +36,8 @@ export const AdminApi = {
     DeleteProductAdditionalDiscount(userId) {
         return BaseApi.delete(apiRoutes.customer.deleteproductadditionaldiscount, { data: { id: userId } });
     },
-    GetById(userId) {
-        return BaseApi.get(apiRoutes.adminProduct.getById, userId);
+    GetById(id) {
+        return BaseApi.get(`${apiRoutes.adminProduct.getById}?id=${encodeURIComponent(id)}`);
     },
 
 

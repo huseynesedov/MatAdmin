@@ -247,6 +247,13 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
     const isSaveDisabled = selectedIds.length < 2;
     const rowClassName = (record, index) => (index % 2 === 0 ? 'custom_bg' : '');
 
+
+//     const handlePageSizeChange = (current, size) => {
+//   setPageSize(size); // state güncelle
+//   setCurrentDataPage(1); // genelde sayfa 1'e resetlenir
+//   getOrdersByStatus(currentValueHash, 0, true); // yeni pageSize ile yeniden getir
+// };
+
     return (
         <>
             <div className="table-responsive-container">

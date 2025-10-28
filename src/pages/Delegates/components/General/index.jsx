@@ -13,8 +13,6 @@ const General = ({ activeKey, isDisableds, handleShows, handleEditClickk }) => {
     const [data, setData] = useState([]);
     const [isDisabled, setIsDisabled] = useState(true);
     const [form] = Form.useForm();
-    const { openNotification } = useAuth();
-    const navigate = useNavigate();
     let { id } = useParams();
     const [checkboxData, setCheckboxData] = useState([]);
 

@@ -22,6 +22,18 @@ const Orders = () => {
     const [products, setProducts] = useState([]);
     const [orderStatusList, setOrderStatusList] = useState([]);
     const [count, setCount] = useState(0);
+    const [pendingPageSize, setPendingPageSize] = useState(null); // 👈 geçici state
+
+    // 🔹 pageSize değişince sadece 1 defa API çağrısı
+    useEffect(() => {
+        if (pendingPageSize !== null) {
+            getOrdersByStatus(currentValueHash, 0, true, fromDate, toDate, pendingPageSize);
+            setPendingPageSize(null); // resetle
+        }
+    }, [pendingPageSize]); // 👈 sadece değişince çalışsın
+
+    console.log(pageSize);
+
 
     const getOrderStatusList = async () => {
         setLoading(true);
@@ -45,22 +57,29 @@ const Orders = () => {
         }
     };
 
-    const getOrdersByStatus = async (valueHash, page = 0, filter = false) => {
+    const getOrdersByStatus = async (
+        valueHash,
+        page = 0,
+        filter = false,
+        from = fromDate,
+        to = toDate,
+        customPageSize
+    ) => {
         setLoading(true);
         try {
             const filters = [];
 
             if (filter) {
-                if (fromDate) {
+                if (from) {
                     filters.push({
-                        value: fromDate,
+                        value: from,
                         fieldName: 'createdDate',
                         equalityType: 'GreaterOrEqual',
                     });
                 }
-                if (toDate) {
+                if (to) {
                     filters.push({
-                        value: toDate,
+                        value: to,
                         fieldName: 'createdDate',
                         equalityType: 'LessOrEqual',
                     });
@@ -77,9 +96,10 @@ const Orders = () => {
 
             const res = await AdminApi.GetOrderList({
                 page,
-                pageSize,
+                pageSize: customPageSize ?? pageSize, // ✅ parametre varsa onu kullan
                 filters,
             });
+
             setProducts(res.data);
             setCount(res.count);
         } catch (error) {
@@ -88,6 +108,8 @@ const Orders = () => {
             setLoading(false);
         }
     };
+
+
 
     const handleRadioChange = (displayText) => {
         const selected = orderStatusList.find(s => s.displayText === displayText);
@@ -145,26 +167,31 @@ const Orders = () => {
                                             disabledDate={disableFromDate}
                                             value={fromDate}
                                             onChange={(value) => {
-                                                setFromDate(value);
-                                                getOrdersByStatus(currentValueHash, 0, true);
+                                                const newFrom = value;
+                                                setFromDate(newFrom);
+                                                // setState sonrası doğru değerlerle çağır
+                                                getOrdersByStatus(currentValueHash, 0, true, newFrom, toDate);
                                             }}
                                             format="DD/MM/YYYY"
                                             style={{ width: '240px', height: '40px' }}
                                         />
+
                                         <DatePicker
                                             disabledDate={disableToDate}
                                             value={toDate}
                                             onChange={(value) => {
-                                                setToDate(value);
-                                                getOrdersByStatus(currentValueHash, 0, true);
+                                                const newTo = value;
+                                                setToDate(newTo);
+                                                getOrdersByStatus(currentValueHash, 0, true, fromDate, newTo);
                                             }}
                                             format="DD/MM/YYYY"
                                             style={{ width: '240px', height: '40px' }}
                                         />
+
                                     </Space>
                                 </Form.Item>
                             </div>
-                            <div className="d-flex align-items-start m-11" style={{width: '37%'}}>
+                            <div className="d-flex align-items-start m-11" style={{ width: '37%' }}>
                                 <Form.Item>
                                     <Radio.Group
                                         onChange={(e) => handleRadioChange(e.target.value)}
@@ -202,7 +229,7 @@ const Orders = () => {
                                     style={{ marginLeft: '8px' }}
                                     className="Save_green3"
                                     icon={<img src={Images.refresh_green} alt="refresh" />}
-                                    onClick={() => getOrdersByStatus("all", 0, false)}
+                                    onClick={() => getOrdersByStatus(currentValueHash, 0, true, fromDate, toDate, pageSize, currentDataPage)}
                                 >
                                     Yenile
                                 </Button>
@@ -221,9 +248,16 @@ const Orders = () => {
                             products={products}
                             handlePageChange={handlePageChange}
                             currentDataPage={currentDataPage}
-                            handlePageSizeChange={setPageSize}
+                            handlePageSizeChange={(current, size) => {
+                                // önce state güncelle
+                                setPageSize(size);
+                                setCurrentDataPage(1);
+                                // ve sadece bir kez çağır
+                             setPendingPageSize(size);
+                            }}
                             currentDisplayText={currentDisplayText}
                         />
+
                     </Card>
                 </div>
             )}

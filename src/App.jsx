@@ -69,6 +69,7 @@ function AppContent() {
             });
 
         const unsubscribe = onMessage(messaging, (payload) => {
+            console.log('Message received. ', payload);
             if (payload?.notification) {
                 openNotification(payload.notification.title, payload.notification.body, false);
             }

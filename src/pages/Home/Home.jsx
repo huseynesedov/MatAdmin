@@ -91,21 +91,22 @@ const Home = () => {
         }
     }, [id]);
 
-    const onProductDatas = (values) => {
+    const onProductDatas = (id) => {
         setLoading(true);
-        let data
-        AdminApi.GetById({ id: values }).then((res) => {
-            data = res
-        })
+
+        AdminApi.GetById(id)
+            .then((res) => {
+                setShowProduct(res); // API-dən gələn məlumatı birbaşa state-ə set edirik
+            })
             .catch((err) => {
                 logout();
-                openNotification('Xəta baş verdi', err.response.data.message, true)
+                openNotification('Xəta baş verdi', err.response?.data?.message || err.message, true);
             })
-            .finally(r => {
-                setShowProduct(data);
+            .finally(() => {
                 setLoading(false);
-            })
+            });
     };
+
 
     const handleShow = () => setShow(true);
     const handleClose2 = () => setShow2(false);
