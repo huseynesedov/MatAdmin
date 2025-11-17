@@ -25,7 +25,7 @@ const Equivalent = (activeKey) => {
 
 
     const getData = () => {
-        AdminApi.GetProductFileByProductId({ ProductId: id }).then(res => {
+        AdminApi.GetProductFileByProductId({ id: id }).then(res => {
             // console.log(res, 'photo list')
             let data = res.map(da => {
                 return {

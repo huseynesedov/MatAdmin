@@ -14,9 +14,10 @@ import Login from "./pages/Login/login";
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { IdsProvider } from "./Contexts/ids.context";
+import { NotificationProvider, useNotifications } from "./NotificationContext";
 
 function AppContent() {
-
+    const { loadNotifications } = useNotifications();
     const { logged, setLogged, logout, openNotification } = useAuth();
     const navigate = useNavigate();
 
@@ -34,28 +35,29 @@ function AppContent() {
     const vapidKey = "BJNATOZRMAk82-d__q2VLAT93Rf7bSEBv-ZZwYZkwRLOildfWeR8N5sxdEwmPSGblPSkWkkG6dWkoFdFOx_BYdM";
 
     useEffect(() => {
+        const loggedIns = localStorage.getItem("loggedIns");
+
+        // ❗ Login yoxdursa firebase init olmasın
+        if (loggedIns !== "true") {
+            console.log("🚫 User logged out → Firebase disabled");
+            return;
+        }
+
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
 
         navigator.serviceWorker.register('/firebase-messaging-sw.js')
             .then((registration) => {
-                console.log('Service Worker registered:', registration);
+                if (registration.active) return registration;
 
-                // SW’nin active olmasını bekle
-                if (registration.active) {
-                    return registration;
-                } else {
-                    return new Promise((resolve) => {
-                        registration.addEventListener('updatefound', () => {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'activated') {
-                                    resolve(registration);
-                                }
-                            });
+                return new Promise((resolve) => {
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'activated') resolve(registration);
                         });
                     });
-                }
+                });
             })
             .then((registration) => {
                 return getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
@@ -69,14 +71,23 @@ function AppContent() {
             });
 
         const unsubscribe = onMessage(messaging, (payload) => {
+            // Yenə də login check edək (istəyə bağlı)
+            if (localStorage.getItem("loggedIns") !== "true") return;
+
             console.log('Message received. ', payload);
+
             if (payload?.notification) {
                 openNotification(payload.notification.title, payload.notification.body, false);
+                const audio = new Audio('/assets/notification-aero-432436.mp3');
+                audio.play().catch(err => console.error("Səs çalmaq mümkün olmadı:", err));
             }
+
+            loadNotifications();
         });
 
         return () => unsubscribe();
     }, []);
+
 
 
 
@@ -182,7 +193,9 @@ const App = () => {
             <AuthProvider>
                 <IdsProvider>
                     <SearchProvider>
-                        <AppContent />
+                        <NotificationProvider>
+                            <AppContent />
+                        </NotificationProvider>
                     </SearchProvider>
                 </IdsProvider>
             </AuthProvider>

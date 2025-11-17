@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import {Checkbox, Form, Table} from 'antd';
-import {AdminApi} from "../../../../api/admin.api";
-import {useParams} from "react-router-dom";
-import {useAuth} from "../../../../AuthContext";
+import { Checkbox, Form, Table } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useAuth } from "../../../../AuthContext";
+import { useIds } from '../../../../Contexts/ids.context';
 
 
 const Licence = () => {
-    /*/admin/v1/UserLicense/Add  Add user license*/
     const [data, setData] = useState([]);
-    let { id } = useParams();
-    const [form] = Form.useForm();
+    const { id } = useIds()
     const { openNotification } = useAuth()
 
     const rowClassName = (record, index) => {
@@ -19,25 +17,29 @@ const Licence = () => {
 
     const createData = () => {
         if (id) {
-       
+
             AdminApi.getLicenseHistoryGetTable(data).then(res => {
                 setData(res)
             })
-            .catch((err) => {
-                openNotification('Xəta baş verdi' , err.response.data.message, true)
-            })
+                .catch((err) => {
+                    openNotification('Xəta baş verdi', err.response.data.message, true)
+                })
         }
     };
-
     useEffect(() => {
-        createData();
-    }, []);
+        if (!id) {
+            setData([]);       // ⭐ id yoxdursa datanı sıfırla
+            return;
+        }
+
+        createData();          // id varsa data yüklə
+    }, [id]);
 
 
 
 
     const columns = [
-      
+
         {
             title: 'Browser',
             width: 77,
@@ -70,7 +72,7 @@ const Licence = () => {
                 rowClassName={rowClassName}
                 columns={columns}
                 dataSource={data}
-                pagination={false}
+                pagination={true}
 
             />
         </>

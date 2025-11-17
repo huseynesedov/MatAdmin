@@ -219,8 +219,8 @@ export const AdminApi = {
     GetCurrencyTable(params) {
         return BaseApi.get(apiRoutes.product.getCurrencyTable, { params });
     },
-    GetProductFileByProductId(userId) {
-        return BaseApi.get(apiRoutes.photos.getProductFileByProductId, { ...userId });
+    GetProductFileByProductId(data) {
+        return BaseApi.get(`${apiRoutes.photos.getProductFileByProductId}?productId=${data.id}`);
     },
     deleteProductPhoto(userId) {
         return BaseApi.delete(`${apiRoutes.photos.deleteByProductFileId}?productFileId=${userId}`);
@@ -326,8 +326,8 @@ export const AdminApi = {
         return BaseApi.post(apiRoutes.announcementModulePage.addAnnocument, { ...params });
     },
 
-    deleteAnnocument(params) {
-        return BaseApi.delete(apiRoutes.announcementModulePage.deleteAnnocument, { params });
+    deleteAnnocument(data) {
+        return BaseApi.delete(`${apiRoutes.announcementModulePage.deleteAnnocument}?id=${data.id}`);
     },
 
     getByIdAnnocument(data) {

@@ -6,14 +6,15 @@ import { AdminApi } from "../../../../api/admin.api";
 import TextArea from "antd/es/input/TextArea";
 import { useAuth } from "../../../../AuthContext";
 import Undergraduate from "../../Component/Undergraduate";
+import { useIds } from '../../../../Contexts/ids.context';
 
 const { confirm } = Modal;
 
-const General = ({ activeKey, isDisableds, handleShows, handleEditClickk }) => {
+const General = ({ activeKey, form }) => {
     const [data, setData] = useState([]);
     const [isDisabled, setIsDisabled] = useState(true);
-    const [form] = Form.useForm();
-    let { id } = useParams();
+    const { id } = useIds()
+
     const [checkboxData, setCheckboxData] = useState([]);
 
 
@@ -80,6 +81,18 @@ const General = ({ activeKey, isDisableds, handleShows, handleEditClickk }) => {
         }
     }, [data]);
 
+    useEffect(() => {
+        if (!id) {
+            // Temizle edildikdə checkboxların hamısı uncheck olsun
+            const resetCheckboxes = checkboxData.map(item => ({
+                ...item,
+                hasRole: false
+            }));
+
+            setCheckboxData(resetCheckboxes);
+        }
+    }, [id]);
+
 
     const handleCheckboxChange = async (checkedItems) => {
         // checkedItems artık objelerin array'i olacak
@@ -92,6 +105,8 @@ const General = ({ activeKey, isDisableds, handleShows, handleEditClickk }) => {
 
         // console.log(checkboxData, 'form için set edilen roles');
     };
+
+
     return (
         <>
 

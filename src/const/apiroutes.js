@@ -123,11 +123,6 @@ export const apiRoutes = {
         getProductTransactions: '/admin/v1/LogTransaction/GetProductTransactions',
     },
 
-
-
-
-
-
     // Admnin-Order
     order: {
         getOrderList: '/admin/v1/Order/GetOrderList',
@@ -232,14 +227,6 @@ export const apiRoutes = {
         test: '/admin/v1/User/Test',
     },
 
-
-
-
-
-
-
-
-
     // Catalog
     catalog: {
         oemTypeList: '/catalog/v1/Product/GetOemTypeList',
@@ -257,6 +244,8 @@ export const apiRoutes = {
         getPaymentTermList: '/catalog/v1/PaymentTerm/GetPaymentTermList',
         getProductGroupListByProductId: '/catalog/v1/Product/GetProductGroupListByProductId',
     },
+
+
     storage: {
         storageGetList: '/catalog/v1/Storage/GetList',
     },
@@ -272,8 +261,6 @@ export const apiRoutes = {
         updateSalesmanAdditionalInfo: '/admin/v1/Salesman/updateSalesmanAdditionalInfo',
 
     },
-
-
 
 
     // Duyuru
@@ -298,5 +285,14 @@ export const apiRoutes = {
 
     module: {
         getModuleHierarchy: '/catalog/v1/Module/GetModuleHierarchy',
+    },
+
+
+
+    // Communication
+
+    notification: {
+        getAllNotificationList: '/communication/v1/Notification/GetAllNotificationList',
+        markNotificationAsRead: '/communication/v1/Notification/MarkNotificationAsRead',
     },
 };

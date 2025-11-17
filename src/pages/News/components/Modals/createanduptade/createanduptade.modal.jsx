@@ -349,22 +349,7 @@ const CreateAndUptade = ({
                                                 alt="Preview"
                                                 style={{ maxHeight: 200, borderRadius: 8 }}
                                             />
-                                            <Tooltip title="Şəkli sil">
-                                                <Button
-                                                    type="primary"
-                                                    danger
-                                                    shape="circle"
-                                                    icon={<DeleteOutlined />}
-                                                    size="small"
-                                                    onClick={() => handleRemove(imageFileList[0])}
-                                                    style={{
-                                                        position: "absolute",
-                                                        top: 5,
-                                                        right: 5,
-                                                        opacity: 0.8,
-                                                    }}
-                                                />
-                                            </Tooltip>
+                                            
                                         </div>
                                     )}
                                 </Form.Item>

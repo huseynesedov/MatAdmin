@@ -3,6 +3,7 @@ import { Checkbox, Button, Collapse, Spin, message, Typography } from "antd";
 import axios from "axios";
 import {AdminApi} from "../../../../api/admin.api";
 import {useParams} from "react-router-dom";
+import { useIds } from "../../../../Contexts/ids.context";
 
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -11,7 +12,8 @@ const RolePermissionManager = ({ salesmanIdHash, permission }) => {
     const [loading, setLoading] = useState(true);
     const [moduleData, setModuleData] = useState([]);
     const [permissionMap, setPermissionMap] = useState({});
-    let {id} = useParams();
+        const { id } = useIds()
+
 
     useEffect(() => {
         fetchPermissions();

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import {Form, Pagination, Table} from 'antd';
-import {useParams} from "react-router-dom";
-import {AdminApi} from "../../../../api/admin.api";
+import { Form, Pagination, Table } from 'antd';
+import { AdminApi } from "../../../../api/admin.api";
+import { useIds } from '../../../../Contexts/ids.context';
 
-const Equivalent = ({activeKey}) => {
+const Equivalent = ({ activeKey }) => {
     const [data, setData] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [form] = Form.useForm();
     const [count, setCount] = useState([]);
-    let {id} = useParams();
+    const { id } = useIds()
+
 
     const rowClassName = (record, index) => {
         return index % 2 === 0 ? 'custom_bg' : '';
@@ -70,14 +71,14 @@ const Equivalent = ({activeKey}) => {
             sorter: true,
             render: (text) => <div className="age-column">{text}</div>,
         },
-       /* {
-            title: 'Cari ünvan',
-            width: 77,
-            dataIndex: 'code',
-            key: 'code',
-            sorter: true,
-            render: (text) => <div className="age-column">{text}</div>,
-        },*/
+        /* {
+             title: 'Cari ünvan',
+             width: 77,
+             dataIndex: 'code',
+             key: 'code',
+             sorter: true,
+             render: (text) => <div className="age-column">{text}</div>,
+         },*/
         {
             title: 'Adress',
             width: 100,
@@ -120,7 +121,7 @@ const Equivalent = ({activeKey}) => {
                 dataSource={data}
                 rowSelection={rowSelection}
             />
-            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count}/>
+            <Pagination current={current} pageSize={pageSize} onChange={onChange} total={count} />
         </>
     );
 };

@@ -16,6 +16,8 @@ const OrderDetail = () => {
     const { idHash } = useParams();
     const navigate = useNavigate();
 
+    
+
     const [pageSize, setPageSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
     const [count, setCount] = useState(0);
@@ -66,31 +68,14 @@ const OrderDetail = () => {
                 setProducts(res.data.orderDetails || []);
                 setCount(res.count);
             })
-
-            //     if (res.status === 204) {  // 204 yanıtı geldiğinde yönlendir
-            //         notification.info({
-            //             description: 'Bu URL-də heç bir məlumat yoxdur.',
-            //             placement: 'topRight',
-            //         });
-            //         navigate("/Orders");
-            //     } else {
-            //         setOrderData(res.data);
-            //         setProducts(res.data.orderDetails || []);
-            //         setCount(res.count);
-            //     }
-            // })
-
             .catch((error) => {
                 if (error.status === 400 || 204) {
                     notification.info({
                         description: 'Mehsul Yoxdur...',
                         placement: 'topRight'
                     });
-                    navigate("/Orders")
+                    navigate("/orders")
                 }
-                // const errorMessage = error.response?.data?.message || error.message || 'Bir hata oluştu, lütfen tekrar deneyin.';
-                // console.error('API hatası:', errorMessage);
-                // alert(errorMessage);
             })
             .finally(() => {
                 setLoading(false);
@@ -110,7 +95,7 @@ const OrderDetail = () => {
 
     useEffect(() => {
         fetchOrderDetail(currentPage - 1);
-    }, [currentPage]);
+    }, [currentPage,idHash]);
 
 
 
@@ -201,9 +186,6 @@ const OrderDetail = () => {
 
 
 
-    if (loading) {
-        return <Spin spinning={true}></Spin>;
-    }
 
     const order = orderData?.order || "Order Yoxdur!";
 
@@ -339,8 +321,6 @@ const OrderDetail = () => {
 
     return (
         <div className="home">
-            <Spin spinning={loading}>
-
                 <Card className="search-card">
                     <div className="row">
                         <div className="col-sm-6 ps-3 pb-3 border_bottom border_right">
@@ -468,7 +448,6 @@ const OrderDetail = () => {
                         salesmanNote={salesmanNote}
                     />
                 </Card>
-            </Spin>
         </div>
     );
 };

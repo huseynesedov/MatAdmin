@@ -27,7 +27,7 @@ const ReturnList = ({ products, handlePageChange, currentDataPage, handlePageSiz
 
 
     const handleRowClick = (record) => {
-        navigate(`/ReturnDetail/${record.idHash}`);
+        navigate(`/returnDetail/${record.idHash}`);
     };
 
     const createUniqueFilters = (data, key) => [...new Set(data.map(item => item[key]))].map(value => ({ text: value, value }));

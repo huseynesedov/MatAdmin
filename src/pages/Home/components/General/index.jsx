@@ -11,9 +11,9 @@ import { useIds } from '../../../../Contexts/ids.context';
 
 const { confirm } = Modal;
 
-const General = forwardRef(({ isSetData, handleShowModal2, form,setSalesPrices,salesPrices,purchasePrices,setPurchasePrices,costPrices,setCostPrices,
+const General = forwardRef(({ isSetData, handleShowModal2, form, setSalesPrices, salesPrices, purchasePrices, setPurchasePrices, costPrices, setCostPrices,
     checkVehicleBrand, setCheckVehicleBrand, checkVehicleModel, setCheckVehicleModel
- }, ref) => {
+}, ref) => {
     const [loading, setLoading] = useState(false); // Loading durumu
     // let { id } = useParams();
 
@@ -680,15 +680,15 @@ const General = forwardRef(({ isSetData, handleShowModal2, form,setSalesPrices,s
         });
     };
 
-  const resetData = () => {
-    form.resetFields(); // formdakı bütün Form.Item-ları sıfırla
-    setproductPropertyValue(null);
-    setCheckVehicleBrand([]);
-    setCheckVehicleModel([]);
-    setShelfData([]);
-  };
+    const resetData = () => {
+        form.resetFields(); // formdakı bütün Form.Item-ları sıfırla
+        setproductPropertyValue(null);
+        setCheckVehicleBrand([]);
+        setCheckVehicleModel([]);
+        setShelfData([]);
+    };
 
-  useImperativeHandle(ref, () => ({
+    useImperativeHandle(ref, () => ({
         resetData: () => {
             form.resetFields();
         },
@@ -1044,15 +1044,31 @@ const General = forwardRef(({ isSetData, handleShowModal2, form,setSalesPrices,s
                                     </Form.Item>
                                 </div>
                             </Card>
+                            
+                        </div>
+                        <div class="col">
+                            <Card className="info-card" title="Fiyat Bilgileri">
+                                <Form layout="horizontal">
+                                    {renderPriceList(salesPrices, setSalesPrices, 'Satış Fiyatı')}
+                                    {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
+                                    {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
+                                </Form>
+                            </Card>
+
+                            <Card className="info-card" title="Ek bilgiler">
+                                <Form.Item layout="horizontal" name="description" label="Mehsul Statusu"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Zəhmət olmasa məlumat doldurun.'
+                                    }]}
+                                    className="mb-0">
+                                    <Input.TextArea placeholder="açıklama"
+                                        disabled={isDisabled} rows={3} />
+                                </Form.Item>
+                            </Card>
+
                             <Card className="info-card" title="Diğer Bilgiler">
-                                {/*<Form.Item name="" label="Koşul Kodu">
-                                    <div className='d-flex justify-content-end'>
-                                        <Input
-                                            disabled={isDisabled}
-                                            style={{maxWidth: "240px",width: "100%"}}
-                                            placeholder="12356789"/>
-                                    </div>
-                                </Form.Item>*/}
+                                
 
                                 <Form.Item name="paymentTermIdHash" label="Koşul Kodu"
                                     rules={[{
@@ -1133,27 +1149,6 @@ const General = forwardRef(({ isSetData, handleShowModal2, form,setSalesPrices,s
                                     </div>
                                 </div>
 
-                            </Card>
-                        </div>
-                        <div class="col">
-                            <Card className="info-card" title="Fiyat Bilgileri">
-                                <Form  layout="horizontal">
-                                    {renderPriceList(salesPrices, setSalesPrices, 'Satış Fiyatı')}
-                                    {renderPriceList(purchasePrices, setPurchasePrices, 'Alış Fiyatı')}
-                                    {renderPriceList(costPrices, setCostPrices, 'Maaliyet')}
-                                </Form>
-                            </Card>
-
-                            <Card className="info-card" title="Ek bilgiler">
-                                <Form.Item layout="horizontal" name="description" label="Mehsul Statusu"
-                                    rules={[{
-                                        required: true,
-                                        message: 'Zəhmət olmasa məlumat doldurun.'
-                                    }]}
-                                    className="mb-0">
-                                    <Input.TextArea placeholder="açıklama"
-                                        disabled={isDisabled} rows={3} />
-                                </Form.Item>
                             </Card>
                         </div>
                     </div>

@@ -12,41 +12,43 @@ const Delegates = lazy(() => import('../pages/Delegates/index'));
 const Return = lazy(() => import('../pages/Return/return'));
 const ReturnDetail = lazy(() => import('../pages/ReturnDetail/return.main'));
 const News = lazy(() => import('../pages/News/news'));
-const ChildUser = lazy(() => import('../pages/Clients/Component/Users/childUser'));
 const Login = lazy(() => import('../pages/Login/login'));
-
-
-
 
 const PrivateRoute = ({ children }) => {
   const { logged } = useAuth();
-  return logged ? children : <Login />;
+  return logged ? children : <Navigate to="/login" replace />;
 };
 
+// Route definitions
+const routes = [
+  { path: "/login", element: <Login /> },
+  { path: "/", element: <Home />, private: true },
+  { path: "/clients", element: <Clients />, private: true },
+  { path: "/delegates", element: <Delegates />, private: true },
+  { path: "/delegates/:id", element: <Delegates />, private: true },
+  { path: "/orders", element: <Orders />, private: true },
+  { path: "/orderDetail/:idHash", element: <OrderDetail />, private: true },
+  { path: "/return", element: <Return />, private: true },
+  { path: "/returnDetail/:idHash", element: <ReturnDetail />, private: true },
+  { path: "/news", element: <News />, private: true },
+];
 
 const RouteList = () => (
-  <Suspense fallback={<Spin size="large" style={{ display: 'none', margin: '100px auto' }} />}>
+  <Suspense
+    fallback={
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 100 }}>
+        <Spin size="large" />
+      </div>
+    }
+  >
     <Routes>
-      <Route path="/login" element={<Login />} />
-
-      <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
-
-      <Route path="/clients" element={<PrivateRoute><Clients /></PrivateRoute>} />
-      <Route path="/clients/:id" element={<PrivateRoute><Clients /></PrivateRoute>}>
-        <Route path="details" element={<ChildUser />} />
-      </Route>
-
-      <Route path="/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
-      <Route path="/OrderDetail/:idHash" element={<PrivateRoute><OrderDetail /></PrivateRoute>} />
-
-      <Route path="/delegates" element={<PrivateRoute><Delegates /></PrivateRoute>} />
-      <Route path="/delegates/:id" element={<PrivateRoute><Delegates /></PrivateRoute>} />
-
-      <Route path="/Return" element={<PrivateRoute><Return /></PrivateRoute>} />
-      <Route path="/ReturnDetail/:idHash" element={<PrivateRoute><ReturnDetail /></PrivateRoute>} />
-
-      <Route path="/news" element={<PrivateRoute><News /></PrivateRoute>} />
-
+      {routes.map(({ path, element, private: isPrivate }) => (
+        <Route
+          key={path}
+          path={path}
+          element={isPrivate ? <PrivateRoute>{element}</PrivateRoute> : element}
+        />
+      ))}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </Suspense>

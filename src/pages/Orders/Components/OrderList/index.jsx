@@ -92,7 +92,7 @@ const OrderList = ({ products, orderStatusList, currentPage, getOrdersByStatus, 
     };
 
     const handleRowClick = (record) => {
-        navigate(`/OrderDetail/${record.idHash}`);
+        navigate(`/orderDetail/${record.idHash}`);
     };
 
     const createUniqueFilters = (data, key) => [...new Set(data.map(item => item[key]))].map(value => ({ text: value, value }));

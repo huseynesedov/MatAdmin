@@ -3,6 +3,7 @@ import { Row, Col, Menu, Avatar, Dropdown, Badge } from 'antd';
 import { DownOutlined, BellOutlined } from '@ant-design/icons';
 import '../assets/styles/Topbar.scss';
 import { useAuth } from '../AuthContext';
+import GetAll from './notifactions/getAll';
 
 const Topbar = () => {
   const { logout } = useAuth();
@@ -18,27 +19,13 @@ const Topbar = () => {
   );
 
   // Notification dropdown menu
-  const notifMenu = (
-    <Menu
-      items={[
-        { key: '1', label: 'Yeni sifarişiniz var' },
-        { key: '2', label: 'Mesaj aldınız' },
-        { key: '3', label: 'Sistem yeniləndi' },
-      ]}
-    />
-  );
+ 
 
   return (
     <div className="topbar">
       <Row justify="end" align="middle" style={{ width: '100%' }}>
         {/* Notification Dropdown */}
-        <Col className="me-4">
-          <Dropdown overlay={notifMenu} trigger={['click']} placement="bottomRight">
-            <Badge count={3} offset={[0, 5]}>
-              <BellOutlined style={{ fontSize: 22, cursor: 'pointer', color: '#555' }} />
-            </Badge>
-          </Dropdown>
-        </Col>
+        <GetAll />
 
         {/* Profile Dropdown */}
         <Col className={'my-3'}>

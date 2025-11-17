@@ -485,10 +485,10 @@ const Home = () => {
                                 )}
 
                             </Col>
-                            <Col span={12} className="text-right">
+                            {/* <Col span={12} className="text-right">
                                 <Button type="default" icon={<img src={Images.Search_blue} alt="search" />}
                                     className="button-margin Search_blue" onClick={handleShow}></Button>
-                            </Col>
+                            </Col> */}
                         </Row>
 
                         {isNewFoto ?

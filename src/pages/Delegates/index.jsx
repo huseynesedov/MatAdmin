@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
     Typography,
     Form,
@@ -6,31 +6,29 @@ import {
     Button,
     Row,
     Col,
-    Divider,
     Tabs,
     Card,
-    Checkbox,
-    Radio,
-    Upload, notification,
+    notification,
 } from "antd";
-import {PlusOutlined, VerticalAlignTopOutlined} from "@ant-design/icons";
 
 
-import SearchModal from "./components/Modal/modal";
 import SearchModal2 from "./components/Modal/modal2";
 import Equivalent from "./components/Equivalent/products";
+import General from "./components/General";
+import RolePermissionManager from "./components/RolePermissionManager";
+import PermissionSettings from "./components/PermissionSettings";
 
 import "./../../assets/styles/Home.scss";
 import Images from "../../assets/images/js/Images";
 import { SearchContext } from "../../searchprovider";
 import { useNavigate, useParams } from "react-router-dom";
 import { AdminApi } from "../../api/admin.api";
-import General from "./components/General";
-import RolePermissionManager from "./components/RolePermissionManager";
-import PermissionSettings from "./components/PermissionSettings";
+import { useIds } from "../../Contexts/ids.context";
 
-const {Title} = Typography;
-const {TabPane} = Tabs;
+
+
+const { Title } = Typography;
+const { TabPane } = Tabs;
 
 const Delegates = () => {
     const navigate = useNavigate();
@@ -40,10 +38,15 @@ const Delegates = () => {
     const [forms, setdefaultforms] = useState();
     const [tabDisable, setTabDisable] = useState(false);
     const [isShowProduct, setShowProduct] = useState();
-    const [activeTab, setActiveTab] = useState(null);
+    const [activeTab, setActiveTab] = useState("1");
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
-    let { id } = useParams();
+    // let { id } = useParams();
+    const { id, selectedId } = useIds()
+
+    const [form] = Form.useForm();
+
+
     const [formData, setFormData] = useState({
         kodu: "",
         uretici: "",
@@ -54,14 +57,8 @@ const Delegates = () => {
         qemNo: "",
     });
 
-    const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
     const handleClose2 = () => setShow2(false);
 
-    const handleInputChangee = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
 
     const handleClear = () => {
         setFormData({
@@ -81,55 +78,6 @@ const Delegates = () => {
         setShow2(true);
     };
 
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
-
-    const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
-    };
-
-    const handleBlur = (e) => {
-        if (!dropdownRef.current.contains(e.relatedTarget)) {
-            setIsDropdownOpen(false);
-        }
-    };
-
-    const handleItemClick = () => {
-        setIsDropdownOpen(false);
-    };
-
-    const [isUpVisible, setIsUpVisible] = useState(false);
-    const [isTableViewVisible, setIsTableViewVisible] = useState(false);
-
-    const handleToggleClick = () => {
-        setIsUpVisible(!isUpVisible);
-        setIsTableViewVisible(!isTableViewVisible);
-    };
-
-    const [showAlert, setShowAlert] = useState(false);
-
-    const handleSaveClick = () => {
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 5000);
-    };
-
-    const handleCloseAlert = () => {
-        setShowAlert(false);
-    };
-
-    const [isBarCode, setIsBarCode] = useState(false);
-
-    const handlePrintClick = () => {
-        setIsBarCode(true);
-    };
-
-    const [isNewFoto, setIsNewFoto] = useState(false);
-
-    const handleNewFotoClick = () => {
-        setIsNewFoto(true);
-    };
 
     const [inputs, setInputs] = useState({
         product_code: "",
@@ -151,6 +99,7 @@ const Delegates = () => {
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
     const { selectedItem } = useContext(SearchContext);
+
     const openNotification = (message, description, error) => {
         if (error) {
             notification.error({
@@ -166,6 +115,7 @@ const Delegates = () => {
             });
         }
     };
+
 
     const handleTabChange = (activeKey) => {
         setActiveTab(activeKey)
@@ -202,7 +152,6 @@ const Delegates = () => {
 
     const onSalesmanDatas = (values) => {
         let data
-        /*xFsQPkFTRN0=*/
         AdminApi.GetSalesmanAdditionalInfos({ salesmanIdHash: values }).then((res) => {
             data = res
         }).catch((err) => {
@@ -213,7 +162,7 @@ const Delegates = () => {
     };
 
     useEffect(() => {
-        setActiveTab(1)
+        setActiveTab("1")
         if (id) {
             // console.log(id, 'onSalesmanDatas')
             onSalesmanDatas(id);
@@ -225,30 +174,7 @@ const Delegates = () => {
         }
     }, [id]);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setInputs({
-            ...inputs,
-            [name]: value,
-        });
-    };
 
-    const handleEditClick = () => {
-        setIsDisabled(false);
-    };
-
-    const handleSaveClickk = () => {
-        setIsSaveDisabled(true);
-        setTimeout(() => {
-            setIsSaveDisabled(false);
-            setIsDisabled(true);
-        }, 1000);
-    };
-
-    const [fileList, setFileList] = useState([]);
-    const handleChange = ({ fileList }) => {
-        setFileList(fileList);
-    };
 
 
     const onSearchData = (values) => {
@@ -285,7 +211,7 @@ const Delegates = () => {
     const onInitialSearch = (values) => {
         // console.log('Success:', values);
         if (!values) return
-        navigate(`/Delegates`);
+        navigate(`/delegates`);
         const result = Object.keys(values).filter(key => values[key] !== undefined && values[key] !== null && values[key] !== "").map((key) => ({
             value: values[key],
             fieldName: key,
@@ -350,6 +276,14 @@ const Delegates = () => {
             setLoading(false);
         }
     };
+
+    const cleanButton = () => {
+        form.resetFields();
+        selectedId(null);
+        setActiveTab("1");
+
+    };
+
     return (
         <div className="home">
 
@@ -368,8 +302,6 @@ const Delegates = () => {
                                             required: false,
                                         },
                                     ]} className="w-100">
-                                    {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
-                                 src={Images.Search_blue} alt="search"/>*/}
                                     <Input className='position-relative' placeholder="123544" />
                                 </Form.Item>
                             </Col>
@@ -382,16 +314,23 @@ const Delegates = () => {
                                         },
                                     ]} className="w-100">
                                     <Input className='position-relative' placeholder="123544" />
-                                    {/*<img className='position-absolute' style={{left: "152px", top: "6px"}}
-                                 src={Images.Search_blue} alt="search"/>*/}
                                 </Form.Item>
                             </Col>
                         </Row>
                     </div>
 
                     <Form.Item>
-                        <Button type="default" className="Delete_red"
-                            icon={<img src={Images.delete_red} alt="delete" />}>Temizle</Button>
+                        {id && (
+                            <Button
+                                type="default"
+                                className="Delete_red"
+                                icon={<img src={Images.delete_red} alt="delete" />}
+                                onClick={cleanButton}
+                            >
+                                Temizle
+                            </Button>
+                        )}
+
                         <Button type="default" htmlType="submit" style={{ marginLeft: '8px' }} className="Bin_Blue"
                             icon={<img src={Images.Search_blue} alt="search" />}>Ara</Button>
                     </Form.Item>
@@ -409,15 +348,19 @@ const Delegates = () => {
                     handleClear={handleClear}
                 />
             </Card>
-            <Tabs defaultActiveKey="1" className="product-tabs" onChange={handleTabChange}>
+            <Tabs
+                activeKey={activeTab}
+                onChange={handleTabChange}
+                className="product-tabs"
+            >
                 <TabPane disabled={tabDisable} tab="Genel" key="1">
-                   
-                    <General activeKey={activeTab === '1'}/>
+
+                    <General form={form} activeKey={activeTab === '1'} />
                 </TabPane>
 
-                
+
                 <TabPane disabled={tabDisable} tab="Yetkilendirme" key="2">
-                   
+
 
                     <RolePermissionManager permission={dataPermission} />
 
