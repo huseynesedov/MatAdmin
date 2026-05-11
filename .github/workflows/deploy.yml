@@ -26,7 +26,7 @@ jobs:
       - name: Create zip
         run: zip -r build.zip build/
 
-      # 1️⃣ serverdə köhnəni sil
+      # 1️⃣ serverdə köhnəni ssil
       - name: Clean server folder
         uses: appleboy/ssh-action@v1.0.3
         with:
