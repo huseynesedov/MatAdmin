@@ -29,6 +29,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "dist/"
+          source: "build/"
           target: "${{ secrets.TARGET }}"
           overwrite: true
