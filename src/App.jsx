@@ -149,7 +149,7 @@ function AppContent() {
                     })
                     .catch(() => {
                         logout();
-                        openNotification("Yenidən giriş tələb olunur !", true);
+                        openNotification("Yenidən giriş tələb olunur !", "", true);
                         clearInterval(refreshInterval);
                     });
             } else {

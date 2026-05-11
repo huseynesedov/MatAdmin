@@ -15,9 +15,18 @@ export const AuthProvider = ({ children }) => {
     const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
     const navigate = useNavigate();
 
-    const [logged, setLogged] = useState(() => {
-        return JSON.parse(localStorage.getItem("loggedIns")) || false;
-    });
+    const readLoggedFromStorage = () => {
+        try {
+            const v = localStorage.getItem("loggedIns");
+            if (v === "true") return true;
+            if (v === "false" || v == null || v === "") return false;
+            return Boolean(JSON.parse(v));
+        } catch {
+            return false;
+        }
+    };
+
+    const [logged, setLogged] = useState(() => readLoggedFromStorage());
 
 
     const openNotification = (message, description, error) => {
