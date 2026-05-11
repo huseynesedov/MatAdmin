@@ -1,11 +1,11 @@
-name: Deploy to Windows Server
+name: Auto Deploy to Windows Server
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,18 +17,42 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm install
 
       - name: Build project
         run: npm run build
 
-      - name: Deploy to Windows Server via SCP
+      - name: Create zip
+        run: zip -r build.zip build/
+
+      # 1️⃣ serverdə köhnəni sil
+      - name: Clean server folder
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            powershell -Command "Remove-Item -Recurse -Force ${{ secrets.TARGET }}\*"
+
+      # 2️⃣ zip upload
+      - name: Upload build
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "build/"
-          target: "${{ secrets.TARGET }}"
+          source: "build.zip"
+          target: "C:\Users\Administrator\actions-runner\hdeploy\build.zip "
           overwrite: true
+
+      # 3️⃣ extract + deploy
+      - name: Extract on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            powershell -Command "Expand-Archive -Path C:\Users\Administrator\actions-runner\hdeploy\build.zip -DestinationPath C:\inetpub\wwwroot\app -Force"
