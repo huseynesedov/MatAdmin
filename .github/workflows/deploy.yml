@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            powershell -Command "Remove-Item -Recurse -Force ${{ secrets.TARGET }}\*"
+            powershell -Command "Remove-Item -Recurse -Force ${{ secrets.TARGET }}/*"
 
       # 2️⃣ zip upload
       - name: Upload build
@@ -44,7 +44,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           source: "build.zip"
-          target: "C:\Users\Administrator\actions-runner\hdeploy\build.zip "
+          target: "C:/Users/Administrator/actions-runner/hdeploy/build.zip "
           overwrite: true
 
       # 3️⃣ extract + deploy
@@ -55,4 +55,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            powershell -Command "Expand-Archive -Path C:\Users\Administrator\actions-runner\hdeploy\build.zip -DestinationPath C:\inetpub\wwwroot\app -Force"
+            powershell -Command "Expand-Archive -Path C:/Users/Administrator/actions-runner/hdeploy/build.zip -DestinationPath C:/inetpub/wwwroot/app -Force"
