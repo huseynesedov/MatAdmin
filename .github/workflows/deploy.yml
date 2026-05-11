@@ -7,6 +7,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # SCP staging (Windows runner path); keep in sync with clean + upload steps.
+    env:
+      WIN_STAGING: "C:/Users/Administrator/actions-runner/hdeploy"
 
     steps:
       - name: Checkout
@@ -23,8 +26,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      # Zip root = site files (index.html at archive root), not a "build/" folder — IIS expects files in TARGET root.
       - name: Create zip
-        run: zip -r build.zip build/
+        run: (cd build && zip -r ../build.zip .)
 
       # 1️⃣ serverdə köhnəni ssil (staging hdeploy boş olsun ki, Windows tar overwrite olmadan çıxarsın)
       - name: Clean server folder
@@ -34,7 +38,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            powershell -Command "Remove-Item -Recurse -Force ${{ secrets.TARGET }}/* -ErrorAction SilentlyContinue; Remove-Item -Recurse -Force 'C:/Users/Administrator/actions-runner/hdeploy/*' -ErrorAction SilentlyContinue"
+            powershell -Command "Remove-Item -Recurse -Force ${{ secrets.TARGET }}/* -ErrorAction SilentlyContinue; Remove-Item -Recurse -Force '${{ env.WIN_STAGING }}/*' -ErrorAction SilentlyContinue"
 
       # 2️⃣ zip upload
       # Windows tar does not support GNU's --overwrite; scp-action passes it when overwrite: true.
@@ -45,10 +49,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           source: "build.zip"
-          target: "C:/Users/Administrator/actions-runner/hdeploy/"
+          target: "${{ env.WIN_STAGING }}/"
           overwrite: false
 
-      # 3️⃣ extract + deploy
+      # 3️⃣ zip-i TARGET kökünə aç (secrets.TARGET = IIS fiziki qovluq)
       - name: Extract on server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -56,4 +60,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            powershell -Command "Expand-Archive -Path C:/Users/Administrator/actions-runner/hdeploy/build.zip -DestinationPath C:/inetpub/wwwroot/app -Force"
+            powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $zip='${{ env.WIN_STAGING }}/build.zip'; $dest='${{ secrets.TARGET }}'; if (-not (Test-Path $zip)) { throw ('ZIP yoxdur: ' + $zip) }; if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }; Expand-Archive -LiteralPath $zip -DestinationPath $dest -Force"
