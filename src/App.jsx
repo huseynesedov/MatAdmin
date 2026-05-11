@@ -11,8 +11,8 @@ import Header from "./components/Header";
 import RouteList from "./Routes";
 import Login from "./pages/Login/login";
 
-import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getMessaging, getToken, onMessage, isSupported } from "firebase/messaging";
 import { IdsProvider } from "./Contexts/ids.context";
 import { NotificationProvider, useNotifications } from "./NotificationContext";
 
@@ -35,58 +35,67 @@ function AppContent() {
     const vapidKey = "BJNATOZRMAk82-d__q2VLAT93Rf7bSEBv-ZZwYZkwRLOildfWeR8N5sxdEwmPSGblPSkWkkG6dWkoFdFOx_BYdM";
 
     useEffect(() => {
-        const loggedIns = localStorage.getItem("loggedIns");
+        let offOnMessage = () => {};
 
-        // ❗ Login yoxdursa firebase init olmasın
-        if (loggedIns !== "true") {
-            console.log("🚫 User logged out → Firebase disabled");
-            return;
+        if (!logged || localStorage.getItem("loggedIns") !== "true") {
+            return () => {};
         }
 
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
-
-        navigator.serviceWorker.register('/firebase-messaging-sw.js')
-            .then((registration) => {
-                if (registration.active) return registration;
-
-                return new Promise((resolve) => {
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'activated') resolve(registration);
-                        });
-                    });
-                });
-            })
-            .then((registration) => {
-                return getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
-            })
-            .then((token) => {
-                console.log('✅ FCM Token:', token);
-                localStorage.setItem("fireBaseToken", token);
-            })
-            .catch((err) => {
-                console.error('❌ Token alınamadı:', err);
-            });
-
-        const unsubscribe = onMessage(messaging, (payload) => {
-            // Yenə də login check edək (istəyə bağlı)
-            if (localStorage.getItem("loggedIns") !== "true") return;
-
-            console.log('Message received. ', payload);
-
-            if (payload?.notification) {
-                openNotification(payload.notification.title, payload.notification.body, false);
-                const audio = new Audio('/assets/notification-aero-432436.mp3');
-                audio.play().catch(err => console.error("Səs çalmaq mümkün olmadı:", err));
+        const run = async () => {
+            if (localStorage.getItem("loggedIns") !== "true") {
+                return;
             }
 
-            loadNotifications();
-        });
+            // HTTP (localhost xaric) üzərində SW/FCM çox vaxt yoxdur → getMessaging bütün UI-i sındırmasın
+            if (!("serviceWorker" in navigator)) {
+                console.warn("MatAdmin: Service Worker yoxdur (məs. HTTP). Push bildirişi ötürülür.");
+                return;
+            }
 
-        return () => unsubscribe();
-    }, []);
+            if (!(await isSupported())) {
+                console.warn("MatAdmin: Firebase Messaging bu mühitdə dəstəklənmir (messaging/unsupported-browser).");
+                return;
+            }
+
+            try {
+                const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+                const messaging = getMessaging(app);
+
+                await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+                const registration = await navigator.serviceWorker.ready;
+
+                const token = await getToken(messaging, {
+                    vapidKey,
+                    serviceWorkerRegistration: registration,
+                });
+                if (token) {
+                    localStorage.setItem("fireBaseToken", token);
+                }
+
+                offOnMessage = onMessage(messaging, (payload) => {
+                    if (localStorage.getItem("loggedIns") !== "true") return;
+
+                    if (payload?.notification) {
+                        openNotification(
+                            payload.notification.title,
+                            payload.notification.body,
+                            false
+                        );
+                        const audio = new Audio("/assets/notification-aero-432436.mp3");
+                        audio.play().catch((err) => console.error("Səs çalmaq mümkün olmadı:", err));
+                    }
+                    loadNotifications();
+                });
+            } catch (err) {
+                console.error("MatAdmin: FCM init uğursuz (səhifə davam edir):", err);
+            }
+        };
+
+        run();
+        return () => offOnMessage();
+        // FCM yalnız girişdən sonra; openNotification/loadNotifications context-dən gəlir
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [logged]);
 
 
 
