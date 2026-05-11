@@ -52,7 +52,7 @@ jobs:
           target: "${{ env.WIN_STAGING }}/"
           overwrite: false
 
-      # 3️⃣ zip-i TARGET kökünə aç (secrets.TARGET = IIS fiziki qovluq)
+      # 3️⃣ zip-i TARGET kökünə aç, sonra staging-dəki zip-i sil (secrets.TARGET = IIS fiziki qovluq)
       - name: Extract on server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -60,4 +60,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $zip='${{ env.WIN_STAGING }}/build.zip'; $dest='${{ secrets.TARGET }}'; if (-not (Test-Path $zip)) { throw ('ZIP yoxdur: ' + $zip) }; if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }; Expand-Archive -LiteralPath $zip -DestinationPath $dest -Force"
+            powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $zip='${{ env.WIN_STAGING }}/build.zip'; $dest='${{ secrets.TARGET }}'; if (-not (Test-Path $zip)) { throw ('ZIP yoxdur: ' + $zip) }; if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }; Expand-Archive -LiteralPath $zip -DestinationPath $dest -Force; Remove-Item -LiteralPath $zip -Force"
