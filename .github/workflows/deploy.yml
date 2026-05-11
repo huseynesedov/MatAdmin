@@ -44,7 +44,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           source: "build.zip"
-          target: "C:/Users/Administrator/actions-runner/hdeploy/build.zip "
+          target: "C:/Users/Administrator/actions-runner/hdeploy/"
           overwrite: true
 
       # 3️⃣ extract + deploy
