@@ -6,7 +6,7 @@ export const apiRoutes = {
         test: '/catalog/v1/Manufacturer/Test',
     },
 
-    // Order
+    // Order (catalog + order service + admin)
     order: {
         getByOrderId: '/order/v1/OrderDetail/GetByOrderId',
         getOrderDetailStatusList: '/catalog/v1/Order/GetOrderDetailStatusList',
@@ -18,6 +18,10 @@ export const apiRoutes = {
         add: '/order/v1/Order/Add',
         getSearchTable: '/order/v1/Order/GetSearchTable',
         baseTest: '/order/v1/Base/Test',
+        getOrderList: '/admin/v1/Order/GetOrderList',
+        undoOrderForOrderDetail: '/admin/v1/Order/UndoOrderForOrderDetail',
+        updateOrderForOrderDetail: '/admin/v1/Order/UpdateOrderForOrderDetail',
+        updateOrderIntoPoolForOrderDetail: '/admin/v1/Order/UpdateOrderIntoPoolForOrderDetail',
     },
 
     // Product
@@ -123,16 +127,6 @@ export const apiRoutes = {
         getProductTransactions: '/admin/v1/LogTransaction/GetProductTransactions',
     },
 
-    // Admnin-Order
-    order: {
-        getOrderList: '/admin/v1/Order/GetOrderList',
-        undoOrderForOrderDetail: '/admin/v1/Order/UndoOrderForOrderDetail',
-        updateOrderForOrderDetail: '/admin/v1/Order/UpdateOrderForOrderDetail',
-        updateOrderIntoPoolForOrderDetail: '/admin/v1/Order/UpdateOrderIntoPoolForOrderDetail',
-
-    },
-
-
     // Admnin-OrderDetail
     orderDetail: {
         getOrderDetail: '/admin/v1/OrderDetail/GetOrderDetail',
@@ -147,8 +141,11 @@ export const apiRoutes = {
 
     },
 
-    // Admnin-Product
-    product: {
+    adminProduct: {
+        getById: '/admin/v1/Product/GetById',
+        equivalentProducts: '/admin/v1/Product/GetEquivalentProducts',
+        getOemsByType: '/admin/v1/Product/GetOemsByType',
+        getVehicleBrandListByProductId: '/admin/v1/Product/GetVehicleBrandListByProductId',
         add: '/admin/v1/Product/Add',
         addOem: '/admin/v1/Product/AddOem',
         addProductVehicleBrand: '/admin/v1/Product/AddProductVehicleBrand',
@@ -166,14 +163,6 @@ export const apiRoutes = {
         updateOem: '/admin/v1/Product/UpdateOem',
         updateProduct: '/admin/v1/Product/UpdateProduct',
         updateProductVehicleBrand: '/admin/v1/Product/UpdateProductVehicleBrand',
-
-    },
-
-    adminProduct: {
-        getById: '/admin/v1/Product/GetById',
-        equivalentProducts: '/admin/v1/Product/GetEquivalentProducts',
-        getOemsByType: '/admin/v1/Product/GetOemsByType',
-        getVehicleBrandListByProductId: '/admin/v1/Product/GetVehicleBrandListByProductId',
     },
 
 
@@ -196,18 +185,6 @@ export const apiRoutes = {
         updateUser: '/admin/v1/User/Update',
         updateUserPassword: '/admin/v1/User/UpdatePassword',
         test: '/admin/v1/User/Test',
-    },
-
-
-    // Admin-Salesman
-    role: {
-        getById: '/admin/v1/User/AddCustomerUser',
-        getSalesmanTableAsync: '/admin/v1/Salesman/GetTableAsync',
-        getListByNameOrCode: '/admin/v1/User/AddSalesmanUser',
-        GetSalesmanCustomerById: '/admin/v1/User/Delete',
-        getSalesmanListForOrderDetail: '/admin/v1/User/GetById',
-        updateUserPasswordById: '/admin/v1/User/GetForUpdateById',
-
     },
 
 
@@ -270,8 +247,6 @@ export const apiRoutes = {
     },
     announcementType: {
         getTable: '/admin/v1/AnnouncementType/GetTable',
-    },
-    announcementType: {
         getById: '/admin/v1/Announcement/GetById',
         getAllAnnocumentTable: '/admin/v1/AnnouncementModulePage/GetAnnouncements',
     },

@@ -27,8 +27,8 @@ jobs:
       - name: Upload dist
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: 45.136.17.11
-          username: Administrator
-          password: Pa99W00rd..!100%
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           source: "dist/*"
-          target: "C:\\inetpub\\wwwroot\\MAT-AdminUI"
+          target: "${{ secrets.TARGET }}"

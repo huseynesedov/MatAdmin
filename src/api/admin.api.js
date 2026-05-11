@@ -91,9 +91,6 @@ export const AdminApi = {
     UpdateCustomerManufacturerByIds(params) {
         return BaseApi.delete(apiRoutes.customer.updatecustomermanufacturerByIds, { ...params });
     },
-    UpdateCustomerManufacturerByIds(params) {
-        return BaseApi.delete(apiRoutes.customer.updatecustomermanufacturerByIds, { ...params });
-    },
     UpdateCustomerDeleteId(params) {
         return BaseApi.deleteNew(apiRoutes.customer.updatecustomermanuDelete, params);
     },
@@ -121,11 +118,6 @@ export const AdminApi = {
     getLoginHistoryByCustomerIdss(data) {
         return BaseApi.post(apiRoutes.customer.getLoginHistories, data);
     },
-
-    getProductTransactionDetails(data) {
-        return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
-    },
-
 
     getProductTransactionDetails(data) {
         return BaseApi.post(apiRoutes.customer.getProductTransactionDetails, data);
@@ -194,30 +186,30 @@ export const AdminApi = {
             return BaseApi.post(apiRoutes.product.add, data);
         },*/
     AddProduct(data) {
-        return BaseApi.post(apiRoutes.product.add, data);
+        return BaseApi.post(apiRoutes.adminProduct.add, data);
     },
     AddEquivalentProducts(data) {
         return BaseApi.post(apiRoutes.adminProduct.equivalentProducts, data);
     },
     AddOem(data) {
-        return BaseApi.post(apiRoutes.product.addOem, data);
+        return BaseApi.post(apiRoutes.adminProduct.addOem, data);
     },
     AddProductVehicleBrand(data) {
-        return BaseApi.post(apiRoutes.product.addProductVehicleBrand, data);
+        return BaseApi.post(apiRoutes.adminProduct.addProductVehicleBrand, data);
     },
     DeleteOem(userId) {
-        return BaseApi.delete(apiRoutes.product.deleteOem, { ...{ id: userId } });
+        return BaseApi.delete(apiRoutes.adminProduct.deleteOem, { ...{ id: userId } });
     },
     deleteProduct(id) {
         // id'yi query param olarak ekle
-        const url = `${apiRoutes.product.deleteProduct}?id=${id}`;
+        const url = `${apiRoutes.adminProduct.deleteProduct}?id=${id}`;
         return BaseApi.delete(url);
     },
     DeleteProductVehicleBrand(userId) {
-        return BaseApi.delete(apiRoutes.product.deleteProductVehicleBrand, userId);
+        return BaseApi.delete(apiRoutes.adminProduct.deleteProductVehicleBrand, userId);
     },
     GetCurrencyTable(params) {
-        return BaseApi.get(apiRoutes.product.getCurrencyTable, { params });
+        return BaseApi.get(apiRoutes.adminProduct.getCurrencyTable, { params });
     },
     GetProductFileByProductId(data) {
         return BaseApi.get(`${apiRoutes.photos.getProductFileByProductId}?productId=${data.id}`);
@@ -229,19 +221,19 @@ export const AdminApi = {
         return BaseApi.get(apiRoutes.adminProduct.getVehicleBrandListByProductId, { ...params });
     },
     GetManufacturersWithProductCount(data) {
-        return BaseApi.post(apiRoutes.product.getManufacturersWithProductCount, data);
+        return BaseApi.post(apiRoutes.adminProduct.getManufacturersWithProductCount, data);
     },
     GetOemListByGroupId(params) {
-        return BaseApi.get(`${apiRoutes.product.getOemListByGroupId}?type=${params.type}&productGroupId=${params.productGroupId}`);
+        return BaseApi.get(`${apiRoutes.adminProduct.getOemListByGroupId}?type=${params.type}&productGroupId=${params.productGroupId}`);
     },
     GetProductGroupsById(userId) {
-        return BaseApi.get(apiRoutes.product.getProductGroupsById, { id: userId });
+        return BaseApi.get(apiRoutes.adminProduct.getProductGroupsById, { id: userId });
     },
     GetProductPropertyValueTable(params) {
-        return BaseApi.get(apiRoutes.product.getProductPropertyValueTable, { ...params });
+        return BaseApi.get(apiRoutes.adminProduct.getProductPropertyValueTable, { ...params });
     },
     GetSearchTable(params) {
-        return BaseApi.post(apiRoutes.product.getSearchTable, { ...params });
+        return BaseApi.post(apiRoutes.adminProduct.getSearchTable, { ...params });
     },
     GetSearchEquivalentProducts(data) {
         return BaseApi.post(apiRoutes.adminProduct.equivalentProducts, data);
@@ -250,19 +242,19 @@ export const AdminApi = {
         return BaseApi.get(apiRoutes.adminProduct.getOemsByType, { ...params });
     },
     GetShelfTable(params) {
-        return BaseApi.get(apiRoutes.product.getShelfTable, { params });
+        return BaseApi.get(apiRoutes.adminProduct.getShelfTable, { params });
     },
     GetVehicleBrandListByProductGroupId(userId) {
-        return BaseApi.get(apiRoutes.product.getVehicleBrandListByProductGroupId, { params: { id: userId } });
+        return BaseApi.get(apiRoutes.adminProduct.getVehicleBrandListByProductGroupId, { params: { id: userId } });
     },
     UpdateOem(data) {
-        return BaseApi.put(apiRoutes.product.updateOem, data);
+        return BaseApi.put(apiRoutes.adminProduct.updateOem, data);
     },
     UpdateProduct(data) {
-        return BaseApi.put(apiRoutes.product.updateProduct, data);
+        return BaseApi.put(apiRoutes.adminProduct.updateProduct, data);
     },
     UpdateProductVehicleBrand(data) {
-        return BaseApi.put(apiRoutes.product.updateProductVehicleBrand, data);
+        return BaseApi.put(apiRoutes.adminProduct.updateProductVehicleBrand, data);
     },
 
     // !!!!!!!!! Return !!!!!!!!!
